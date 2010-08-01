@@ -109,4 +109,43 @@ public class Delimiters {
             segmentDelimiter = segment.toCharArray();
         }
 	}
+
+    public boolean removeNodeToken(String string, DelimiterType delimiterType) {
+        if(string.length() == 0) {
+            return true;
+        }
+
+        int stringLen = string.length();
+
+        for(int i = 0; i < stringLen; i++) {
+            char c = string.charAt(i);
+
+            switch(delimiterType) {
+                case SEGMENT:
+                    if(equals(segment, c)) {
+                        continue;
+                    }
+                case FIELD:
+                    if(equals(field, c)) {
+                        continue;
+                    }
+                case COMPONENT:
+                    if(equals(component, c)) {
+                        continue;
+                    }
+                case SUB_COMPONENT:
+                    if(equals(subComponent, c)) {
+                        continue;
+                    }
+                default :
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean equals(String delimiter, char c) {
+        return delimiter != null && delimiter.length() == 1 && delimiter.charAt(0) == c;
+    }
 }

@@ -15,12 +15,17 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Message Trailer.
@@ -35,13 +40,25 @@ public class UNT implements Serializable, EDIWritable {
 	private String messageRefNum;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
-        writer.write("UNT");
-        writer.write(delimiters.getField());
-        writer.write(segmentCount);
-        writer.write(delimiters.getField());
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
+        nodeWriter.write("UNT");
+        nodeWriter.write(delimiters.getField());
+        nodeWriter.write(Integer.toString(segmentCount));
+        nodeTokens.add(nodeWriter.toString());
+        ((StringWriter)nodeWriter).getBuffer().setLength(0);
+
+        nodeWriter.write(delimiters.getField());
         if(messageRefNum != null) {
-            writer.write(messageRefNum);
+            nodeWriter.write(messageRefNum);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));
         writer.write(delimiters.getSegment());
     }
 

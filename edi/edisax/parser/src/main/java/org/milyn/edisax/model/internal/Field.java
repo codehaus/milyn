@@ -19,7 +19,7 @@ package org.milyn.edisax.model.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Field extends ValueNode {
+public class Field extends ValueNode implements ContainerNode {
 
     private List<Component> component;
     private Boolean required;

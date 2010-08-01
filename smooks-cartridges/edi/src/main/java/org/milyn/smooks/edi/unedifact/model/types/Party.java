@@ -15,12 +15,17 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interchange Party (sender or recipient).
@@ -37,21 +42,35 @@ public class Party implements Serializable, EDIWritable {
 	private String internalSubId;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
         if(id != null) {
-            writer.write(id);
+            nodeWriter.write(id);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(codeQualifier != null) {
-            writer.write(codeQualifier);
+            nodeWriter.write(codeQualifier);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(internalId != null) {
-            writer.write(internalId);
+            nodeWriter.write(internalId);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(internalSubId != null) {
-            writer.write(internalSubId);
+            nodeWriter.write(internalSubId);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
     public String getId() {

@@ -17,9 +17,14 @@ package org.milyn.smooks.edi.unedifact.model;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 import org.milyn.smooks.edi.unedifact.model.types.DateTime;
 import org.milyn.smooks.edi.unedifact.model.types.Party;
@@ -48,52 +53,82 @@ public class UNB implements Serializable, EDIWritable {
     private String testIndicator;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
-        writer.write("UNB");
-        writer.write(delimiters.getField());
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
+        nodeWriter.write("UNB");
+        nodeWriter.write(delimiters.getField());
         if(syntaxIdentifier != null) {
-            syntaxIdentifier.write(writer, delimiters);
+            syntaxIdentifier.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(sender != null) {
-            sender.write(writer, delimiters);
+            sender.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(recipient != null) {
-            recipient.write(writer, delimiters);
+            recipient.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(date != null) {
-            date.write(writer, delimiters);
+            date.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(controlRef != null) {
-            writer.write(controlRef);
+            nodeWriter.write(controlRef);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(recipientRef != null) {
-            recipientRef.write(writer, delimiters);
+            recipientRef.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(applicationRef != null) {
-            writer.write(applicationRef);
+            nodeWriter.write(applicationRef);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(processingPriorityCode != null) {
-            writer.write(processingPriorityCode);
+            nodeWriter.write(processingPriorityCode);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(ackRequest != null) {
-            writer.write(ackRequest);
+            nodeWriter.write(ackRequest);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(agreementId != null) {
-            writer.write(agreementId);
+            nodeWriter.write(agreementId);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(testIndicator != null) {
-            writer.write(testIndicator);
+            nodeWriter.write(testIndicator);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));
         writer.write(delimiters.getSegment());
+        writer.flush();
     }
 
     public SyntaxIdentifier getSyntaxIdentifier() {

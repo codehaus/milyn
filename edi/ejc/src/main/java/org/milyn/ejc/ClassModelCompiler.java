@@ -189,7 +189,7 @@ public class ClassModelCompiler {
         collapseSingleFieldSegmentBinding(parent);
 
         if(parent.getWriteMethod() != null) {
-            parent.getWriteMethod().writeDelimiter(DelimiterType.SEGMENT);
+            parent.getWriteMethod().addTerminatingDelimiter(DelimiterType.SEGMENT);
             parent.getWriteMethod().addFlush();
         }
     }
@@ -352,6 +352,8 @@ public class ClassModelCompiler {
         JNamedType childProperty = new JNamedType(jtype, propertyName);
 
         BindingConfig childBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), child, parentBinding, childProperty);
+        childBeanConfig.setMappingNode(mappingNode);
+
         JClass parentBeanClass = parentBinding.getBeanClass();
         if(!parentBeanClass.isFinalized() && !parentBeanClass.hasProperty(propertyName) && model.isClassCreator(parentBeanClass)) {
             parentBeanClass.addBeanProperty(childProperty);
@@ -362,7 +364,7 @@ public class ClassModelCompiler {
         if(addClassToModel) {
             model.addCreatedClass(child);
             createdClassesByNode.put(mappingNode, child);
-            childBeanConfig.setWriteMethod(new WriteMethod(child));
+            childBeanConfig.setWriteMethod(new WriteMethod(child, mappingNode));
         }
 
         return childBeanConfig;
@@ -430,15 +432,6 @@ public class ClassModelCompiler {
         return null;
     }
 
-    private void writeSegmentStart(BindingConfig bindingConfig, Segment segment) {
-        WriteMethod writeMethod = bindingConfig.getWriteMethod();
-
-        if(bindingConfig.getParent() == null || writeMethod.getBody().length() > 0) {
-            writeMethod.appendToBody("\n        writer.write(\"" + segment.getSegcode() + "\");");
-            writeMethod.writeDelimiter(DelimiterType.FIELD);
-        }
-    }
-
     /**********************************************************************************************************
      * Private Helper Methods
      *********************************************************************************************************
@@ -452,7 +445,7 @@ public class ClassModelCompiler {
         }
 
         JClass beanClass = bindingConfig.getBeanClass();
-        WriteMethod writeMethod = new WriteMethod(beanClass);
+        WriteMethod writeMethod = new WriteMethod(beanClass, bindingConfig.getMappingNode());
 
         bindingConfig.setWriteMethod(writeMethod);
 

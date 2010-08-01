@@ -183,5 +183,7 @@ public class UNEdifactInterchange implements Serializable {
         if(interchangeTrailer != null) {
             interchangeTrailer.write(writer, delimiters);
         }
+
+        writer.flush();
     }
 }

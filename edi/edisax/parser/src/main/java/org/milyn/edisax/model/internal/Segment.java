@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Segment extends SegmentGroup {
+public class Segment extends SegmentGroup implements ContainerNode {
 
     private List<Field> fields;
     private String segcode;

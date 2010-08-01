@@ -15,12 +15,17 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Transfer Status.
@@ -35,13 +40,23 @@ public class TransferStatus implements Serializable, EDIWritable {
 	private String firstAndLast;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
         if(sequence != null) {
-            writer.write(sequence);
+            nodeWriter.write(sequence);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(firstAndLast != null) {
-            writer.write(firstAndLast);
+            nodeWriter.write(firstAndLast);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
     public String getSequence() {
