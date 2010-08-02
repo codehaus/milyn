@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model;
+package org.milyn.smooks.edi.unedifact.model.r41;
 
 import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Message Trailer.
+ * Message Trailer (Version 4, Release 1).
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNT implements Serializable, EDIWritable {
+public class UNT41 implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 

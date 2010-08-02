@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model;
+package org.milyn.smooks.edi.unedifact.model.r41;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,16 +26,16 @@ import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
-import org.milyn.smooks.edi.unedifact.model.types.MessageIdentifier;
-import org.milyn.smooks.edi.unedifact.model.types.SourceIdentifier;
-import org.milyn.smooks.edi.unedifact.model.types.TransferStatus;
+import org.milyn.smooks.edi.unedifact.model.r41.types.MessageIdentifier;
+import org.milyn.smooks.edi.unedifact.model.r41.types.SourceIdentifier;
+import org.milyn.smooks.edi.unedifact.model.r41.types.TransferStatus;
 
 /**
- * Message Header.
+ * Message Header (Version 4, Release 1).
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNH implements Serializable, EDIWritable {
+public class UNH41 implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 

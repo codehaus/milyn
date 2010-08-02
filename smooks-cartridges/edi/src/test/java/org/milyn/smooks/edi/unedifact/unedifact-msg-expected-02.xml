@@ -1,5 +1,5 @@
 <list>
-  <org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
+  <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
     <interchangeHeader>
       <syntaxIdentifier>
         <serviceCodeListDirVersion>serviceCode</serviceCodeListDirVersion>
@@ -101,9 +101,9 @@
       <segmentCount>25</segmentCount>
       <messageRefNum>mref1</messageRefNum>
     </messageTrailer>
-  </org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
-  <org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
-    <interchangeHeader reference="../../org.milyn.smooks.edi.unedifact.model.UNEdifactMessage/interchangeHeader"/>
+  </org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
+  <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
+    <interchangeHeader reference="../../org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41/interchangeHeader"/>
     <messageHeader>
       <messageRefNum>mref2</messageRefNum>
       <messageIdentifier>
@@ -117,9 +117,9 @@
       <segmentCount>25</segmentCount>
       <messageRefNum>mref2</messageRefNum>
     </messageTrailer>
-  </org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
-  <org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
-    <interchangeHeader reference="../../org.milyn.smooks.edi.unedifact.model.UNEdifactMessage/interchangeHeader"/>
+  </org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
+  <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
+    <interchangeHeader reference="../../org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41/interchangeHeader"/>
     <messageHeader>
       <messageRefNum>mref3</messageRefNum>
       <messageIdentifier>
@@ -133,5 +133,5 @@
       <segmentCount>25</segmentCount>
       <messageRefNum>mref3</messageRefNum>
     </messageTrailer>
-  </org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
+  </org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
 </list>

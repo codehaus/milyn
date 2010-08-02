@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model.types;
+package org.milyn.smooks.edi.unedifact.model.r41.types;
 
 import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -28,29 +28,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Application.
+ * Reference.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Application implements Serializable, EDIWritable {
+public class Ref implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String id;
-	private String codeQualifier;
+	private String ref;
+    private String refQualifier;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
         Writer nodeWriter = new StringWriter();
         List<String> nodeTokens = new ArrayList<String>();
 
-        if(id != null) {
-            nodeWriter.write(id);
+        if(ref != null) {
+            nodeWriter.write(ref);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
-        if(codeQualifier != null) {
-            nodeWriter.write(codeQualifier);
+        if(refQualifier != null) {
+            nodeWriter.write(refQualifier);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -59,19 +59,19 @@ public class Application implements Serializable, EDIWritable {
         writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
-    public String getId() {
-		return id;
+    public String getRef() {
+		return ref;
 	}
 
-    public void setId(String ref) {
-		this.id = ref;
+    public void setRef(String ref) {
+		this.ref = ref;
 	}
 
-    public String getCodeQualifier() {
-		return codeQualifier;
+    public String getRefQualifier() {
+		return refQualifier;
 	}
 
-    public void setCodeQualifier(String refQualifier) {
-		this.codeQualifier = refQualifier;
+    public void setRefQualifier(String refQualifier) {
+		this.refQualifier = refQualifier;
 	}
 }

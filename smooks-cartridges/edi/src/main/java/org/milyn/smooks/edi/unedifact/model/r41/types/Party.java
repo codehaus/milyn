@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model.types;
+package org.milyn.smooks.edi.unedifact.model.r41.types;
 
 import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -28,29 +28,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reference.
+ * Interchange Party (sender or recipient).
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Ref implements Serializable, EDIWritable {
+public class Party implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
-
-	private String ref;
-    private String refQualifier;
+	
+	private String id;
+	private String codeQualifier;
+	private String internalId;
+	private String internalSubId;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
         Writer nodeWriter = new StringWriter();
         List<String> nodeTokens = new ArrayList<String>();
 
-        if(ref != null) {
-            nodeWriter.write(ref);
+        if(id != null) {
+            nodeWriter.write(id);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
-        if(refQualifier != null) {
-            nodeWriter.write(refQualifier);
+        if(codeQualifier != null) {
+            nodeWriter.write(codeQualifier);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(internalId != null) {
+            nodeWriter.write(internalId);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(internalSubId != null) {
+            nodeWriter.write(internalSubId);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -59,19 +73,35 @@ public class Ref implements Serializable, EDIWritable {
         writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
-    public String getRef() {
-		return ref;
+    public String getId() {
+		return id;
 	}
 
-    public void setRef(String ref) {
-		this.ref = ref;
+    public void setId(String id) {
+		this.id = id;
 	}
 
-    public String getRefQualifier() {
-		return refQualifier;
+    public String getCodeQualifier() {
+		return codeQualifier;
 	}
 
-    public void setRefQualifier(String refQualifier) {
-		this.refQualifier = refQualifier;
+    public void setCodeQualifier(String codeQualifier) {
+		this.codeQualifier = codeQualifier;
+	}
+
+    public String getInternalId() {
+		return internalId;
+	}
+
+    public void setInternalId(String internalId) {
+		this.internalId = internalId;
+	}
+
+    public String getInternalSubId() {
+		return internalSubId;
+	}
+
+    public void setInternalSubId(String internalSubId) {
+		this.internalSubId = internalSubId;
 	}
 }
