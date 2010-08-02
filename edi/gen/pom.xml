@@ -17,53 +17,19 @@
         <d08a.version>1.0-SNAPSHOT</d08a.version>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>testonly</id>
-            <modules>
-                <!-- UN/EDIFACT D93A... -->
-                <!--<module>unedifact/d93a/test</module>-->
+    <modules>
+        <!-- UN/EDIFACT D93A... -->
+        <!--<module>unedifact/d93a/mapping</module>-->
 
-                <!-- UN/EDIFACT D03B... -->
-                <module>unedifact/d03b/test</module>
+        <!-- UN/EDIFACT D03B... -->
+        <module>unedifact/d03b/mapping</module>
+        <module>unedifact/d03b/binding</module>
+        <module>unedifact/d03b/test</module>
 
-                <!-- UN/EDIFACT D08A... -->
-                <module>unedifact/d08a/test</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>gen</id>
-            <modules>
-                <!-- UN/EDIFACT D93A... -->
-                <!--<module>unedifact/d93a/mapping</module>-->
-
-                <!-- UN/EDIFACT D03B... -->
-                <module>unedifact/d03b/mapping</module>
-                <module>unedifact/d03b/binding</module>
-                <module>unedifact/d03b/test</module>
-
-                <!-- UN/EDIFACT D08A... -->
-                <module>unedifact/d08a/mapping</module>
-                <module>unedifact/d08a/test</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>deploy</id>
-            <modules>
-                <!-- UN/EDIFACT D93A... -->
-                <!--<module>unedifact/d93a/mapping</module>-->
-
-                <!-- UN/EDIFACT D03B... -->
-                <module>unedifact/d03b/mapping</module>
-                <module>unedifact/d03b/binding</module>
-                <module>unedifact/d03b/test</module>
-
-                <!-- UN/EDIFACT D08A... -->
-                <module>unedifact/d08a/mapping</module>
-                <module>unedifact/d08a/test</module>
-            </modules>
-        </profile>
-    </profiles>
+        <!-- UN/EDIFACT D08A... -->
+        <module>unedifact/d08a/mapping</module>
+        <module>unedifact/d08a/test</module>
+    </modules>
 
     <dependencies>
         <dependency>
