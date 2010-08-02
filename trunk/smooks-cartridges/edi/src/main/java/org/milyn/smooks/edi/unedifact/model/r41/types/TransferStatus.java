@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model.types;
+package org.milyn.smooks.edi.unedifact.model.r41.types;
 
 import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -28,36 +28,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Message Version.
+ * Transfer Status.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MessageVersion implements Serializable, EDIWritable {
+public class TransferStatus implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String versionNum;
-	private String releaseNum;
-	private String associationCode;
+	private String sequence;
+	private String firstAndLast;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
         Writer nodeWriter = new StringWriter();
         List<String> nodeTokens = new ArrayList<String>();
 
-        if(versionNum != null) {
-            nodeWriter.write(versionNum);
+        if(sequence != null) {
+            nodeWriter.write(sequence);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
-        if(releaseNum != null) {
-            nodeWriter.write(releaseNum);
-            nodeTokens.add(nodeWriter.toString());
-            ((StringWriter)nodeWriter).getBuffer().setLength(0);
-        }
-        nodeWriter.write(delimiters.getComponent());
-        if(associationCode != null) {
-            nodeWriter.write(associationCode);
+        if(firstAndLast != null) {
+            nodeWriter.write(firstAndLast);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -66,27 +59,19 @@ public class MessageVersion implements Serializable, EDIWritable {
         writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
-    public String getVersionNum() {
-		return versionNum;
+    public String getSequence() {
+		return sequence;
 	}
 
-    public void setVersionNum(String versionNum) {
-		this.versionNum = versionNum;
+    public void setSequence(String sequence) {
+		this.sequence = sequence;
 	}
 
-    public String getReleaseNum() {
-		return releaseNum;
+    public String getFirstAndLast() {
+		return firstAndLast;
 	}
 
-    public void setReleaseNum(String releaseNum) {
-		this.releaseNum = releaseNum;
-	}
-
-    public String getAssociationCode() {
-		return associationCode;
-	}
-
-    public void setAssociationCode(String associationCode) {
-		this.associationCode = associationCode;
+    public void setFirstAndLast(String firstAndLast) {
+		this.firstAndLast = firstAndLast;
 	}
 }

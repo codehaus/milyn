@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model;
+package org.milyn.smooks.edi.unedifact.model.r41.types;
 
 import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -28,53 +28,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Interchange Trailer (UNZ) Control Segment Data.
+ * Message Version.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNZ implements Serializable, EDIWritable {
+public class MessageVersion implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
-	private int controlCount;
-	private String controlRef;
+	private String versionNum;
+	private String releaseNum;
+	private String associationCode;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
         Writer nodeWriter = new StringWriter();
         List<String> nodeTokens = new ArrayList<String>();
 
-        nodeWriter.write("UNZ");
-        nodeWriter.write(delimiters.getField());
-        nodeWriter.write(Integer.toString(controlCount));
-        nodeTokens.add(nodeWriter.toString());
-        ((StringWriter)nodeWriter).getBuffer().setLength(0);
-
-        nodeWriter.write(delimiters.getField());
-        if(controlRef != null) {
-            nodeWriter.write(controlRef);
+        if(versionNum != null) {
+            nodeWriter.write(versionNum);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(releaseNum != null) {
+            nodeWriter.write(releaseNum);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(associationCode != null) {
+            nodeWriter.write(associationCode);
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
 
         nodeTokens.add(nodeWriter.toString());
-
-        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));
-        writer.write(delimiters.getSegment());
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
-    public int getControlCount() {
-		return controlCount;
+    public String getVersionNum() {
+		return versionNum;
 	}
 
-    public void setControlCount(int controlCount) {
-		this.controlCount = controlCount;
+    public void setVersionNum(String versionNum) {
+		this.versionNum = versionNum;
 	}
 
-    public String getControlRef() {
-		return controlRef;
+    public String getReleaseNum() {
+		return releaseNum;
 	}
 
-    public void setControlRef(String controlRef) {
-		this.controlRef = controlRef;
+    public void setReleaseNum(String releaseNum) {
+		this.releaseNum = releaseNum;
+	}
+
+    public String getAssociationCode() {
+		return associationCode;
+	}
+
+    public void setAssociationCode(String associationCode) {
+		this.associationCode = associationCode;
 	}
 }

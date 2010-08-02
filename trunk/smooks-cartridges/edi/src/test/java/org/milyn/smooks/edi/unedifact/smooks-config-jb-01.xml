@@ -6,7 +6,7 @@
 
 	<unedifact:reader mappingModel="MSG1-model.xml,MSG2-model.xml,MSG3-model.xml" ignoreNewLines="true" />
 	
-	<import file="/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-message.xml" />
+	<import file="/org/milyn/smooks/edi/unedifact/model/r41/bindings/unedifact-message.xml" />
 	
     <jb:bean beanId="unEdifactMessages" class="java.util.ArrayList" createOnElement="#document" retain="true">
     	<jb:wiring beanIdRef="unEdifactMessage" />

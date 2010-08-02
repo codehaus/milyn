@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model.types;
+package org.milyn.smooks.edi.unedifact.model.r41.types;
 
 import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -28,29 +28,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Transfer Status.
+ * Syntax Identifier.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class TransferStatus implements Serializable, EDIWritable {
+public class SyntaxIdentifier extends Identifier implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String sequence;
-	private String firstAndLast;
+	private String serviceCodeListDirVersion;
+	private String codedCharacterEncoding;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
         Writer nodeWriter = new StringWriter();
         List<String> nodeTokens = new ArrayList<String>();
 
-        if(sequence != null) {
-            nodeWriter.write(sequence);
+        if(getId() != null) {
+            nodeWriter.write(getId());
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
-        if(firstAndLast != null) {
-            nodeWriter.write(firstAndLast);
+        if(getVersionNum() != null) {
+            nodeWriter.write(getVersionNum());
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(serviceCodeListDirVersion != null) {
+            nodeWriter.write(serviceCodeListDirVersion);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(codedCharacterEncoding != null) {
+            nodeWriter.write(codedCharacterEncoding);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
+        }
+        nodeWriter.write(delimiters.getComponent());
+        if(getReleaseNum() != null) {
+            nodeWriter.write(getReleaseNum());
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -59,19 +77,16 @@ public class TransferStatus implements Serializable, EDIWritable {
         writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
-    public String getSequence() {
-		return sequence;
+    public String getServiceCodeListDirVersion() {
+		return serviceCodeListDirVersion;
 	}
-
-    public void setSequence(String sequence) {
-		this.sequence = sequence;
+	public void setServiceCodeListDirVersion(String serviceCodeListDirVersion) {
+		this.serviceCodeListDirVersion = serviceCodeListDirVersion;
 	}
-
-    public String getFirstAndLast() {
-		return firstAndLast;
+	public String getCodedCharacterEncoding() {
+		return codedCharacterEncoding;
 	}
-
-    public void setFirstAndLast(String firstAndLast) {
-		this.firstAndLast = firstAndLast;
+	public void setCodedCharacterEncoding(String codedCharacterEncoding) {
+		this.codedCharacterEncoding = codedCharacterEncoding;
 	}
 }

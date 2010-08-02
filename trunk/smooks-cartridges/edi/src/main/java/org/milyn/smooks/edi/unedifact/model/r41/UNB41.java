@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model;
+package org.milyn.smooks.edi.unedifact.model.r41;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,17 +26,17 @@ import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
-import org.milyn.smooks.edi.unedifact.model.types.DateTime;
-import org.milyn.smooks.edi.unedifact.model.types.Party;
-import org.milyn.smooks.edi.unedifact.model.types.Ref;
-import org.milyn.smooks.edi.unedifact.model.types.SyntaxIdentifier;
+import org.milyn.smooks.edi.unedifact.model.r41.types.DateTime;
+import org.milyn.smooks.edi.unedifact.model.r41.types.Party;
+import org.milyn.smooks.edi.unedifact.model.r41.types.Ref;
+import org.milyn.smooks.edi.unedifact.model.r41.types.SyntaxIdentifier;
 
 /**
- * Interchange Header (UNB) Control Segment Data.
+ * Interchange Header (UNB) Control Segment Data (Version 4, Release 1).
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNB implements Serializable, EDIWritable {
+public class UNB41 implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 	

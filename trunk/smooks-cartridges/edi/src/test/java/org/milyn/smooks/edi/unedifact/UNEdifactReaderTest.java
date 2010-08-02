@@ -36,8 +36,8 @@ import org.milyn.edisax.util.EDIUtils;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;
-import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
-import org.milyn.smooks.edi.unedifact.model.UNEdifactMessage;
+import org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41;
+import org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
@@ -91,7 +91,7 @@ public class UNEdifactReaderTest extends TestCase {
 		//execCtx.setEventListener(new HtmlReportGenerator("target/report.html"));
 		smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("unedifact-msg-02.edi")), jResult, sResult);
 		
-		List<UNEdifactMessage> messages = (List<UNEdifactMessage>) jResult.getBean("unEdifactMessages");
+		List<UNEdifactMessage41> messages = (List<UNEdifactMessage41>) jResult.getBean("unEdifactMessages");
 
 		System.out.println(sResult);
 		System.out.println(new XStream().toXML(messages));
@@ -109,7 +109,7 @@ public class UNEdifactReaderTest extends TestCase {
 		//execCtx.setEventListener(new HtmlReportGenerator("target/report.html"));
 		smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("unedifact-msg-02.edi")), jResult, sResult);
 		
-		UNEdifactInterchange interchange = jResult.getBean(UNEdifactInterchange.class);
+		UNEdifactInterchange41 interchange = jResult.getBean(UNEdifactInterchange41.class);
 
 		System.out.println(new XStream().toXML(interchange));
 		

@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model.types;
+package org.milyn.smooks.edi.unedifact.model.r41.types;
 
 import java.io.Serializable;
 

@@ -88,8 +88,8 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         Properties properties = new Properties();
 
         properties.setProperty(EdiSpecificationReader.INTERCHANGE_TYPE, INTERCHANGE_TYPE);
-        properties.setProperty(EdiSpecificationReader.MESSAGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-message.xml");
-        properties.setProperty(EdiSpecificationReader.INTERCHANGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-interchange.xml");
+        properties.setProperty(EdiSpecificationReader.MESSAGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/r41/bindings/unedifact-message.xml");
+        properties.setProperty(EdiSpecificationReader.INTERCHANGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/r41/bindings/unedifact-interchange.xml");
 
         return properties;
     }
