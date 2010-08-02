@@ -1,4 +1,4 @@
-<org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange>
+<org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41>
   <interchangeHeader>
     <syntaxIdentifier>
       <serviceCodeListDirVersion>serviceCode</serviceCodeListDirVersion>
@@ -39,7 +39,7 @@
     <controlRef>00000000000001</controlRef>
   </interchangeTrailer>
   <messages>
-    <org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
+    <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
       <interchangeHeader reference="../../../interchangeHeader"/>
       <groupHeader>
         <groupId>groupId</groupId>
@@ -108,8 +108,8 @@
         <messageRefNum>mref1</messageRefNum>
       </messageTrailer>
       <message class="org.milyn.smooks.edi.unedifact.MSG2"/>
-    </org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
-    <org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
+    </org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
+    <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
       <interchangeHeader reference="../../../interchangeHeader"/>
       <messageHeader>
         <messageRefNum>mref2</messageRefNum>
@@ -125,8 +125,8 @@
         <messageRefNum>mref2</messageRefNum>
       </messageTrailer>
       <message class="org.milyn.smooks.edi.unedifact.MSG2"/>
-    </org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
-    <org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
+    </org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
+    <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
       <interchangeHeader reference="../../../interchangeHeader"/>
       <messageHeader>
         <messageRefNum>mref3</messageRefNum>
@@ -142,6 +142,6 @@
         <messageRefNum>mref3</messageRefNum>
       </messageTrailer>
       <message class="org.milyn.smooks.edi.unedifact.MSG1"/>
-    </org.milyn.smooks.edi.unedifact.model.UNEdifactMessage>
+    </org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41>
   </messages>
-</org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange>
+</org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41>
