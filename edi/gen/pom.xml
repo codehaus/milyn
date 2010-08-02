@@ -17,21 +17,48 @@
         <d08a.version>1.0-SNAPSHOT</d08a.version>
     </properties>
 
-    <modules>
-        <!-- UN/EDIFACT D93A... -->
-        <!--<module>unedifact/d93a/mapping</module>-->
+    <profiles>
+        <profile>
+            <id>all</id>
+            <modules>
+                <!-- UN/EDIFACT D93A... -->
+                <!--<module>unedifact/d93a/mapping</module>-->
 
-        <!-- UN/EDIFACT D03B... -->
-        <module>unedifact/d03b/mapping</module>
-        <module>unedifact/d03b/binding</module>
-        <module>unedifact/d03b/test</module>
+                <!-- UN/EDIFACT D03B... -->
+                <module>unedifact/d03b/mapping</module>
+                <module>unedifact/d03b/binding</module>
+                <module>unedifact/d03b/test</module>
 
-        <!-- UN/EDIFACT D08A... -->
-        <module>unedifact/d08a/mapping</module>
-        <module>unedifact/d08a/test</module>
-    </modules>
+                <!-- UN/EDIFACT D08A... -->
+                <module>unedifact/d08a/mapping</module>
+                <module>unedifact/d08a/test</module>
+            </modules>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>deploy</id>
+            <modules>
+                <!-- UN/EDIFACT D93A... -->
+                <!--<module>unedifact/d93a/mapping</module>-->
+
+                <!-- UN/EDIFACT D03B... -->
+                <module>unedifact/d03b/mapping</module>
+                <module>unedifact/d03b/binding</module>
+
+                <!-- UN/EDIFACT D08A... -->
+                <module>unedifact/d08a/mapping</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <dependencies>
+        <dependency>
+			<groupId>org.milyn</groupId>
+			<artifactId>milyn-smooks-edi</artifactId>
+			<version>${smooks.version}</version>
+		</dependency>
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-ect</artifactId>
