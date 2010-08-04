@@ -263,7 +263,7 @@ public class ClassUtil {
 
             // Get the input stream from the connection.  Need to set the defaultUseCaches
             URLConnection connection = url.openConnection();
-            connection.setDefaultUseCaches(false);
+            connection.setUseCaches(true);
             ins = connection.getInputStream();
 
             br = new BufferedReader( new InputStreamReader( ins ));
