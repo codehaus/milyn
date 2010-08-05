@@ -58,4 +58,10 @@ public interface ApplicationContext extends BoundAttributeStore {
      */
     public BeanIdStore getBeanIdStore();
 
+    /**
+     * Get the {@link ClassLoader} to be used by the associated Smooks instance
+     *
+     * @return The ClassLoader.
+     */
+    public ClassLoader getClassLoader();
 }

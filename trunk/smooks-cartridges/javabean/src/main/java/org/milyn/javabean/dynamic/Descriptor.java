@@ -17,6 +17,7 @@
 package org.milyn.javabean.dynamic;
 
 import org.milyn.Smooks;
+import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -24,6 +25,7 @@ import org.milyn.cdr.SmooksResourceConfigurationList;
 import org.milyn.cdr.XMLConfigDigester;
 import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.javabean.dynamic.ext.BeanWriterFactory;
+import org.milyn.javabean.dynamic.resolvers.AbstractResolver;
 import org.milyn.javabean.dynamic.resolvers.DefaultBindingConfigResolver;
 import org.milyn.javabean.dynamic.resolvers.DefaultSchemaResolver;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
@@ -57,6 +59,7 @@ public class Descriptor {
 
     private Smooks smooks;
     private Schema schema;
+    private ClassLoader classloader = Descriptor.class.getClassLoader();
 
     public Descriptor(List<Properties> descriptors) throws SAXException, IOException {
         AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
@@ -67,21 +70,27 @@ public class Descriptor {
     public Descriptor(String descriptorPath) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 
-		List<Properties> descriptors = loadDescriptors(descriptorPath, getClass());
+		List<Properties> descriptors = loadDescriptors(descriptorPath, getClass().getClassLoader());
 		intialize(descriptors, new DefaultSchemaResolver(descriptors), new DefaultBindingConfigResolver(descriptors));
 	}
 
-	public Descriptor(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+	public Descriptor(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver, ClassLoader classloader) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 		AssertArgument.isNotNull(bindingResolver, "bindingResolver");
+        AssertArgument.isNotNull(classloader, "classloader");
 
-		List<Properties> descriptors = loadDescriptors(descriptorPath, getClass());
+        this.classloader = classloader;
+
+		List<Properties> descriptors = loadDescriptors(descriptorPath, classloader);
 		intialize(descriptors, schemaResolver, bindingResolver);
 	}
 
-    public Descriptor(List<Properties> descriptors, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+    public Descriptor(List<Properties> descriptors, EntityResolver schemaResolver, EntityResolver bindingResolver, ClassLoader classloader) throws SAXException, IOException {
         AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
         AssertArgument.isNotNull(bindingResolver, "bindingResolver");
+        AssertArgument.isNotNull(classloader, "classloader");
+
+        this.classloader = classloader;
 
         intialize(descriptors, schemaResolver, bindingResolver);
     }
@@ -98,11 +107,11 @@ public class Descriptor {
         return BeanWriterFactory.getBeanWriters(smooks.getApplicationContext());
     }
 
-    public static List<Properties> loadDescriptors(String descriptorPath, Class<?> loaderClass) {
+    public static List<Properties> loadDescriptors(String descriptorPath, ClassLoader classLoader) {
         List<Properties> descriptorFiles = new ArrayList<Properties>();
 
         try {
-            List<URL> resources = ClassUtil.getResources(descriptorPath, loaderClass);
+            List<URL> resources = ClassUtil.getResources(descriptorPath, classLoader);
 
             if(resources.isEmpty()) {
                 throw new IllegalStateException("Failed to locate any model descriptor file by the name '" + descriptorPath + "' on the classpath.");
@@ -131,6 +140,18 @@ public class Descriptor {
     }
 
     private void intialize(List<Properties> descriptors, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+
+        if(schemaResolver instanceof AbstractResolver) {
+            if(((AbstractResolver)schemaResolver).getClassLoader() != classloader) {
+                throw new SmooksException("Schema EntityResolver '" + schemaResolver.getClass().getName() + "' not using the same ClassLoader as this Descriptor instance.");
+            }
+        }
+        if(bindingResolver instanceof AbstractResolver) {
+            if(((AbstractResolver)bindingResolver).getClassLoader() != classloader) {
+                throw new SmooksException("Binding EntityResolver '" + bindingResolver.getClass().getName() + "' not using the same ClassLoader as this Descriptor instance.");
+            }
+        }
+
         if(schemaResolver != null) {
             this.schema = newSchemaInstance(descriptors, schemaResolver);
         }
@@ -179,7 +200,7 @@ public class Descriptor {
         return xsdSources;
     }
 
-    public static Smooks newSmooksInstance(List<Properties> descriptors, EntityResolver bindingResolver) throws SAXException, IOException, SmooksConfigurationException {
+    private Smooks newSmooksInstance(List<Properties> descriptors, EntityResolver bindingResolver) throws SAXException, IOException, SmooksConfigurationException {
         AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
         AssertArgument.isNotNull(bindingResolver, "bindingResolver");
 
@@ -188,6 +209,9 @@ public class Descriptor {
 
         // Now create a Smooks instance for processing configurations for these namespaces...
         Smooks smooks = new Smooks();
+
+        smooks.setClassLoader(classloader);
+        
         for (Namespace namespace : namespaces) {
             InputSource bindingSource = bindingResolver.resolveEntity(namespace.uri, namespace.uri);
 
@@ -196,7 +220,7 @@ public class Descriptor {
                     SmooksResourceConfigurationList configList;
 
                     try {
-                        configList = XMLConfigDigester.digestConfig(bindingSource.getByteStream(), "./", extendedConfigDigesters);
+                        configList = XMLConfigDigester.digestConfig(bindingSource.getByteStream(), "./", extendedConfigDigesters, classloader);
                         for(int i = 0; i < configList.size(); i++) {
                             SmooksResourceConfiguration config = configList.get(i);
                             

@@ -99,17 +99,6 @@ public class ModelBuilder {
 
         configure();
 	}
-
-	public ModelBuilder(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver, boolean validate) throws SAXException, IOException {
-		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
-		AssertArgument.isNotNull(schemaResolver, "schemaResolver");
-		AssertArgument.isNotNull(bindingResolver, "bindingResolver");
-
-        descriptor = new Descriptor(descriptorPath, schemaResolver, bindingResolver);
-        this.validate = validate;
-
-        configure();
-	}
 	
 	public boolean isValidating() {
 		return validate;

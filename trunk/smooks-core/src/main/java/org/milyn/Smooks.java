@@ -160,15 +160,16 @@ public class Smooks {
      * @return The ClassLoader instance.
      */
     public ClassLoader getClassLoader() {
-        return classLoader;
+        return context.getClassLoader();
     }
 
     /**
      * Set the ClassLoader associated with this Smooks instance.
      * @param classLoader The ClassLoader instance.
      */
-    public void setClassLoader(ClassLoader classLoader) {
+    public void setClassLoader(ClassLoader classLoader) {        
         this.classLoader = classLoader;
+        context.setClassLoader(classLoader);
     }
 
     /**

@@ -68,6 +68,7 @@ public final class XMLConfigDigester {
 
     private final SmooksResourceConfigurationList resourcelist;
     private final Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
+    private ClassLoader classLoader = XMLConfigDigester.class.getClassLoader();
 
     private Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
     private static ThreadLocal<Boolean> extentionDigestOn = new ThreadLocal<Boolean>();
@@ -90,7 +91,7 @@ public final class XMLConfigDigester {
      *
      * @param list Config list.
      */
-    private XMLConfigDigester(SmooksResourceConfigurationList list) {
+    public XMLConfigDigester(SmooksResourceConfigurationList list) {
         this.resourcelist = list;
         configStack.push(new SmooksConfig("root-config"));
     }
@@ -109,10 +110,32 @@ public final class XMLConfigDigester {
      * @throws SmooksConfigurationException  Invalid configuration..
      */
     public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI, Map<String, Smooks> extendedConfigDigesters) throws SAXException, IOException, URISyntaxException, SmooksConfigurationException {
+        return digestConfig(stream, baseURI, extendedConfigDigesters, null);
+    }
+
+    /**
+     * Digest the XML Smooks configuration stream.
+     *
+     * @param stream  The stream.
+     * @param baseURI The base URI to be associated with the configuration stream.
+     * @param extendedConfigDigesters Config digesters.
+     * @param classLoader The ClassLoader to be used.
+     * @return A {@link SmooksResourceConfigurationList} containing the list of
+     *         {@link SmooksResourceConfiguration SmooksResourceConfigurations} defined in the
+     *         XML configuration.
+     * @throws SAXException Error parsing the XML stream.
+     * @throws IOException  Error reading the XML stream.
+     * @throws SmooksConfigurationException  Invalid configuration..
+     */
+    public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI, Map<String, Smooks> extendedConfigDigesters, ClassLoader classLoader) throws SAXException, IOException, URISyntaxException, SmooksConfigurationException {
         SmooksResourceConfigurationList list = new SmooksResourceConfigurationList(baseURI);
 
         setExtentionDigestOff();
         XMLConfigDigester digester = new XMLConfigDigester(list);
+
+        if(classLoader != null) {
+            digester.classLoader = classLoader;
+        }
 
         digester.extendedConfigDigesters = extendedConfigDigesters;
         digester.digestConfigRecursively(new InputStreamReader(stream), baseURI);
@@ -133,11 +156,30 @@ public final class XMLConfigDigester {
      * @throws SmooksConfigurationException  Invalid configuration..
      */
     public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI) throws SAXException, IOException, URISyntaxException, SmooksConfigurationException {
+        return digestConfig(stream, baseURI, (ClassLoader) null);
+    }
+
+    /**
+     * Digest the XML Smooks configuration stream.
+     *
+     * @param stream  The stream.
+     * @param baseURI The base URI to be associated with the configuration stream.
+     * @return A {@link SmooksResourceConfigurationList} containing the list of
+     *         {@link SmooksResourceConfiguration SmooksResourceConfigurations} defined in the
+     *         XML configuration.
+     * @throws SAXException Error parsing the XML stream.
+     * @throws IOException  Error reading the XML stream.
+     * @throws SmooksConfigurationException  Invalid configuration..
+     */
+    public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI, ClassLoader classLoader) throws SAXException, IOException, URISyntaxException, SmooksConfigurationException {
         SmooksResourceConfigurationList list = new SmooksResourceConfigurationList(baseURI);
 
         setExtentionDigestOff();
         XMLConfigDigester digester = new XMLConfigDigester(list);
 
+        if(classLoader != null) {
+            digester.classLoader = classLoader;
+        }
         digester.digestConfigRecursively(new InputStreamReader(stream), baseURI);
 
         return list;
@@ -547,7 +589,7 @@ public final class XMLConfigDigester {
                 XMLConfigDigester configDigester = new XMLConfigDigester(extConfigList);
 
                 configDigester.extendedConfigDigesters = extendedConfigDigesters;
-                configDigester.digestConfigRecursively(new InputStreamReader(ClassUtil.getResourceAsStream(resourcePath, getClass())), baseURI);
+                configDigester.digestConfigRecursively(new InputStreamReader(ClassUtil.getResourceAsStream(resourcePath, classLoader)), baseURI);
                 configStore.addSmooksResourceConfigurationList(extConfigList);
             } catch (Exception e) {
                 throw new SmooksConfigurationException("Failed to construct Smooks instance for processing extended configuration resource '" + resourcePath + "'.", e);
@@ -559,11 +601,13 @@ public final class XMLConfigDigester {
             extendedConfigDigesters.put(configNamespace, smooks);
         }
 
+        smooks.setClassLoader(classLoader);
+
         return smooks;
     }
 
     private void assertExtendedConfigOK(String configNamespace, String resourcePath) {
-        InputStream resourceStream = ClassUtil.getResourceAsStream(resourcePath, getClass());
+        InputStream resourceStream = ClassUtil.getResourceAsStream(resourcePath, classLoader);
 
         if (resourceStream == null) {
             throw new SmooksConfigurationException("Unable to locate Smooks digest configuration '" + resourcePath + "' for extended resource configuration namespace '" + configNamespace + "'.  This resource must be available on the classpath.");

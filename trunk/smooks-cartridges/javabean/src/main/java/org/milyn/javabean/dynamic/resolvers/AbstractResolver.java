@@ -30,12 +30,12 @@ import org.xml.sax.SAXException;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-abstract class AbstractResolver implements EntityResolver {
+public abstract class AbstractResolver implements EntityResolver {
 
 	private List<Properties> descriptors;
-    private Class<?> loadClass = getClass();
+    private ClassLoader classLoader = AbstractResolver.class.getClassLoader();
 
-	protected AbstractResolver(List<Properties> descriptors) {
+    protected AbstractResolver(List<Properties> descriptors) {
 		this.descriptors = descriptors;
 	}
 
@@ -43,12 +43,12 @@ abstract class AbstractResolver implements EntityResolver {
 		return descriptors;
 	}
 
-    public Class<?> getLoadClass() {
-        return loadClass;
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 
-    public void setLoadClass(Class<?> loadClass) {
-        this.loadClass = loadClass;
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     protected InputSource resolveSchemaLocation(String systemId) throws SAXException {
@@ -61,7 +61,7 @@ abstract class AbstractResolver implements EntityResolver {
 				throw new SAXException("Failed to resolve schemaLocation for namespace '" + systemId + "'.");
 			}
 			
-			InputStream stream = ClassUtil.getResourceAsStream(schemaLocation, loadClass);
+			InputStream stream = ClassUtil.getResourceAsStream(schemaLocation, classLoader);
 	
 			if(stream == null) {
 				throw new SAXException("schemaLocation '" + schemaLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
@@ -83,7 +83,7 @@ abstract class AbstractResolver implements EntityResolver {
 				throw new SAXException("Failed to resolve bindingConfigLocation for namespace '" + systemId + "'.");
 			}
 			
-			InputStream stream = ClassUtil.getResourceAsStream(bindingConfigLocation, loadClass);
+			InputStream stream = ClassUtil.getResourceAsStream(bindingConfigLocation, classLoader);
 	
 			if(stream == null) {
 				throw new SAXException("bindingConfigLocation '" + bindingConfigLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
