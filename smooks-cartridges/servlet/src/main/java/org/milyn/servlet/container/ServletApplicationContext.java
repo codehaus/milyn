@@ -129,4 +129,8 @@ public class ServletApplicationContext implements ApplicationContext {
 	public BeanIdStore getBeanIdStore() {
 		return beanIdStore;
 	}
+
+    public ClassLoader getClassLoader() {
+        return getClass().getClassLoader();
+    }
 }

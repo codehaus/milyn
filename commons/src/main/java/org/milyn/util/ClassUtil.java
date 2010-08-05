@@ -84,7 +84,7 @@ public class ClassUtil {
 			} // ignore
 		}
 
-		final ClassLoader classLoader = caller.getClassLoader();
+		ClassLoader classLoader = caller.getClassLoader();
 		if (classLoader != null) {
 			try {
 				return classLoader.loadClass(className);
@@ -92,42 +92,61 @@ public class ClassUtil {
 			} // ignore
 		}
 
-		return Class.forName(className, true, ClassLoader
-				.getSystemClassLoader());
+		return Class.forName(className, true, ClassLoader.getSystemClassLoader());
 	}
+
+    /**
+     * Get the specified resource as a stream.
+     *
+     * @param resourceName
+     *            The name of the class to load.
+     * @param caller
+     *            The class of the caller.
+     * @return The input stream for the resource or null if not found.
+     */
+    public static InputStream getResourceAsStream(final String resourceName, final Class caller) {
+        final String resource;
+
+        if (!resourceName.startsWith("/")) {
+            final Package callerPackage = caller.getPackage();
+            if (callerPackage != null) {
+                resource = callerPackage.getName().replace('.', '/') + '/'
+                        + resourceName;
+            } else {
+                resource = resourceName;
+            }
+
+            return getResourceAsStream(resource, caller.getClassLoader());
+        } else {
+            return getResourceAsStream(resourceName, caller.getClassLoader());            
+        }
+    }
 
 	/**
 	 * Get the specified resource as a stream.
 	 *
-	 * @param resourceName
-	 *            The name of the class to load.
-	 * @param caller
-	 *            The class of the caller.
+	 * @param resourceName The name of the class to load.
+	 * @param classLoader The ClassLoader to use, if the resource is not located via the
+     * Thread context ClassLoader.
 	 * @return The input stream for the resource or null if not found.
 	 */
-	public static InputStream getResourceAsStream(final String resourceName, final Class caller) {
-		final String resource;
-		if (resourceName.startsWith("/")) {
-			resource = resourceName.substring(1);
-		} else {
-			final Package callerPackage = caller.getPackage();
-			if (callerPackage != null) {
-				resource = callerPackage.getName().replace('.', '/') + '/'
-						+ resourceName;
-			} else {
-				resource = resourceName;
-			}
-		}
+	public static InputStream getResourceAsStream(final String resourceName, final ClassLoader classLoader) {
 		final ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+        final String resource;
+
+        if (resourceName.startsWith("/")) {
+            resource = resourceName.substring(1);
+        } else {
+            resource = resourceName;
+        }
+
 		if (threadClassLoader != null) {
-			final InputStream is = threadClassLoader
-					.getResourceAsStream(resource);
+			final InputStream is = threadClassLoader.getResourceAsStream(resource);
 			if (is != null) {
 				return is;
 			}
 		}
 
-		final ClassLoader classLoader = caller.getClassLoader();
 		if (classLoader != null) {
 			final InputStream is = classLoader.getResourceAsStream(resource);
 			if (is != null) {
@@ -138,21 +157,24 @@ public class ClassUtil {
 		return ClassLoader.getSystemResourceAsStream(resource);
 	}
 	
-	public static List<URL> getResources(String resourcePath, Class<?> caller) throws IOException {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    public static List<URL> getResources(String resourcePath, Class<?> caller) throws IOException {
+        return getResources(resourcePath, caller.getClassLoader());
+    }
+
+	public static List<URL> getResources(String resourcePath, ClassLoader callerClassLoader) throws IOException {
         Set<URL> resources = new LinkedHashSet<URL>();
 
         if(resourcePath.startsWith("/")) {
             resourcePath = resourcePath.substring(1);
         }
-		
-		if (classLoader != null) {
-			resources.addAll(CollectionsUtil.toList(classLoader.getResources(resourcePath)));
+
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader != null) {
+			resources.addAll(CollectionsUtil.toList(contextClassLoader.getResources(resourcePath)));
 		}
 
-		classLoader = caller.getClassLoader();
-		if (classLoader != null) {
-            resources.addAll(CollectionsUtil.toList(classLoader.getResources(resourcePath)));
+		if (callerClassLoader != null) {
+            resources.addAll(CollectionsUtil.toList(callerClassLoader.getResources(resourcePath)));
 		}
 
 		return new ArrayList<URL>(resources);

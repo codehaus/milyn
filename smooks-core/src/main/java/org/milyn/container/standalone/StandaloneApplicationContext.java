@@ -42,6 +42,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	private SmooksResourceConfigurationStore resStore;
 	private DefaultProfileStore profileStore = new DefaultProfileStore();
 	private BeanIdStore beanIdStore = new BeanIdStore();
+    private ClassLoader classLoader;
 
     /**
      * Public constructor.
@@ -106,5 +107,15 @@ public class StandaloneApplicationContext implements ApplicationContext {
 		return beanIdStore;
 	}
 
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    public ClassLoader getClassLoader() {
+        if(classLoader != null) {
+            return classLoader;
+        }
+        return getClass().getClassLoader();
+    }
 
 }
