@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.edisax.unedifact.handlers;
+package org.milyn.edisax.unedifact.handlers.r41;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  * UNB Segment Handler.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNBHandler implements ControlBlockHandler {
+class UNBHandler implements ControlBlockHandler {
 
 	private static Log logger = LogFactory.getLog(UNBHandler.class);
 	
