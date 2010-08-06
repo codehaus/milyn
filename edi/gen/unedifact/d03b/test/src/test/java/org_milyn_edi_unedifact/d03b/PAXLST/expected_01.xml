@@ -29,7 +29,7 @@
 				<codeQualifier>02</codeQualifier>
 			</senderApp>
 			<recipientApp>
-				<id>CBP-ACE-TEST</id>
+				<id>CBP-A+CE-TEST</id>
 				<codeQualifier>02</codeQualifier>
 			</recipientApp>
 			<dateTime>
@@ -108,7 +108,7 @@
 							<Party_name_format_code>1</Party_name_format_code>
 						</PARTY_NAME>
 						<STREET>
-							<Street_and_number_or_post_office_box_identifier_-_-1>11107 SUNSET HILLS ROAD</Street_and_number_or_post_office_box_identifier_-_-1>
+							<Street_and_number_or_post_office_box_identifier_-_-1>11107 SUNSET HILL'S ROAD</Street_and_number_or_post_office_box_identifier_-_-1>
 						</STREET>
 						<City_name>RESTON</City_name>
 						<COUNTRY_SUB_ENTITY_DETAILS>

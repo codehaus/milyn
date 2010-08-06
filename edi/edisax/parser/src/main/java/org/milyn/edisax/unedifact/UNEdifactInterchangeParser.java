@@ -28,7 +28,7 @@ import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.interchange.ControlBlockHandlerFactory;
-import org.milyn.edisax.unedifact.handlers.UNEdifactControlBlockHandlerFactory;
+import org.milyn.edisax.unedifact.handlers.r41.UNEdifact41ControlBlockHandlerFactory;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
@@ -88,7 +88,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	        while(true) {
 		        segCode = segmentReader.peek(3);
 		        if(segCode.length() == 3) {
-                    ControlBlockHandlerFactory controlBlockHandlerFactory = new UNEdifactControlBlockHandlerFactory(hierarchyChangeListener);
+                    ControlBlockHandlerFactory controlBlockHandlerFactory = new UNEdifact41ControlBlockHandlerFactory(hierarchyChangeListener);
 		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
 
                     ControlBlockHandler handler = controlBlockHandlerFactory.getControlBlockHandler(segCode);

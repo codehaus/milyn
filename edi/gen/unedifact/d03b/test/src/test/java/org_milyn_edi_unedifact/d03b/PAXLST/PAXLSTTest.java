@@ -11,7 +11,7 @@ import java.io.IOException;
 public class PAXLSTTest extends AbstractTestCase {
 
     public void test_read() throws IOException, SAXException {
-        testXMLSerialize("message_01.edi", "expected_01.xml");
+        testXMLSerialize("message_01.edi", "expected_01.xml", true);
     }
 
     public void test_bind() throws IOException, SAXException {
