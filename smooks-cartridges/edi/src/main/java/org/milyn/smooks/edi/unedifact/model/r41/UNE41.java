@@ -51,7 +51,7 @@ public class UNE41 implements Serializable, EDIWritable {
 
         nodeWriter.write(delimiters.getField());
         if(groupRef != null) {
-            nodeWriter.write(groupRef);
+            nodeWriter.write(delimiters.escape(groupRef));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

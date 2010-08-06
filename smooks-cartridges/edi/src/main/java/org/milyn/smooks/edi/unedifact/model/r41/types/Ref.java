@@ -44,13 +44,13 @@ public class Ref implements Serializable, EDIWritable {
         List<String> nodeTokens = new ArrayList<String>();
 
         if(ref != null) {
-            nodeWriter.write(ref);
+            nodeWriter.write(delimiters.escape(ref));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(refQualifier != null) {
-            nodeWriter.write(refQualifier);
+            nodeWriter.write(delimiters.escape(refQualifier));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

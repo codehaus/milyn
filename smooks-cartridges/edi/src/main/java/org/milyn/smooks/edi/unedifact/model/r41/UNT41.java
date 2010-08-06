@@ -51,7 +51,7 @@ public class UNT41 implements Serializable, EDIWritable {
 
         nodeWriter.write(delimiters.getField());
         if(messageRefNum != null) {
-            nodeWriter.write(messageRefNum);
+            nodeWriter.write(delimiters.escape(messageRefNum));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

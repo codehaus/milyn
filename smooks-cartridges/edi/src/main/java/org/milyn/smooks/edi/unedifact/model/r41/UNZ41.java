@@ -51,7 +51,7 @@ public class UNZ41 implements Serializable, EDIWritable {
 
         nodeWriter.write(delimiters.getField());
         if(controlRef != null) {
-            nodeWriter.write(controlRef);
+            nodeWriter.write(delimiters.escape(controlRef));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

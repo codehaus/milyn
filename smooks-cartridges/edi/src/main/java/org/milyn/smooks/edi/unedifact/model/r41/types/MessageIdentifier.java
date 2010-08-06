@@ -46,43 +46,43 @@ public class MessageIdentifier extends SourceIdentifier implements Serializable,
         List<String> nodeTokens = new ArrayList<String>();
 
         if(getId() != null) {
-            nodeWriter.write(getId());
+            nodeWriter.write(delimiters.escape(getId()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(getVersionNum() != null) {
-            nodeWriter.write(getVersionNum());
+            nodeWriter.write(delimiters.escape(getVersionNum()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(getReleaseNum() != null) {
-            nodeWriter.write(getReleaseNum());
+            nodeWriter.write(delimiters.escape(getReleaseNum()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(getControllingAgencyCode() != null) {
-            nodeWriter.write(getControllingAgencyCode());
+            nodeWriter.write(delimiters.escape(getControllingAgencyCode()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(associationAssignedCode != null) {
-            nodeWriter.write(associationAssignedCode);
+            nodeWriter.write(delimiters.escape(associationAssignedCode));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(codeListDirVersionNum != null) {
-            nodeWriter.write(codeListDirVersionNum);
+            nodeWriter.write(delimiters.escape(codeListDirVersionNum));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(typeSubFunctionId != null) {
-            nodeWriter.write(typeSubFunctionId);
+            nodeWriter.write(delimiters.escape(typeSubFunctionId));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

@@ -45,19 +45,19 @@ public class MessageVersion implements Serializable, EDIWritable {
         List<String> nodeTokens = new ArrayList<String>();
 
         if(versionNum != null) {
-            nodeWriter.write(versionNum);
+            nodeWriter.write(delimiters.escape(versionNum));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(releaseNum != null) {
-            nodeWriter.write(releaseNum);
+            nodeWriter.write(delimiters.escape(releaseNum));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(associationCode != null) {
-            nodeWriter.write(associationCode);
+            nodeWriter.write(delimiters.escape(associationCode));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
