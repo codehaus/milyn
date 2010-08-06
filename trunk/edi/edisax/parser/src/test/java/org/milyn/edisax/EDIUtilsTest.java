@@ -8,6 +8,7 @@ import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.edisax.util.EDIUtils;
+import org.milyn.util.CollectionsUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -97,11 +98,16 @@ public class EDIUtilsTest extends TestCase {
 
 	}
 
-    public void test_truncate() {
-//        Delimiters delims = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
-//
-//        assertEquals("P100971204141", EDIUtils.truncate("P100971204141:::::+++", DelimiterType.SEGMENT, delims));
-//        assertEquals("P100971204141::a:::", EDIUtils.truncate("P100971204141::a:::+++", DelimiterType.SEGMENT, delims));
+    public void test_concatAndTruncate() {
+        Delimiters delims = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
+
+        assertEquals("ab", EDIUtils.concatAndTruncate(CollectionsUtil.toList("a", "b", "+:+"), DelimiterType.SEGMENT, delims));
+        assertEquals("a+:+b", EDIUtils.concatAndTruncate(CollectionsUtil.toList("a", "+:+", "b", "+:+"), DelimiterType.SEGMENT, delims));
+        assertEquals("a+:+bc+:+", EDIUtils.concatAndTruncate(CollectionsUtil.toList("a", "+:+", "b", "c+:+"), DelimiterType.SEGMENT, delims));
+
+        assertEquals("ab", EDIUtils.concatAndTruncate(CollectionsUtil.toList("a", "b", "+:+"), DelimiterType.FIELD, delims));
+        assertEquals("ab+:+'", EDIUtils.concatAndTruncate(CollectionsUtil.toList("a", "b", "+:+'"), DelimiterType.FIELD, delims));
+        assertEquals("ab+:+", EDIUtils.concatAndTruncate(CollectionsUtil.toList("a", "b", "+:+"), DelimiterType.COMPONENT, delims));
     }
 
     private String output(String[] value) {
