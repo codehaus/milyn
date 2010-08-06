@@ -44,13 +44,13 @@ public class Application implements Serializable, EDIWritable {
         List<String> nodeTokens = new ArrayList<String>();
 
         if(id != null) {
-            nodeWriter.write(id);
+            nodeWriter.write(delimiters.escape(id));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(codeQualifier != null) {
-            nodeWriter.write(codeQualifier);
+            nodeWriter.write(delimiters.escape(codeQualifier));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

@@ -49,13 +49,13 @@ public class DateTime implements Serializable, EDIWritable {
         List<String> nodeTokens = new ArrayList<String>();
 
         if(date != null) {
-            nodeWriter.write(date);
+            nodeWriter.write(delimiters.escape(date));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(time != null) {
-            nodeWriter.write(time);
+            nodeWriter.write(delimiters.escape(time));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

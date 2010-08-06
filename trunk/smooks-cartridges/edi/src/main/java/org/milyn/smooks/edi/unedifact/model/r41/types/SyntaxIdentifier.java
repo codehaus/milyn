@@ -44,31 +44,31 @@ public class SyntaxIdentifier extends Identifier implements Serializable, EDIWri
         List<String> nodeTokens = new ArrayList<String>();
 
         if(getId() != null) {
-            nodeWriter.write(getId());
+            nodeWriter.write(delimiters.escape(getId()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(getVersionNum() != null) {
-            nodeWriter.write(getVersionNum());
+            nodeWriter.write(delimiters.escape(getVersionNum()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(serviceCodeListDirVersion != null) {
-            nodeWriter.write(serviceCodeListDirVersion);
+            nodeWriter.write(delimiters.escape(serviceCodeListDirVersion));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(codedCharacterEncoding != null) {
-            nodeWriter.write(codedCharacterEncoding);
+            nodeWriter.write(delimiters.escape(codedCharacterEncoding));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(getReleaseNum() != null) {
-            nodeWriter.write(getReleaseNum());
+            nodeWriter.write(delimiters.escape(getReleaseNum()));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

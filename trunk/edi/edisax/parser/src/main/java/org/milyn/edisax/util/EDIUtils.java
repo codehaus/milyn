@@ -339,7 +339,7 @@ public class EDIUtils {
         }
 
         for(int i = nodeTokens.size() - 1; i >= 0; i--) {
-            if(!delimiters.removeNodeToken(nodeTokens.get(i), outerDelimiterType)) {
+            if(!delimiters.removeableNodeToken(nodeTokens.get(i), outerDelimiterType)) {
                 break;
             }
             nodeTokens.remove(i);

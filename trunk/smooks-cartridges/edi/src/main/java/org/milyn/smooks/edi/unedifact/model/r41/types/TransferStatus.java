@@ -44,13 +44,13 @@ public class TransferStatus implements Serializable, EDIWritable {
         List<String> nodeTokens = new ArrayList<String>();
 
         if(sequence != null) {
-            nodeWriter.write(sequence);
+            nodeWriter.write(delimiters.escape(sequence));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getComponent());
         if(firstAndLast != null) {
-            nodeWriter.write(firstAndLast);
+            nodeWriter.write(delimiters.escape(firstAndLast));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

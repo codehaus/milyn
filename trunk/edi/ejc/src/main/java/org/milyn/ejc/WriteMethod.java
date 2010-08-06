@@ -123,9 +123,9 @@ class WriteMethod extends JMethod {
             }
 
             // Add the encoder encode instruction to te write method...
-            appendToBody("\n            nodeWriter.write(" + encoderName + ".encode(" + property.getName() + "));");
+            appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
         } else {
-            appendToBody("\n            nodeWriter.write(" + property.getName() + ".toString());");
+            appendToBody("\n            nodeWriter.write(delimiters.escape(" + property.getName() + ".toString()));");
         }
 
         if(trunacate) {

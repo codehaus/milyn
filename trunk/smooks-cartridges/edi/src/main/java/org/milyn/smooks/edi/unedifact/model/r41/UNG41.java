@@ -55,7 +55,7 @@ public class UNG41 implements Serializable, EDIWritable {
         nodeWriter.write("UNG");
         nodeWriter.write(delimiters.getField());
         if(groupId != null) {
-            nodeWriter.write(groupId);
+            nodeWriter.write(delimiters.escape(groupId));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -79,13 +79,13 @@ public class UNG41 implements Serializable, EDIWritable {
         }
         nodeWriter.write(delimiters.getField());
         if(groupRef != null) {
-            nodeWriter.write(groupRef);
+            nodeWriter.write(delimiters.escape(groupRef));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getField());
         if(controllingAgencyCode != null) {
-            nodeWriter.write(controllingAgencyCode);
+            nodeWriter.write(delimiters.escape(controllingAgencyCode));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -97,7 +97,7 @@ public class UNG41 implements Serializable, EDIWritable {
         }
         nodeWriter.write(delimiters.getField());
         if(applicationPassword != null) {
-            nodeWriter.write(applicationPassword);
+            nodeWriter.write(delimiters.escape(applicationPassword));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }

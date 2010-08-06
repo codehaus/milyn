@@ -16,6 +16,9 @@
 
 package org.milyn.edisax.model.internal;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Delimiters {
 
     private String segment;
@@ -26,6 +29,7 @@ public class Delimiters {
     private String escape;
     private volatile char[] segmentDelimiter;
     private boolean ignoreCRLF;
+    private Set<Character> delimiterChars = new HashSet<Character>();
 
     public String getSegment() {
         return segment;
@@ -34,6 +38,7 @@ public class Delimiters {
     public Delimiters setSegment(String value) {
         this.segment = value;
 		initSegmentDelimiter();
+        initDelimiterChars();
         return this;
     }
 
@@ -43,33 +48,37 @@ public class Delimiters {
 
     public Delimiters setField(String value) {
         this.field = value;
+        initDelimiterChars();
         return this;
     }
 
-	public String getFieldRepeat() {
+    public String getFieldRepeat() {
 		return fieldRepeat;
 	}
 
-	public Delimiters setFieldRepeat(String fieldRepeat) {
+    public Delimiters setFieldRepeat(String fieldRepeat) {
 		this.fieldRepeat = fieldRepeat;
+        initDelimiterChars();
 		return this;
 	}
 
-	public String getComponent() {
+    public String getComponent() {
         return component;
     }
 
     public Delimiters setComponent(String value) {
         this.component = value;
+        initDelimiterChars();
         return this;
     }
 
     public String getSubComponent() {
         return subComponent;
     }
-    
+
     public Delimiters setSubComponent(String value) {
         this.subComponent = value;
+        initDelimiterChars();
         return this;
     }
 
@@ -79,28 +88,29 @@ public class Delimiters {
 
     public Delimiters setEscape(String escape) {
         this.escape = escape;
+        initDelimiterChars();
         return this;
     }
 
-	public char[] getSegmentDelimiter() {
+    public char[] getSegmentDelimiter() {
 		if(segmentDelimiter == null) {
 			initSegmentDelimiter();
 		}
 		return segmentDelimiter;
 	}
 
-	public boolean ignoreCRLF() {
+    public boolean ignoreCRLF() {
 		if(segmentDelimiter == null) {
 			initSegmentDelimiter();
 		}
 		return ignoreCRLF;
 	}
-	
-	private synchronized void initSegmentDelimiter() {
+
+    private synchronized void initSegmentDelimiter() {
 		if(segmentDelimiter != null) {
 			return;
 		}
-		
+
         this.ignoreCRLF = segment.endsWith("!$");
 
         if (ignoreCRLF) {
@@ -110,7 +120,7 @@ public class Delimiters {
         }
 	}
 
-    public boolean removeNodeToken(String string, DelimiterType delimiterType) {
+    public boolean removeableNodeToken(String string, DelimiterType delimiterType) {
         if(string.length() == 0) {
             return true;
         }
@@ -143,6 +153,69 @@ public class Delimiters {
         }
 
         return true;
+    }
+
+    public String escape(String string) {
+        if(string == null) {
+            return null;
+        }
+        if(string.length() == 0) {
+            return string;
+        }
+        if(delimiterChars.isEmpty()) {
+            return string;
+        }
+
+        StringBuilder escapeBuffer = new StringBuilder();
+        int stringLen = string.length();
+
+        for(int i = 0; i < stringLen; i++) {
+            char c = string.charAt(i);
+
+            if(delimiterChars.contains(c)) {
+                escapeBuffer.append(escape);
+            }
+            escapeBuffer.append(c);
+        }
+
+        return escapeBuffer.toString();
+    }
+
+    private void initDelimiterChars() {
+        delimiterChars.clear();
+
+        if(segmentDelimiter != null && (segmentDelimiter.length == 0 || segmentDelimiter.length > 1)) {
+            return;
+        } else if(field != null && (field.length() == 0 || field.length() > 1)) {
+            return;
+        } else if(fieldRepeat != null && (fieldRepeat.length() == 0 || fieldRepeat.length() > 1)) {
+            return;
+        } else if(component != null && (component.length() == 0 || component.length() > 1)) {
+            return;
+        } else if(subComponent != null && (subComponent.length() == 0 || subComponent.length() > 1)) {
+            return;
+        } else if(escape == null || (escape.length() == 0 || escape.length() > 1)) {
+            return;
+        }
+
+        if(segmentDelimiter != null) {
+            delimiterChars.add(segmentDelimiter[0]);
+        }
+        if(field != null) {
+            delimiterChars.add(field.charAt(0));
+        }
+        if(fieldRepeat != null) {
+            delimiterChars.add(fieldRepeat.charAt(0));
+        }
+        if(component != null) {
+            delimiterChars.add(component.charAt(0));
+        }
+        if(subComponent != null) {
+            delimiterChars.add(subComponent.charAt(0));
+        }
+        if(escape != null) {
+            delimiterChars.add(escape.charAt(0));
+        }
     }
 
     private boolean equals(String delimiter, char c) {

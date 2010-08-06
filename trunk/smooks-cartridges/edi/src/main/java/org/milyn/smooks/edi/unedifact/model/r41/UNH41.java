@@ -54,7 +54,7 @@ public class UNH41 implements Serializable, EDIWritable {
         nodeWriter.write("UNH");
         nodeWriter.write(delimiters.getField());
         if(messageRefNum != null) {
-            nodeWriter.write(messageRefNum);
+            nodeWriter.write(delimiters.escape(messageRefNum));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
@@ -66,7 +66,7 @@ public class UNH41 implements Serializable, EDIWritable {
         }
         nodeWriter.write(delimiters.getField());
         if(commonAccessRef != null) {
-            nodeWriter.write(commonAccessRef);
+            nodeWriter.write(delimiters.escape(commonAccessRef));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
