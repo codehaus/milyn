@@ -95,31 +95,31 @@ public class UNB41 implements Serializable, EDIWritable {
         }
         nodeWriter.write(delimiters.getField());
         if(applicationRef != null) {
-            nodeWriter.write(applicationRef);
+            nodeWriter.write(delimiters.escape(applicationRef));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getField());
         if(processingPriorityCode != null) {
-            nodeWriter.write(processingPriorityCode);
+            nodeWriter.write(delimiters.escape(processingPriorityCode));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getField());
         if(ackRequest != null) {
-            nodeWriter.write(ackRequest);
+            nodeWriter.write(delimiters.escape(ackRequest));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getField());
         if(agreementId != null) {
-            nodeWriter.write(agreementId);
+            nodeWriter.write(delimiters.escape(agreementId));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
         nodeWriter.write(delimiters.getField());
         if(testIndicator != null) {
-            nodeWriter.write(testIndicator);
+            nodeWriter.write(delimiters.escape(testIndicator));
             nodeTokens.add(nodeWriter.toString());
             ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
