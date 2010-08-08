@@ -105,6 +105,7 @@ public class EJCMojo extends AbstractMojo {
             Resource resource = new Resource();
             resource.setDirectory(destDir.getPath());
             resource.addInclude("**/*.xml");
+            resource.addInclude("**/*.lst");
             project.addResource(resource);
         } catch (EJCException e) {
             throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);

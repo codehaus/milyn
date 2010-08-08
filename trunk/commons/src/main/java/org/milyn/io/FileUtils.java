@@ -60,6 +60,11 @@ public abstract class FileUtils {
             throw new IllegalArgumentException("File '" + file.getAbsoluteFile() + "' is an existing directory.  Cannot write.");
         }
 
+        File folder = file.getParentFile();
+        if(folder != null && !folder.exists()) {
+            folder.mkdirs();
+        }
+
         FileOutputStream stream = new FileOutputStream(file);
         try {
             stream.write(bytes);

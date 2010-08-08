@@ -10,6 +10,7 @@ import org.milyn.edisax.EDIConfigurationException;
 import org.xml.sax.SAXException;
 import org.milyn.smooks.edi.unedifact.UNEdifactReaderConfigurator;        
 import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
+import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchangeFactory;        
 
 import org.xml.sax.InputSource;
 import javax.xml.transform.stream.StreamSource;
@@ -20,7 +21,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import javax.xml.transform.Result;
 
-public class ${messageSetName}InterchangeFactory {
+public class ${messageSetName}InterchangeFactory implements UNEdifactInterchangeFactory {
 
     public static final String MAPPING_MODEL = "${mappingModel}";
     public static final String INTERCHANGE_BINDING_CONFIG = "${bindingConfig}";
