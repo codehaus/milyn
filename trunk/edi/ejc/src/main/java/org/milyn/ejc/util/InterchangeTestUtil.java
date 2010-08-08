@@ -122,7 +122,7 @@ public class InterchangeTestUtil {
         return interchange41;
     }
 
-    public static void test_all(UNEdifactInterchangeFactory factory, boolean dump, String ejcClassListFile) throws IOException, ClassNotFoundException {
+    public static void test_loads(UNEdifactInterchangeFactory factory, boolean dump, String ejcClassListFile, int numMessages) throws IOException, ClassNotFoundException {
         InputStream stream = InterchangeTestUtil.class.getResourceAsStream(ejcClassListFile);
 
         if(stream == null) {
@@ -134,14 +134,21 @@ public class InterchangeTestUtil {
             String ejcClassName = reader.readLine();
             int i = 1;
 
+            long start = System.currentTimeMillis();
             while(ejcClassName != null) {
-                System.out.println(i + ": " + ejcClassName);
+                //System.out.println(i + ": " + ejcClassName);
                 test_Interchange(factory, dump, Class.forName(ejcClassName));
                 ejcClassName = reader.readLine();
+
+                if(i == numMessages) {
+                    break;
+                }
+
                 i++;
             }
+            System.out.println("Took: " + (System.currentTimeMillis() - start));
         } finally {
             stream.close();
         }
-    }    
+    }
 }

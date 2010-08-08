@@ -72,8 +72,4 @@ public class D03B_GeneratedMessagesTest extends AbstractTestCase {
 
         InterchangeTestUtil.test_Interchange(factory, false, interchange41);
     }
-
-    public void xxtest_all() throws ClassNotFoundException, IOException {
-        InterchangeTestUtil.test_all(factory, false, "/org/milyn/edi/unedifact/d03b/ejc-classes.lst");
-    }
 }
