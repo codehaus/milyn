@@ -19,6 +19,8 @@ import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.io.FileUtils;
+import org.milyn.javabean.pojogen.JClass;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.util.FreeMarkerTemplate;
@@ -71,6 +73,7 @@ public class EJCExecutor {
 
         List<MessageDefinition> messageSetDefinitions = new ArrayList<MessageDefinition>();
         Set<Map.Entry<Description, EdifactModel>> modelSet = mappingModels.entrySet();
+        StringBuilder rootClassesListFileBuilder = new StringBuilder();
         for(Map.Entry<Description, EdifactModel> model : modelSet) {
             Description description = model.getKey();
 
@@ -86,22 +89,28 @@ public class EJCExecutor {
                 ejc.addEDIMessageAnnotation(true);
                 if(definitionsClassModel != null) {
                     String messagePackageName = packageName + "." + description.getName();
-                    ejc.compile(model.getValue().getEdimap(), messagePackageName, destDir.getAbsolutePath(), definitionsClassModel.getClassesByNode());
-
-                    MessageDefinition messageDef = new MessageDefinition(description.getName(), "/" + messagePackageName.replace('.', '/') + "/" + EJC.BINDINGCONFIG_XML);
-                    messageSetDefinitions.add(messageDef);
+                    ClassModel classModel = ejc.compile(model.getValue().getEdimap(), messagePackageName, destDir.getAbsolutePath(), definitionsClassModel.getClassesByNode());
 
                     // If this is an interchange, get rid of the edi mapping model config and the
                     // Factory class for the message folder...
                     if(interchangeProperties != null) {
+                        MessageDefinition messageDef = new MessageDefinition(description.getName(), "/" + messagePackageName.replace('.', '/') + "/" + EJC.BINDINGCONFIG_XML);
+                        messageSetDefinitions.add(messageDef);
+
                         deleteFile(messagePackageName, EJC.EDIMAPPINGCONFIG_XML);
                         deleteFile(messagePackageName, EJCUtils.encodeClassName(description.getName()) + "Factory.java");
+
+                        JClass beanClass = classModel.getRootBeanConfig().getBeanClass();
+                        rootClassesListFileBuilder.append(beanClass.getPackageName()).append(".").append(beanClass.getClassName()).append("\n");
                     }
                 } else {
                     ejc.compile(model.getValue().getEdimap(), packageName, destDir.getAbsolutePath());
                 }
             }
         }
+
+        // Write the list of class names into the jar file as a list file.  Can be used for testing etc...
+        FileUtils.writeFile(rootClassesListFileBuilder.toString().getBytes("UTF-8"), new File(destDir, packageName.replace('.', '/') + "/ejc-classes.lst"));
 
         if(interchangeProperties != null && !messageSetDefinitions.isEmpty()) {
             applyTemplate("message-bindingconfig.xml", messageBindingTemplate, interchangeProperties, messageSetDefinitions);

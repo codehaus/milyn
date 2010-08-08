@@ -20,7 +20,9 @@ import org.milyn.edi.unedifact.d03b.APERAK.Aperak;
 import org.milyn.edi.unedifact.d03b.AUTHOR.Author;
 import org.milyn.edi.unedifact.d03b.BALANC.Balanc;
 import org.milyn.edi.unedifact.d03b.BANSTA.Bansta;
+import org.milyn.edi.unedifact.d03b.D03BInterchangeFactory;
 import org.milyn.edi.unedifact.d03b.INVOIC.Invoic;
+import org.milyn.ejc.util.InterchangeTestUtil;
 import org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41;
 import org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41;
 import org_milyn_edi_unedifact.d03b.AbstractTestCase;
@@ -36,38 +38,42 @@ import java.util.List;
 public class D03B_GeneratedMessagesTest extends AbstractTestCase {
 
     public void test_APERAK() throws IOException {
-        test_Interchange(false, Aperak.class);
+        InterchangeTestUtil.test_Interchange(factory, false, Aperak.class);
     }
 
     public void test_AUTHOR() throws IOException {
-        test_Interchange(false, Author.class);
+        InterchangeTestUtil.test_Interchange(factory, false, Author.class);
     }
 
     public void test_BALANC() throws IOException {
-        test_Interchange(false, Balanc.class);
+        InterchangeTestUtil.test_Interchange(factory, false, Balanc.class);
     }
 
     public void test_BANSTA() throws IOException {
-        test_Interchange(false, Bansta.class);
+        InterchangeTestUtil.test_Interchange(factory, false, Bansta.class);
     }
 
     public void test_INVOIC() throws IOException {
-        test_Interchange(false, Invoic.class);
+        InterchangeTestUtil.test_Interchange(factory, false, Invoic.class);
     }
 
     public void test_APERAK_AUTHOR_INVOIC_1_per_group() throws IOException {
 
-        test_Interchange(false, Aperak.class, Author.class, Invoic.class);
+        InterchangeTestUtil.test_Interchange(factory, false, Aperak.class, Author.class, Invoic.class);
     }
 
     public void test_APERAK_AUTHOR_INVOIC_all_in_1_group() throws IOException {
-        UNEdifactInterchange41 interchange41 = buildInterchange(Aperak.class, Author.class, Invoic.class);
+        UNEdifactInterchange41 interchange41 = InterchangeTestUtil.buildInterchange(Aperak.class, Author.class, Invoic.class);
 
         // Set the 2nd and 3rd to have the same group header as the first...
         List<UNEdifactMessage41> messages = interchange41.getMessages();
         messages.get(1).setGroupHeader(messages.get(0).getGroupHeader());
         messages.get(2).setGroupHeader(messages.get(0).getGroupHeader());
 
-        test_Interchange(false, interchange41);
+        InterchangeTestUtil.test_Interchange(factory, false, interchange41);
+    }
+
+    public void xxtest_all() throws ClassNotFoundException, IOException {
+        InterchangeTestUtil.test_all(factory, false, "/org/milyn/edi/unedifact/d03b/ejc-classes.lst");
     }
 }

@@ -82,6 +82,7 @@ public class EJCTestUtil {
     public static void testModel(String ediMappingModelFile, String ediMessageFile, String factoryClassName) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
         testModel(ediMappingModelFile, ediMessageFile, factoryClassName, false);
     }
+    
     public static void testModel(String ediMappingModelFile, String ediMessageFile, String factoryClassName, boolean dump) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
         StackTraceElement[] thisStack = Thread.currentThread().getStackTrace();
         Class callerClass = null;
