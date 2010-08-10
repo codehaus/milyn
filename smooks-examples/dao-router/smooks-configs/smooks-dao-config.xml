@@ -8,7 +8,7 @@
 		This is the normal Javabean binding. Notice that we have a wiring on customer. The
 	    Customer entity will not be created but looked up by a locator.
 	 -->
-    <jb:bean beanId="order" class="example.entity.Order" createOnElement="order">
+    <jb:bean beanId="order" class="example.jpa.entity.Order" createOnElement="order">
         <jb:value property="ordernumber"   data="ordernumber" decoder="Integer" />
         <jb:value property="orderDate"     data="date"        decoder="Date">
             <jb:decodeParam name="format">yyyy-MM-dd HH:mm:ss</jb:decodeParam>
@@ -34,7 +34,7 @@
 		This is the normal Javabean binding. Notice that we have a wiring on product. The
 	    Product entity will not be created but looked up by a locator.
 	 -->
-    <jb:bean beanId="orderLine" class="example.entity.OrderLine" createOnElement="order-item">
+    <jb:bean beanId="orderLine" class="example.jpa.entity.OrderLine" createOnElement="order-item">
 		<jb:value property="quantity" data="quantity" decoder="Integer"/>
 		<jb:wiring property="order" beanIdRef="order"/>
 		<jb:wiring property="product" beanIdRef="product"/>

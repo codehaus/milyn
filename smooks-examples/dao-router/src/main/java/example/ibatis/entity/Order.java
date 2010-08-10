@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package example.entity;
+package example.ibatis.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,22 +33,13 @@ import javax.persistence.TemporalType;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-@Entity
-@Table(name="orders")
 public class Order extends AbstractEntity {
 
-	@Id
 	private Integer ordernumber;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date orderDate;
 
-	@ManyToOne
-	@JoinColumn(name="customerid")
 	private Customer customer;
-
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	private List<OrderLine> orderItems = new ArrayList<OrderLine>();
 
 	/**
 	 * @return the ordernumber
@@ -90,24 +81,6 @@ public class Order extends AbstractEntity {
 	 */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-	}
-
-	/**
-	 * @return the orderItems
-	 */
-	public List<OrderLine> getOrderItems() {
-		return orderItems;
-	}
-
-	/**
-	 * @param orderItems the orderItems to set
-	 */
-	public void setOrderItems(List<OrderLine> orderItems) {
-		this.orderItems = orderItems;
-	}
-
-	public void addOrderLine(OrderLine orderLine) {
-		orderItems.add(orderLine);
 	}
 
 }

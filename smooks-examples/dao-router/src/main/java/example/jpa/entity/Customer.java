@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package example.entity;
+package example.jpa.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;

@@ -22,7 +22,7 @@ import org.milyn.scribe.annotation.Dao;
 import org.milyn.scribe.annotation.Lookup;
 import org.milyn.scribe.annotation.Param;
 
-import example.entity.Product;
+import example.jpa.entity.Product;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
