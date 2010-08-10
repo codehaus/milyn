@@ -63,6 +63,7 @@
         <milyn.smooks.json.version>${milyn.smooks.core.version}</milyn.smooks.json.version>
 		<milyn.smooks.persistence.version>${milyn.smooks.core.version}</milyn.smooks.persistence.version>
 		<milyn.scribe.jpa.version>${milyn.smooks.core.version}</milyn.scribe.jpa.version>
+		<milyn.scribe.ibatis.version>${milyn.smooks.core.version}</milyn.scribe.ibatis.version>
         <milyn.smooks.validation.version>${milyn.smooks.core.version}</milyn.smooks.validation.version>
         <milyn.smooks.ejc.version>${milyn.smooks.core.version}</milyn.smooks.ejc.version>
         <milyn.smooks.yaml.version>${milyn.smooks.core.version}</milyn.smooks.yaml.version>
