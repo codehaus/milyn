@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,16 @@ import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.routing.db.StatementExec;
+import org.milyn.scribe.adapter.ibatis.SqlMapClientRegister;
 import org.milyn.scribe.adapter.jpa.EntityManagerRegister;
 import org.milyn.scribe.register.DaoRegister;
 import org.milyn.scribe.register.MapDaoRegister;
 import org.milyn.util.HsqlServer;
 import org.xml.sax.SAXException;
+
+import com.ibatis.common.resources.Resources;
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 import example.dao.CustomerDao;
 import example.dao.OrderDao;
@@ -61,9 +67,13 @@ public class Main {
 
     private EntityManager em;
 
+	private SqlMapClient sqlMapClient;
+
     public static byte[] messageInDao = readInputMessage("dao");
 
     public static byte[] messageInJpa = readInputMessage("jpa");
+
+    public static byte[] messageInIbatis = readInputMessage("ibatis");
 
     public static void main(String[] args) throws Exception {
         Main main = new Main();
@@ -78,6 +88,8 @@ public class Main {
 
         	main.initDatabase();
 
+        	main.createSqlMapInstance();
+
             System.out.println();
 
             Main.pause("The database is started now. Press return to see its contents.");
@@ -86,13 +98,13 @@ public class Main {
 
             System.out.println();
 
-            System.out.println("\n\nThis first run Smooks will use data access objects to persist and lookup entities.");
+            System.out.println("\n\nThis first run Smooks will use data access objects (DAOs) to persist and lookup entities.");
 
             Main.pause("Press return to see the sample message for the first run..");
 
             System.out.println("\n" + new String(messageInDao) + "\n");
 
-            Main.pause("Now press return to execute Smooks.");
+            Main.pause("Press return to execute Smooks.");
 
             main.runSmooksTransformWithDao();
 
@@ -109,13 +121,28 @@ public class Main {
             System.out.println("\n" + new String(messageInJpa) + "\n");
             System.out.println();
 
-            Main.pause("Now press return to execute Smooks.");
+            Main.pause("Press return to execute Smooks.");
 
             main.runSmooksTransformWithJpa();
 
             System.out.println();
 
-            Main.pause("Smooks has processed the message.  Now press return to view the contents of the database again.  This time there should be new orders and orderlines...");
+            Main.pause("Smooks has processed the message.  Now press return to view the contents of the database again.  There should be new orders and orderlines...");
+
+            main.printOrders();
+
+            System.out.println("\n\nThis third run Smooks will use iBatis to persist and lookup entities.");
+
+            Main.pause("Press return to see the sample message for the second run..");
+
+            System.out.println("\n" + new String(messageInIbatis) + "\n");
+            System.out.println();
+
+            Main.pause("Now press return to execute Smooks.");
+
+            main.runSmooksTransformWithIbatis();
+
+            Main.pause("Smooks has processed the message.  Now press return to view the contents of the database again.  There should be new orders and orderlines...");
 
             main.printOrders();
 
@@ -147,7 +174,7 @@ public class Main {
             EntityTransaction tx = em.getTransaction();
             tx.begin();
 
-            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInDao)), null);
+            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInDao)));
 
             tx.commit();
         } finally {
@@ -171,10 +198,34 @@ public class Main {
 
             tx.begin();
 
-            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInJpa)), null);
+            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInJpa)));
 
             tx.commit();
         } finally {
+            smooks.close();
+        }
+    }
+
+    protected void runSmooksTransformWithIbatis() throws IOException, SAXException, SmooksException, SQLException {
+
+    	Smooks smooks = new Smooks("./smooks-configs/smooks-ibatis-config.xml");
+
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
+
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report-ibatis.html"));
+
+            PersistenceUtil.setDAORegister(executionContext, new SqlMapClientRegister(sqlMapClient));
+
+            sqlMapClient.startTransaction();
+
+            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInIbatis)));
+
+            sqlMapClient.commitTransaction();
+        } finally {
+        	sqlMapClient.endTransaction();
+
             smooks.close();
         }
     }
@@ -269,19 +320,19 @@ public class Main {
         }
     }
 
-    public void startEntityManagerFactory() throws Exception {
+    private void createSqlMapInstance() {
 
+		try {
+			String resource = "ibatis/sql-map-config.xml";
+			Reader reader = Resources.getResourceAsReader(resource);
 
-    	InputStream schema = new FileInputStream("db-create.script");
+			sqlMapClient =  SqlMapClientBuilder.buildSqlMapClient(reader);
 
-         try {
-             dbServer = new HsqlServer(9201);
-             dbServer.execScript(schema);
-         } finally {
-             schema.close();
-         }
+		} catch (Exception e) {
+			throw new RuntimeException("Error initializing SqlMapConfig class. Cause: " + e);
+		}
 
-    }
+	}
 
     static void pause(String message) {
         try {

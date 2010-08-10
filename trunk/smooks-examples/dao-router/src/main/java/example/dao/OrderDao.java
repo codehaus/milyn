@@ -20,7 +20,7 @@ import javax.persistence.EntityManager;
 import org.milyn.scribe.annotation.Dao;
 import org.milyn.scribe.annotation.Insert;
 
-import example.entity.Order;
+import example.jpa.entity.Order;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

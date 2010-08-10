@@ -13,34 +13,44 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package example.dao;
-
-import javax.persistence.EntityManager;
-
-import org.milyn.scribe.annotation.Dao;
-import org.milyn.scribe.annotation.Lookup;
-import org.milyn.scribe.annotation.Param;
-
-import example.jpa.entity.Customer;
+package example.ibatis.entity;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-@Dao
-public class CustomerDao {
+public class Product extends AbstractEntity {
 
-	private final EntityManager em;
+	private Integer id;
+
+	private String name;
 
 	/**
-	 * @param em
+	 * @return the id
 	 */
-	public CustomerDao(EntityManager em) {
-		this.em = em;
+	public Integer getId() {
+		return id;
 	}
 
-	@Lookup(name="id")
-	public Customer findCustomerById(@Param("id") int id) {
-		return em.find(Customer.class, id);
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Integer id) {
+		this.id = id;
 	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }
