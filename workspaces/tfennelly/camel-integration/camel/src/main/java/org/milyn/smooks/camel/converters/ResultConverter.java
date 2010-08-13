@@ -14,11 +14,13 @@
  */
 package org.milyn.smooks.camel.converters;
 
+import java.io.StringWriter;
 import java.util.Map;
 
 import org.apache.camel.Converter;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;
+import org.milyn.payload.StringSource;
 
 /**
  * 
@@ -30,6 +32,12 @@ public class ResultConverter
 {
 	private ResultConverter()
 	{
+	}
+	
+	@Converter
+	public static StringSource toStringResult(String payload)
+	{
+		return new StringSource(payload);
 	}
 
 	@Converter

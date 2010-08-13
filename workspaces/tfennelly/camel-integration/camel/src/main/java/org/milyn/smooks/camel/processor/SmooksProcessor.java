@@ -54,6 +54,8 @@ public class SmooksProcessor implements Processor
 	private Resource smooksConfig;
 	private SmooksMapper smooksMapper;
 
+	private Class resultType;
+
 	/**
 	 * Creates an instance of SmooksProcessor with a default configuration
 	 * of the underlying Smooks instance.
@@ -110,6 +112,15 @@ public class SmooksProcessor implements Processor
 			Source source = smooksMapper.createSource(exchange);
 			Result result = smooksMapper.createResult();
 			smooks.filterSource(executionContext, source, result);
+			/*
+			 * Perhaps we could simply have a ResultType property which specifies the result type
+			 * that the user wants. This can then be created and mapped to the exchange's body.
+			 * The source type could be specified using the convertBodyTo method and the same
+			 * with converting the Result to an appropriate type. We could then provide base 
+			 * converters for the know types and users can specify their own if they want to
+			 * go directly to a custom type.
+			 */
+			//exchange.getOut().setBody(result);
 			smooksMapper.mapResult(result, exchange);
 		} 
 		else
@@ -174,7 +185,7 @@ public class SmooksProcessor implements Processor
 		this.smooksMapper = smooksMapper;
 		return this;
 	}
-
+	
 	/**
 	 * Add a visitor instance.
 	 * 
