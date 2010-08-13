@@ -12,7 +12,7 @@
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
-package org.milyn.smooks.camel.dataformat;
+package org.milyn.smooks.camel.dataformat.mappers;
 
 import java.io.InputStream;
 
@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMResult;
 import org.apache.camel.Exchange;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.JavaSource;
+import org.milyn.smooks.camel.dataformat.SmooksMapper;
 
 /**
  * A SmooksMapper that maps the Camel input body to an {@link InputStream}

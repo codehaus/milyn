@@ -28,7 +28,7 @@ import org.milyn.javabean.Bean;
 import org.milyn.payload.StringSource;
 import org.milyn.smooks.camel.Coordinate;
 import org.milyn.smooks.camel.dataformat.SmooksMapper;
-import org.milyn.smooks.camel.dataformat.StringInStringOutMapper;
+import org.milyn.smooks.camel.dataformat.mappers.StringInStringOutMapper;
 import org.milyn.smooks.camel.routing.BeanRouter;
 
 /**

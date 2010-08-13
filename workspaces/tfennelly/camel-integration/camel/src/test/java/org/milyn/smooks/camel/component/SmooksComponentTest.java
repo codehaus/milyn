@@ -32,7 +32,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.milyn.smooks.camel.dataformat.SmooksMapper;
-import org.milyn.smooks.camel.dataformat.StreamInDomOutMapper;
+import org.milyn.smooks.camel.dataformat.mappers.StreamInDomOutMapper;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.custommonkey.xmlunit.XMLUnit;
