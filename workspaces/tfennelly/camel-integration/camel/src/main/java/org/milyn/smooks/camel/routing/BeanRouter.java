@@ -17,10 +17,9 @@ package org.milyn.smooks.camel.routing;
 
 import java.io.IOException;
 
-import org.apache.camel.Endpoint;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.apache.camel.Producer;
-import org.apache.camel.util.CamelContextHelper;
+import org.apache.camel.ProducerTemplate;
 import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
@@ -41,6 +40,8 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 	
 	@ConfigParam
 	private String toEndpoint;
+	
+	private ProducerTemplate producerTemplate;
 	
 	/**
 	 * Set the beanId of the bean to be routed.
@@ -68,15 +69,10 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 	public void visitAfter(SAXElement element, ExecutionContext smooksExecutionContext) throws SmooksException, IOException {
 		Object bean = getBeanFromExecutionContext(smooksExecutionContext, beanId);
 		Exchange exchange = getExchange(smooksExecutionContext);
-		Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(exchange.getContext(), toEndpoint);
 		try
 		{
-			//TODO: Creating a producer migth be expensive (for example JMS)
-			// so we should probably change producers.
-			Producer producer = endpoint.createProducer();
-			Exchange newExchange = producer.createExchange();
-			newExchange.getIn().setBody(bean);
-			producer.process(newExchange);
+			setProducerTemplateFromContext(exchange.getContext());
+			producerTemplate.sendBody(toEndpoint, bean);
 		} 
 		catch (Exception e)
 		{
@@ -92,7 +88,7 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 		
 		return bean;
 	}
-	
+
 	private Exchange getExchange(ExecutionContext smooksExceutionContext)
 	{
 		Exchange exchange = (Exchange) smooksExceutionContext.getAttribute(Exchange.class);
@@ -102,6 +98,19 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 		return exchange;
 	}
 
+	private void setProducerTemplateFromContext(CamelContext camelContext)
+	{
+		if (producerTemplate == null)
+		{
+			this.producerTemplate = camelContext.createProducerTemplate();
+		}
+	}
+	
+	public void setProducerTempalate(ProducerTemplate producerTemplate)
+	{
+		this.producerTemplate = producerTemplate;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.Object)
 	 */
