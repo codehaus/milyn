@@ -21,7 +21,6 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
-import org.milyn.smooks.camel.dataformat.mappers.StringInStringOutMapper;
 
 /**
  * 

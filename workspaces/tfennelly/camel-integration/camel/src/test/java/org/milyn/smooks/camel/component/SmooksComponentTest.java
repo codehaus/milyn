@@ -31,7 +31,6 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.milyn.smooks.camel.dataformat.mappers.StreamInDomOutMapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

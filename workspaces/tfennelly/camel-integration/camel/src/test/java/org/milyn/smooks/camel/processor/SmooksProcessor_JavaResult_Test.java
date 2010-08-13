@@ -25,7 +25,6 @@ import org.milyn.javabean.Value;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
 import org.milyn.smooks.camel.Coordinate;
-import org.milyn.smooks.camel.dataformat.mappers.StringInJavaOutMapper;
 
 /**
  * 
