@@ -61,7 +61,7 @@
     </category>
 
     <category name="example">
-        <priority value="ERROR"/>
+        <priority value="INFO"/>
     </category>
 
     <!-- ======================= -->

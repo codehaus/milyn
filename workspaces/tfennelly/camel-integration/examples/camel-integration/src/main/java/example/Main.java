@@ -26,6 +26,8 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultProducerTemplate;
 import org.milyn.io.StreamUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Simple example main class.
@@ -37,9 +39,17 @@ public class Main
 	{
 		String payload = readInputMessage();
 		printStartMessage(payload);
-		CamelContext camelContext = configureAndStartCamel();
+		CamelContext camelContext = configureAndStartCamel(getDSLType(args));
 		sendMessageToCamel(camelContext, payload);
 		printEndMessage();
+	}
+	
+	private static String getDSLType(String... args)
+	{
+		if (args.length > 0)
+			return args[0];
+		else
+			return "JavaDSL";
 	}
 	
 	private static String readInputMessage()
@@ -78,15 +88,25 @@ public class Main
 		}
 		System.out.println("\n");
 	}
-
-	private static CamelContext configureAndStartCamel() throws Exception
+	
+	static CamelContext configureAndStartCamel(String type) throws Exception
 	{
-		CamelContext context = new DefaultCamelContext();
-		context.addComponent("jms", context.getComponent("mock")); 
-		context.addRoutes(new ExampleRouteBuilder());
-		context.start();
+		CamelContext camelContext;
+		if ("SpringDSL".equals(type))
+		{
+	        ApplicationContext springContext =  new ClassPathXmlApplicationContext("META-INF/spring/camel-context.xml");
+	        camelContext = (CamelContext) springContext.getBean("camelContext");
+			
+		}
+		else
+		{
+			camelContext= new DefaultCamelContext();
+			camelContext.addComponent("jms", camelContext.getComponent("mock")); 
+			camelContext.addRoutes(new ExampleRouteBuilder());
+			camelContext.start();
+		}
 		
-		return context;
+		return camelContext;
 	}
 	
 	private static void sendMessageToCamel(CamelContext context, String payload) throws IOException

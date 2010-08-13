@@ -13,7 +13,7 @@ public class ExampleRouteBuilderTest extends CamelTestSupport
 	@Override
 	public RouteBuilder createRouteBuilder()
 	{
-		return new ExampleRouteBuilder(System.out);
+		return new ExampleRouteBuilder();
 	}
 	
 	@Test
@@ -34,7 +34,7 @@ public class ExampleRouteBuilderTest extends CamelTestSupport
 	{
 		CamelContext context = super.createCamelContext();
 		context.addComponent("jms", context.getComponent("mock")); 
-		context.setTracing(true);
+		//context.setTracing(true);
 		return context;
 	}
 	
