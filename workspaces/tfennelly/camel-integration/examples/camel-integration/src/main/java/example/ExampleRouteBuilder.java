@@ -3,7 +3,6 @@ package example;
 import java.io.PrintStream;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.milyn.smooks.camel.SmooksProcessor;
 
 public class ExampleRouteBuilder extends RouteBuilder
 {
@@ -24,7 +23,8 @@ public class ExampleRouteBuilder extends RouteBuilder
 	{
 		// Set up the route for the initial input-message.xml
 		errorHandler(defaultErrorHandler().maximumRedeliveries(5).redeliverDelay(10000));
-		from("direct:input").process(new SmooksProcessor("/smooks-config.xml", this));
+		//from("direct:input").process(new SmooksProcessor("/smooks-config.xml", this));
+		from("direct:input").to("smooks://smooks-config.xml?smooksMapper=#smooksMapper");
 		
 		// Set up routes for endpoints defined in smooks-config.xml
 		from("direct:ireland").process(new LogProcessor("ie", outputStream)).to("jms:queue:ireland");

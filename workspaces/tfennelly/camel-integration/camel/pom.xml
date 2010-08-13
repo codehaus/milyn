@@ -15,7 +15,7 @@
 
 	<properties>
 		<smooks.version>1.4-SNAPSHOT</smooks.version>
-		<camel.version>2.1.0</camel.version>
+		<camel.version>2.4.0</camel.version>
 	</properties>
 
     <dependencies>
@@ -23,11 +23,6 @@
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-core</artifactId>
-            <version>${smooks.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-javabean</artifactId>
             <version>${smooks.version}</version>
         </dependency>
 
@@ -57,7 +52,68 @@
             <version>${camel.version}</version>
             <scope>provided</scope>
         </dependency>
-
+        
+        
+         <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-edi</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-csv</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-fixed-length</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-javabean</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-json</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-rules</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-scripting</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-templating</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-validation</artifactId>
+            <version>${smooks.version}</version>
+        </dependency>
+        
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		
     </dependencies>
     
     <build>
@@ -91,7 +147,7 @@
                     <additionalConfig>
                         <file>
                             <name>.checkstyle</name>
-                            <location>/camel-eclipse-checkstyle</location>
+                            <location>src/main/resources/camel-checkstyle.xml</location>
                         </file>
                     </additionalConfig>
                     <downloadSources>true</downloadSources>

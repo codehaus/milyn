@@ -16,16 +16,18 @@
 package example;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultProducerTemplate;
+import org.apache.camel.impl.SimpleRegistry;
 import org.milyn.io.StreamUtils;
+import org.milyn.smooks.camel.dataformat.StreamInDomOutMapper;
 
 /**
  * Simple example main class.
@@ -81,17 +83,21 @@ public class Main
 
 	private static CamelContext configureAndStartCamel() throws Exception
 	{
-		CamelContext context = new DefaultCamelContext();
+		SimpleRegistry registry = new SimpleRegistry();
+		registry.put("smooksMapper", new StreamInDomOutMapper());
+		
+		CamelContext context = new DefaultCamelContext(registry);
 		context.addComponent("jms", context.getComponent("mock")); 
 		context.addRoutes(new ExampleRouteBuilder());
 		context.start();
+		
 		return context;
 	}
 	
-	private static void sendMessageToCamel(CamelContext context, String payload)
+	private static void sendMessageToCamel(CamelContext context, String payload) throws IOException
 	{
 		DefaultProducerTemplate producerTemplate = new DefaultProducerTemplate(context);
-		producerTemplate.sendBody("direct:input",  new StreamSource(new StringReader(payload)));
+		producerTemplate.sendBody("direct:input",  new StreamSource(new ByteArrayInputStream(payload.getBytes())));
 	}
 
 	private static void printEndMessage()
