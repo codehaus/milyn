@@ -51,9 +51,8 @@ public class SmooksProcessor implements Processor
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private Smooks smooks;
 	private Resource smooksConfig;
-	private String resultType;
-
 	private String reportPath;
+	private Result result;
 
 	/**
 	 * Creates an instance of SmooksProcessor with a default configuration
@@ -106,14 +105,9 @@ public class SmooksProcessor implements Processor
 		executionContext.setAttribute(Exchange.class, exchange);
 		exchange.getOut().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
 		setupSmooksReporting(executionContext);
-
-		if (resultType != null)
+		
+		if (result != null)
 		{
-			// TODO: There are surely other ways of doing this willout having 
-			// to create an new instance everytime. Look into a better solution
-			// if it is decided that we should go with this proposal.
-			Class<?> loadClass = ObjectHelper.loadClass(resultType);
-			Result result = (Result) ObjectHelper.newInstance(loadClass);
 			Source source = getSource(exchange);
 			smooks.filterSource(executionContext, source, result);
 			exchange.getOut().setBody(result);
@@ -173,7 +167,11 @@ public class SmooksProcessor implements Processor
 
 	public SmooksProcessor setResultType(String resultType)
 	{
-		this.resultType = resultType;
+		if (resultType != null)
+		{
+			Class<?> loadClass = ObjectHelper.loadClass(resultType);
+			this.result = (Result) ObjectHelper.newInstance(loadClass);
+		}
 		return this;
 	}
 	
