@@ -34,6 +34,16 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 
 	@Test
     public void test_single_value() throws Exception {
+		context.addRoutes(new RouteBuilder() {
+			@Override
+			public void configure() throws Exception
+			{
+                from("direct:a").
+                process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").addVisitor(new Value("x", "/coord/@x", Integer.class))).
+                convertBodyTo(JavaResult.class);
+			}
+			
+		});
         Exchange response = template.request("direct:a", new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody(new StringSource("<coord x='1234' />"));
@@ -44,6 +54,15 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 
 	@Test
     public void test_multi_value() throws Exception {
+		context.addRoutes(new RouteBuilder() {
+			@Override
+			public void configure() throws Exception
+			{
+                from("direct:b").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
+                		addVisitor(new Value("x", "/coord/@x", Integer.class)).
+                		addVisitor(new Value("y", "/coord/@y", Double.class)));
+			}
+		});
         Exchange response = template.request("direct:b", new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody(new StringSource("<coord x='1234' y='98765.76' />"));
@@ -58,6 +77,17 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 	
 	@Test
     public void test_bean() throws Exception {
+		context.addRoutes(new RouteBuilder() {
+			@Override
+			public void configure() throws Exception
+			{
+                from("direct:c").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
+                		addVisitor(new Bean(Coordinate.class, "coordinate").
+        				bindTo("x", "/coord/@x").
+        				bindTo("y", "/coord/@y"))).convertBodyTo(Coordinate.class);
+			}
+		});
+		
         Exchange response = template.request("direct:c", new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody(new StringSource("<coord x='111' y='222' />"));
@@ -70,30 +100,4 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
         assertEquals(222, coord.getY());
     }
 
-	/* (non-Javadoc)
-	 * @see org.apache.camel.test.junit4.CamelTestSupport#createRouteBuilder()
-	 */
-	@Override
-	protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            public void configure() {
-            	
-                from("direct:a").
-                process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").addVisitor(new Value("x", "/coord/@x", Integer.class))).
-                convertBodyTo(JavaResult.class);
-                
-                from("direct:b").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
-                		addVisitor(new Value("x", "/coord/@x", Integer.class)).
-                		addVisitor(new Value("y", "/coord/@y", Double.class)));
-                
-                from("direct:c").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
-                		addVisitor(new Bean(Coordinate.class, "coordinate").
-                				bindTo("x", "/coord/@x").
-                				bindTo("y", "/coord/@y"))).convertBodyTo(Coordinate.class);
-
-            	// TODO: Create a Processor (or something else) specifically for Java Binding.. make the DSL cleaner ??
-            	
-            }
-        };
-	}
 }
