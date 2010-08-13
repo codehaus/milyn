@@ -49,7 +49,6 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void unmarshalCSV() throws Exception {
         result.expectedMessageCount(1);
@@ -64,7 +63,8 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
         assertMockEndpointsSatisfied();
         Exchange exchange = result.assertExchangeReceived(0);
         assertIsInstanceOf(List.class, exchange.getIn().getBody());
-        List customerList = exchange.getIn().getBody(List.class);
+        @SuppressWarnings("rawtypes")
+		List customerList = exchange.getIn().getBody(List.class);
         assertEquals(2, customerList.size());
         
         Customer chrisActual = (Customer) customerList.get(0);

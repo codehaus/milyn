@@ -47,6 +47,7 @@ public class ResultConverter
 		return domResult.getNode();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Converter
 	public static List toList(JavaResult javaResult, Exchange exchange)
 	{
@@ -67,6 +68,7 @@ public class ResultConverter
 		return (Double) getSingleObjectFromJavaResult(result);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Converter
 	public static List toString(JavaResult result)
 	{
