@@ -53,13 +53,13 @@ public class SourceConverter
 	}
 	
 	@Converter
-	public static StreamSource toStreamSource(InputStream in)
+	public static Source toStreamSource(InputStream in)
 	{
 		return new StreamSource(in);
 	}
 	
 	@Converter
-	public static StringSource toStringResult(String payload)
+	public static Source toStringResult(String payload)
 	{
 		return new StringSource(payload);
 	}

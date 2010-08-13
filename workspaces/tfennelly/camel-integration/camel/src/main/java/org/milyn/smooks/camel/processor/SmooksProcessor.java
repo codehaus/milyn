@@ -119,47 +119,13 @@ public class SmooksProcessor implements Processor
 			smooks.filterSource(executionContext, source);
 		}
 		executionContext.removeAttribute(Exchange.class);
-		
-		/*
-		if (smooksMapper != null)
-		{
-			Source source = smooksMapper.createSource(exchange);
-			Result result = smooksMapper.createResult();
-			smooks.filterSource(executionContext, source, result);
-			/*
-			 * Perhaps we could simply have a ResultType property which specifies the result type
-			 * that the user wants. This can then be created and mapped to the exchange's body.
-			 * The source type could be specified using the convertBodyTo method and the same
-			 * with converting the Result to an appropriate type. We could then provide base 
-			 * converters for the know types and users can specify their own if they want to
-			 * go directly to a custom type.
-			exchange.getOut().setBody(result);
-			//smooksMapper.mapResult(result, exchange);
-		} 
-		else
-		{
-			Source source = getSource(exchange);
-			smooks.filterSource(executionContext, source);
-		}
-		executionContext.removeAttribute(Exchange.class);
-		*/
 	}
 
 	private Source getSource(Exchange exchange)
 	{
-		Source source;
 		Message in = exchange.getIn();
 		Object payload = in.getBody();
-		if (payload instanceof Source)
-		{
-			source = (Source) payload;
-		}
-		else
-		{
-			source = SourceFactory.getInstance().createSource(payload);
-		}
-		
-		return source;
+		return exchange.getContext().getTypeConverter().convertTo(Source.class, payload);
 	}
 
 	public Resource getSmooksConfig()
