@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.apache.camel.Converter;
 import org.milyn.payload.JavaResult;
-import org.milyn.smooks.camel.Coordinate;
 import org.milyn.smooks.camel.dataformat.Customer;
 
 /**

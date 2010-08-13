@@ -95,23 +95,6 @@ public class SmooksProcessor2Test extends CamelTestSupport {
                 SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
                 processor.setResultType("javax.xml.transform.dom.DOMResult");
                 processor.setReportPath("target/smooks-report.html");
-                
-                /*
-                processor.setSmooksMapper(new SmooksMapper() {
-                    public void mapResult(Result result, Exchange exchange) {
-                        exchange.getOut().setBody(((DOMResult) result).getNode());
-                    }
-
-                    public Source createSource(Exchange exchange) {
-                        return new StreamSource(exchange.getIn().getBody(InputStream.class));
-                    }
-
-                    public Result createResult() {
-                        return new DOMResult();
-                    }
-                });
-                */
-
                 from("file://src/test/data?noop=true").convertBodyTo(InputStream.class)
                 .process(processor).convertBodyTo(Node.class)
                 .to("mock:result");
