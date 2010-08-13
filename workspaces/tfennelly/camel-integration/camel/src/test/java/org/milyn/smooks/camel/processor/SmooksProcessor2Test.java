@@ -31,6 +31,7 @@ import org.milyn.smooks.camel.dataformat.SmooksMapper;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class SmooksProcessor2Test extends CamelTestSupport {
 
@@ -85,6 +86,8 @@ public class SmooksProcessor2Test extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() throws Exception {
                 SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
+                processor.setResultType("javax.xml.transform.dom.DOMResult");
+                /*
                 processor.setSmooksMapper(new SmooksMapper() {
                     public void mapResult(Result result, Exchange exchange) {
                         exchange.getOut().setBody(((DOMResult) result).getNode());
@@ -98,9 +101,10 @@ public class SmooksProcessor2Test extends CamelTestSupport {
                         return new DOMResult();
                     }
                 });
+                */
 
-                from("file://src/test/data?noop=true")
-                .process(processor)
+                from("file://src/test/data?noop=true").convertBodyTo(InputStream.class)
+                .process(processor).convertBodyTo(Node.class)
                 .to("mock:result");
             }
         };

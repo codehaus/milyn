@@ -21,6 +21,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.milyn.payload.StringSource;
+import org.milyn.smooks.camel.processor.SmooksProcessor;
 
 /**
  * 

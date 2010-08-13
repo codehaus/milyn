@@ -22,6 +22,11 @@ import org.springframework.core.io.Resource;
 
 import java.util.Map;
 
+/**
+ * 
+ * @author Christian Mueller
+ *
+ */
 public class SmooksComponent extends ResourceBasedComponent
 {
 	protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception
@@ -32,7 +37,10 @@ public class SmooksComponent extends ResourceBasedComponent
 		return new ProcessorEndpoint(uri, this, smooksProcessor);
 	}
 
-	protected void configureSmooksProcessor(SmooksProcessor smooksProcessor, String uri, String remaining, Map<String, Object> parameters)
+	protected void configureSmooksProcessor(SmooksProcessor smooksProcessor, 
+			String uri, 
+			String remaining, 
+			Map<String, Object> parameters)
 			throws Exception
 	{
 		setProperties(smooksProcessor, parameters);

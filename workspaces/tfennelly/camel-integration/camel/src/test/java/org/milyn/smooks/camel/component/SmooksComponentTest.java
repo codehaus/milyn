@@ -16,29 +16,24 @@
  */
 package org.milyn.smooks.camel.component;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.milyn.smooks.camel.dataformat.SmooksMapper;
-import org.milyn.smooks.camel.dataformat.mappers.StreamInDomOutMapper;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.milyn.smooks.camel.dataformat.mappers.StreamInDomOutMapper;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * Unit test for {@link SmooksComponent}.
@@ -57,14 +52,6 @@ public class SmooksComponentTest extends CamelTestSupport
 		XMLUnit.setIgnoreWhitespace(true);
 	}
 
-	@Override
-	protected JndiRegistry createRegistry() throws Exception
-	{
-		JndiRegistry jndiRegistry = super.createRegistry();
-		jndiRegistry.bind("smooksMapper", new StreamInDomOutMapper());
-		return jndiRegistry;
-	}
-	
 	@Test
 	public void unmarshalEDI() throws Exception
 	{
@@ -93,8 +80,9 @@ public class SmooksComponentTest extends CamelTestSupport
 		{
 			public void configure() throws Exception
 			{
-				from("file://src/test/data?noop=true")
-				.to("smooks://edi-to-xml-smooks-config.xml?smooksMapper=#smooksMapper")
+				from("file://src/test/data?noop=true").convertBodyTo(InputStream.class)
+				.to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
+				.convertBodyTo(Node.class)
 				.to("mock:result");
 			}
 		};

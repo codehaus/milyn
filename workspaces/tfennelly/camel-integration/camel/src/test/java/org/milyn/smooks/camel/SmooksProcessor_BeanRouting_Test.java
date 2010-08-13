@@ -25,6 +25,7 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.milyn.javabean.Bean;
 import org.milyn.payload.StringSource;
+import org.milyn.smooks.camel.processor.SmooksProcessor;
 import org.milyn.smooks.camel.routing.BeanRouter;
 
 /**
@@ -74,13 +75,13 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
             public void configure() throws Exception {
                 
             	// Create a Coordinate bean for each coord element and route it to "direct:b"...
-                from("direct:a1").process(new SmooksProcessor(this).
+                from("direct:a1").process(new SmooksProcessor().
                 		addVisitor(new Bean(Coordinate.class, "coordinate", "coords/coord").
                 				bindTo("x", "coords/coord/@x").
                 				bindTo("y", "coords/coord/@y")).
                 		addVisitor(new BeanRouter().setBeanId("coordinate").setToEndpoint("direct:b"), "coords/coord"));
 
-                from("direct:a2").process(new SmooksProcessor(getClass().getResourceAsStream("bean_routing_01.xml"), this));
+                from("direct:a2").process(new SmooksProcessor("/bean_routing_01.xml"));
                 
                 directBProcessor = new DirectProcessor();
                 from("direct:b").process(directBProcessor);            	

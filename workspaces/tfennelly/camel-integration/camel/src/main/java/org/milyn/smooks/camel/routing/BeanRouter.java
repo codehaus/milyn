@@ -71,6 +71,8 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 		Endpoint endpoint = exchange.getContext().getEndpoint(toEndpoint);
 		try
 		{
+			//TODO: Creating a producer migth be expensive (for example JMS)
+			// so we should probably change producers.
 			Producer producer = endpoint.createProducer();
 			Exchange newExchange = producer.createExchange();
 			newExchange.getIn().setBody(bean);

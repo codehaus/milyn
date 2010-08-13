@@ -25,9 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultProducerTemplate;
-import org.apache.camel.impl.SimpleRegistry;
 import org.milyn.io.StreamUtils;
-import org.milyn.smooks.camel.dataformat.StreamInDomOutMapper;
 
 /**
  * Simple example main class.
@@ -83,10 +81,7 @@ public class Main
 
 	private static CamelContext configureAndStartCamel() throws Exception
 	{
-		SimpleRegistry registry = new SimpleRegistry();
-		registry.put("smooksMapper", new StreamInDomOutMapper());
-		
-		CamelContext context = new DefaultCamelContext(registry);
+		CamelContext context = new DefaultCamelContext();
 		context.addComponent("jms", context.getComponent("mock")); 
 		context.addRoutes(new ExampleRouteBuilder());
 		context.start();

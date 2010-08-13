@@ -26,6 +26,8 @@ import org.milyn.Smooks;
  * Smooks Mapper for Camel.
  * <p/>
  * Different types of source and result need to be mapped in different ways.
+ * 
+ * @author Christian Mueller
  */
 public interface SmooksMapper
 {

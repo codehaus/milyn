@@ -17,15 +17,14 @@
 package org.milyn.smooks.camel.processor;
 
 import java.io.IOException;
-import java.io.Reader;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.apache.camel.util.ObjectHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
@@ -43,6 +42,7 @@ import org.xml.sax.SAXException;
  * Smooks {@link Processor} for Camel.
  * 
  * @version $Revision$
+ * @author Christian Mueller
  */
 public class SmooksProcessor implements Processor
 {
@@ -54,7 +54,7 @@ public class SmooksProcessor implements Processor
 	private Resource smooksConfig;
 	private SmooksMapper smooksMapper;
 
-	private Class resultType;
+	private String resultType;
 
 	/**
 	 * Creates an instance of SmooksProcessor with a default configuration
@@ -107,6 +107,22 @@ public class SmooksProcessor implements Processor
 		executionContext.setAttribute(Exchange.class, exchange);
 		exchange.getOut().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
 
+		if (resultType != null)
+		{
+			Class<?> loadClass = ObjectHelper.loadClass(resultType);
+			Result result = (Result) ObjectHelper.newInstance(loadClass);
+			Source source = getSource(exchange);
+			smooks.filterSource(executionContext, source, result);
+			exchange.getOut().setBody(result);
+		}
+		else
+		{
+			Source source = getSource(exchange);
+			smooks.filterSource(executionContext, source);
+		}
+		executionContext.removeAttribute(Exchange.class);
+		
+		/*
 		if (smooksMapper != null)
 		{
 			Source source = smooksMapper.createSource(exchange);
@@ -119,9 +135,8 @@ public class SmooksProcessor implements Processor
 			 * with converting the Result to an appropriate type. We could then provide base 
 			 * converters for the know types and users can specify their own if they want to
 			 * go directly to a custom type.
-			 */
-			//exchange.getOut().setBody(result);
-			smooksMapper.mapResult(result, exchange);
+			exchange.getOut().setBody(result);
+			//smooksMapper.mapResult(result, exchange);
 		} 
 		else
 		{
@@ -129,24 +144,23 @@ public class SmooksProcessor implements Processor
 			smooks.filterSource(executionContext, source);
 		}
 		executionContext.removeAttribute(Exchange.class);
+		*/
 	}
 
 	private Source getSource(Exchange exchange)
 	{
+		Source source;
 		Message in = exchange.getIn();
-
-		Source source = in.getBody(Source.class);
-		if (source == null)
+		Object payload = in.getBody();
+		if (payload instanceof Source)
 		{
-			Reader reader = in.getBody(Reader.class);
-			if (reader == null)
-			{
-				source = SourceFactory.getInstance().createSource(in.getBody());
-			} else
-			{
-				source = new StreamSource(reader);
-			}
+			source = (Source) payload;
 		}
+		else
+		{
+			source = SourceFactory.getInstance().createSource(payload);
+		}
+		
 		return source;
 	}
 
@@ -183,6 +197,12 @@ public class SmooksProcessor implements Processor
 	public SmooksProcessor setSmooksMapper(SmooksMapper smooksMapper)
 	{
 		this.smooksMapper = smooksMapper;
+		return this;
+	}
+	
+	public SmooksProcessor setResultType(String resultType)
+	{
+		this.resultType = resultType;
 		return this;
 	}
 	

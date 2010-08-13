@@ -21,14 +21,11 @@ import java.util.List;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.milyn.javabean.Bean;
 import org.milyn.payload.StringSource;
 import org.milyn.smooks.camel.Coordinate;
-import org.milyn.smooks.camel.dataformat.SmooksMapper;
-import org.milyn.smooks.camel.dataformat.mappers.StringInStringOutMapper;
 import org.milyn.smooks.camel.routing.BeanRouter;
 
 /**
@@ -40,20 +37,6 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
 	protected DirectProcessor directBProcessor;
 	protected DirectProcessor directCProcessor;
 	
-	@Override
-	protected JndiRegistry createRegistry() throws Exception
-	{
-		JndiRegistry jndiRegistry = super.createRegistry();
-		bindSmooksMapperToRegistry(jndiRegistry);
-		return jndiRegistry;
-	}
-
-	private void bindSmooksMapperToRegistry(JndiRegistry jndiRegistry)
-	{
-		SmooksMapper smooksMapper = new StringInStringOutMapper();
-		jndiRegistry.bind("smooksMapper", smooksMapper);
-	}
-
 	@Test
     public void test_dsl_configured() throws Exception {
 		sendTo("direct:a1");        
@@ -98,7 +81,7 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
                 				bindTo("y", "coords/coord/@y")).
                 		addVisitor(new BeanRouter().setBeanId("coordinate").setToEndpoint("direct:b"), "coords/coord"));
 
-                from("direct:a2").to("smooks://bean_routing_01.xml?smooksMapper=#smooksMapper");
+                from("direct:a2").to("smooks://bean_routing_01.xml");
                 
                 directBProcessor = new DirectProcessor();
                 from("direct:b").process(directBProcessor);            	

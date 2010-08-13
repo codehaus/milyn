@@ -15,6 +15,8 @@
 */
 package org.milyn.smooks.camel;
 
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -22,7 +24,10 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.milyn.javabean.Bean;
 import org.milyn.javabean.Value;
+import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
+import org.milyn.smooks.camel.dataformat.mappers.StringInJavaOutMapper;
+import org.milyn.smooks.camel.processor.SmooksProcessor;
 
 /**
  * 
@@ -47,8 +52,28 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
                 exchange.getIn().setBody(new StringSource("<coord x='1234' y='98765.76' />"));
             }
         });
+        Map<String, Object> body = (Map<String, Object>) response.getOut().getBody();
+        assertEquals(1234, body.get("x"));
+        assertEquals(98765.76D, (Double) body.get("y"), 0.01D);
+        /* I'm unsure about the use of the JavaMessage class in this regard...
+         * it will intercept the getBody method to find the value from the
+         * map which would be the result from a multi-value JavaResult.
+         * If users want to convert to a specific object instance they could create
+         * a converter like this:
+         * @Converter
+         * public class CustomConverter
+         * {
+         * 	@Converter
+         *  public static CustomClass toCustomClass(JavaResult result)
+         *  {
+         * 		// extract the values and create an instance of the CustomClass.
+         * 		return customObjectInstance; 
+         *  }
+         * }
+         * 
         assertEquals(1234, (int) response.getOut().getBody(Integer.class));
         assertEquals(98765.76D, (double) response.getOut().getBody(Double.class), 0.01D);
+        */
     }
 	
 	@Test
@@ -75,18 +100,20 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
             	
                 from("direct:a").process(new SmooksProcessor().
                 		addVisitor(new Value("x", "/coord/@x", Integer.class)).
-                		mapJavaResult());
+		                setResultType("org.milyn.payload.JavaResult"));
                 
                 from("direct:b").process(new SmooksProcessor().
                 		addVisitor(new Value("x", "/coord/@x", Integer.class)).
                 		addVisitor(new Value("y", "/coord/@y", Double.class)).
-                		mapJavaResult());
+		                setResultType("org.milyn.payload.JavaResult")).
+                		convertBodyTo(Map.class);
                 
                 from("direct:c").process(new SmooksProcessor().
                 		addVisitor(new Bean(Coordinate.class, "coordinate").
                 				bindTo("x", "/coord/@x").
                 				bindTo("y", "/coord/@y")).
-                		mapJavaResult());
+		                setResultType("org.milyn.payload.JavaResult")).
+                		convertBodyTo(Coordinate.class);
 
             	// TODO: Create a Processor (or something else) specifically for Java Binding.. make the DSL cleaner ??
             	

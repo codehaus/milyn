@@ -17,6 +17,7 @@
 package org.milyn.smooks.camel.dataformat;
 
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +28,21 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.milyn.payload.JavaSource;
+import org.milyn.payload.JavaSourceWithoutEventStream;
+
+import com.sun.org.apache.bcel.internal.util.JavaWrapper;
 
 /**
  * Smooks CSV DataFormat unit test.
  */
 public class SmooksCSVDataFormat2Test extends CamelTestSupport {
+	
+    private static Customer charlesExpected;
+    private static Customer chrisExpected;
 
     @EndpointInject(uri = "direct:unmarshal")
     private Endpoint unmarshal;
@@ -61,19 +71,30 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
         List customerList = exchange.getIn().getBody(List.class);
         assertEquals(2, customerList.size());
         
-        Customer chris = (Customer) customerList.get(0);
-        assertEquals("christian", chris.getFirstName());
-        assertEquals("mueller", chris.getLastName());
-        assertEquals(Gender.Male, chris.getGender());
-        assertEquals(33, chris.getAge());
-        assertEquals("germany", chris.getCountry());
+        Customer chrisActual = (Customer) customerList.get(0);
+        assertEquals(chrisActual, chrisActual);
         
-        Customer charles = (Customer) customerList.get(1);
-        assertEquals("charles", charles.getFirstName());
-        assertEquals("moulliard", charles.getLastName());
-        assertEquals(Gender.Male, charles.getGender());
-        assertEquals(43, charles.getAge());
-        assertEquals("belgium", charles.getCountry());
+        Customer charlesActual = (Customer) customerList.get(1);
+        assertEquals(charlesExpected, charlesActual);
+    }
+    
+    
+    @BeforeClass
+    public static void createExcpectedCustomers()
+    {
+    	charlesExpected = new Customer();
+    	charlesExpected.setFirstName("charles");
+    	charlesExpected.setLastName("moulliard");
+    	charlesExpected.setAge(43);
+    	charlesExpected.setGender(Gender.Male);
+    	charlesExpected.setCountry("belgium");
+    	
+    	chrisExpected = new Customer();
+    	chrisExpected.setFirstName("christian");
+    	chrisExpected.setLastName("mueller");
+    	chrisExpected.setAge(33);
+    	chrisExpected.setGender(Gender.Male);
+    	chrisExpected.setCountry("germany");
     }
     
     @Test
@@ -81,20 +102,8 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
         result.expectedMessageCount(1);
         
         final List<Customer> customerList = new ArrayList<Customer>();
-        final Customer chris = new Customer();
-        chris.setFirstName("christian");
-        chris.setLastName("mueller");
-        chris.setGender(Gender.Male);
-        chris.setAge(33);
-        chris.setCountry("germany");
-        customerList.add(chris);
-        Customer charles = new Customer();
-        charles.setFirstName("charles");
-        charles.setLastName("moulliard");
-        charles.setGender(Gender.Male);
-        charles.setAge(43);
-        charles.setCountry("belgium");
-        customerList.add(charles);
+        customerList.add(chrisExpected);
+        customerList.add(charlesExpected);
         
         template.send(marshal, new Processor() {
             public void process(Exchange exchange) throws Exception {
@@ -112,14 +121,16 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() throws Exception {
                 SmooksDataFormat2 csvUnmarshal = new SmooksDataFormat2("csv-smooks-unmarshal-config.xml");
+                csvUnmarshal.setResultType("org.milyn.payload.JavaResult");
 
-                from("direct:unmarshal")
-                .unmarshal(csvUnmarshal)
+                from("direct:unmarshal").convertBodyTo(InputStream.class)
+                .unmarshal(csvUnmarshal).convertBodyTo(List.class)
                 .to("mock:result");
                 
                 SmooksDataFormat2 csvMarshal = new SmooksDataFormat2("csv-smooks-marshal-config.xml");
+                csvMarshal.setResultType("org.milyn.payload.StringResult");
                 
-                from("direct:marshal")
+                from("direct:marshal").convertBodyTo(JavaSourceWithoutEventStream.class)
                 .marshal(csvMarshal)
                 .to("mock:result");
             }

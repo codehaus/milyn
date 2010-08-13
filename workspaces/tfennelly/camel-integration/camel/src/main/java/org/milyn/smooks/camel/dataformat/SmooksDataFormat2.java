@@ -20,27 +20,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.camel.Exchange;
-import org.milyn.smooks.camel.processor.SmooksProcessor;
 import org.apache.camel.spi.DataFormat;
 import org.milyn.container.ExecutionContext;
-import org.milyn.payload.JavaResult;
-import org.milyn.payload.JavaSource;
-import org.milyn.payload.StringResult;
+import org.milyn.smooks.camel.processor.SmooksProcessor;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.xml.sax.SAXException;
 
+/**
+ * 
+ * @author Christian Mueller
+ *
+ */
 public class SmooksDataFormat2 implements DataFormat {
     
     private SmooksProcessor processor;
     private String smooksResultKey = "result";
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private String resultType;
     
     public SmooksDataFormat2() {
         processor = new SmooksProcessor();
@@ -48,28 +47,14 @@ public class SmooksDataFormat2 implements DataFormat {
     
     public SmooksDataFormat2(String smooksConfig) throws IOException, SAXException {
         processor = new SmooksProcessor(smooksConfig);
-        //setSmooksConfig(smooksConfig);
     }
 
     public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception {
         synchronized (processor) {
-            if (processor.getSmooksMapper() == null) {
-                processor.setSmooksMapper(new SmooksMapper() {
-                    public Source createSource(Exchange exchange) {
-                        JavaSource javaSource = new JavaSource(exchange.getIn().getBody());
-                        javaSource.setEventStreamRequired(false);
-                        return javaSource;
-                    }
-                    
-                    public Result createResult() {
-                        return new StringResult();
-                    }
-                    
-                    public void mapResult(Result result, Exchange exchange) {
-                        exchange.getOut().setBody(((StringResult) result).getResult());
-                    }
-                });
-            }
+        	if (resultType != null)
+		        processor.setResultType(resultType);
+        	else
+		        processor.setResultType("org.milyn.payload.StringResult");
         }
         
         processor.process(exchange);
@@ -80,25 +65,14 @@ public class SmooksDataFormat2 implements DataFormat {
 
     public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
         synchronized (processor) {
-            if (processor.getSmooksMapper() == null) {
-                processor.setSmooksMapper(new SmooksMapper() {
-                    public Source createSource(Exchange exchange) {
-                        return new StreamSource(exchange.getIn().getBody(InputStream.class));
-                    }
-                    
-                    public Result createResult() {
-                        return new JavaResult();
-                    }
-                    
-                    public void mapResult(Result result, Exchange exchange) {
-                        exchange.getOut().setBody(((JavaResult) result).getBean(smooksResultKey));
-                    }
-                });
-            }
+        	if (resultType != null)
+		        processor.setResultType(resultType);
+        	else
+		        processor.setResultType("org.milyn.payload.JavaResult");
         }
         
         processor.process(exchange);
-        
+        exchange.setProperty("SmooksDataFormatKeys", smooksResultKey);
         return exchange.getOut().getBody();
     }
     
@@ -124,5 +98,10 @@ public class SmooksDataFormat2 implements DataFormat {
             throw new IllegalArgumentException("Could not find resource for URI: " + smooksConfig + " using: " + resourceLoader);
         }
         processor.setSmooksConfig(resource);
+    }
+    
+    public void setResultType(String resultType)
+    {
+    	this.resultType = resultType;
     }
 }

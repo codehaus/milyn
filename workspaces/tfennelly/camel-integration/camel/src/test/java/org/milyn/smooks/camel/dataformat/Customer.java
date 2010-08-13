@@ -21,7 +21,58 @@ public class Customer {
 	private String FirstName;
     private String LastName;
     private Gender Gender;
-    private int Age;
+    
+    @Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Age;
+		result = prime * result + ((Country == null) ? 0 : Country.hashCode());
+		result = prime * result
+				+ ((FirstName == null) ? 0 : FirstName.hashCode());
+		result = prime * result + ((Gender == null) ? 0 : Gender.hashCode());
+		result = prime * result
+				+ ((LastName == null) ? 0 : LastName.hashCode());
+		return result;
+	}
+    
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (Age != other.Age)
+			return false;
+		if (Country == null)
+		{
+			if (other.Country != null)
+				return false;
+		} else if (!Country.equals(other.Country))
+			return false;
+		if (FirstName == null)
+		{
+			if (other.FirstName != null)
+				return false;
+		} else if (!FirstName.equals(other.FirstName))
+			return false;
+		if (Gender != other.Gender)
+			return false;
+		if (LastName == null)
+		{
+			if (other.LastName != null)
+				return false;
+		} else if (!LastName.equals(other.LastName))
+			return false;
+		return true;
+	}
+
+	private int Age;
 	private String Country;
 	
     public String getCountry() {

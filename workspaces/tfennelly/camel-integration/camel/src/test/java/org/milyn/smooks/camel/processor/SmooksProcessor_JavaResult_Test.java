@@ -79,14 +79,15 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
             	
-                from("direct:a").process(new SmooksProcessor().setSmooksMapper(new StringInJavaOutMapper()).
-                		addVisitor(new Value("x", "/coord/@x", Integer.class)));
+                from("direct:a").
+                process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").addVisitor(new Value("x", "/coord/@x", Integer.class))).
+                convertBodyTo(JavaResult.class);
                 
-                from("direct:b").process(new SmooksProcessor().setSmooksMapper(new StringInJavaOutMapper()).
+                from("direct:b").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
                 		addVisitor(new Value("x", "/coord/@x", Integer.class)).
                 		addVisitor(new Value("y", "/coord/@y", Double.class)));
                 
-                from("direct:c").process(new SmooksProcessor().setSmooksMapper(new StringInJavaOutMapper()).
+                from("direct:c").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
                 		addVisitor(new Bean(Coordinate.class, "coordinate").
                 				bindTo("x", "/coord/@x").
                 				bindTo("y", "/coord/@y"))).convertBodyTo(Coordinate.class);

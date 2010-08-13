@@ -15,10 +15,15 @@
 */
 package org.milyn.smooks.camel;
 
+import java.io.InputStream;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+import org.milyn.payload.StringSource;
+import org.milyn.smooks.camel.dataformat.mappers.StringInStringOutMapper;
+import org.milyn.smooks.camel.processor.SmooksProcessor;
 
 /**
  * 
@@ -46,7 +51,10 @@ public class SmooksProcessor_File_In_StringResult_Test extends CamelTestSupport 
 	protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("file://target/smooks").process(new SmooksProcessor().mapCharResult()).to("mock:a");
+                from("file://target/smooks").convertBodyTo(InputStream.class).
+                process(new SmooksProcessor().setResultType("org.milyn.payload.StringResult")).
+                convertBodyTo(String.class).
+                to("mock:a");
             }
         };
 	}

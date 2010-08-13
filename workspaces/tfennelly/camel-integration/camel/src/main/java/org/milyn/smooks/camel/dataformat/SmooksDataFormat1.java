@@ -34,6 +34,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.xml.sax.SAXException;
 
+/**
+ * @author Christian Mueller
+ */
 public class SmooksDataFormat1 implements DataFormat {
     
     public static final String SMOOKS_EXECUTION_CONTEXT = "CamelSmooksExecutionContext";

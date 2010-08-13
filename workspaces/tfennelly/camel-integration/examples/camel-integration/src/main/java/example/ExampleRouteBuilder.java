@@ -23,8 +23,7 @@ public class ExampleRouteBuilder extends RouteBuilder
 	{
 		// Set up the route for the initial input-message.xml
 		errorHandler(defaultErrorHandler().maximumRedeliveries(5).redeliverDelay(10000));
-		//from("direct:input").process(new SmooksProcessor("/smooks-config.xml", this));
-		from("direct:input").to("smooks://smooks-config.xml?smooksMapper=#smooksMapper");
+		from("direct:input").to("smooks://smooks-config.xml");
 		
 		// Set up routes for endpoints defined in smooks-config.xml
 		from("direct:ireland").process(new LogProcessor("ie", outputStream)).to("jms:queue:ireland");
