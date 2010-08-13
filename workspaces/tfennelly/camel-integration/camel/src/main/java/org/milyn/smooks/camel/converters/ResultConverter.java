@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.apache.camel.Converter;
 import org.milyn.payload.JavaResult;
+import org.milyn.payload.StringResult;
 
 /**
  * 
@@ -41,6 +42,12 @@ public class ResultConverter
 	public static Double toDouble(JavaResult result)
 	{
 		return (Double) getSingleObjectFromJavaResult(result);
+	}
+	
+	@Converter
+	public static String toString(StringResult result)
+	{
+		return result.getResult();
 	}
 	
 	private static Object getSingleObjectFromJavaResult(JavaResult result)

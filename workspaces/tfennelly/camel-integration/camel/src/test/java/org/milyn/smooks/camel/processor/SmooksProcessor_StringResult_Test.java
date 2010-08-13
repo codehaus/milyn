@@ -31,7 +31,7 @@ public class SmooksProcessor_StringResult_Test extends CamelTestSupport {
 
 	@Test
     public void test() throws Exception {
-        Exchange response = template.request("direct:a", new Processor() {
+        template.request("direct:a", new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody(new StringSource("<x/>"));
             }
@@ -47,7 +47,6 @@ public class SmooksProcessor_StringResult_Test extends CamelTestSupport {
 	protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                //from("direct:a").process(new SmooksProcessor().mapCharResult()).to("direct:b");
                 from("direct:a").process(new SmooksProcessor().setSmooksMapper(new StringInStringOutMapper())).to("direct:b");
                 from("direct:b").process(new DirectBProcessor());
             }
