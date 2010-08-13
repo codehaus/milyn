@@ -29,12 +29,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.milyn.payload.JavaSource;
 import org.milyn.payload.JavaSourceWithoutEventStream;
-
-import com.sun.org.apache.bcel.internal.util.JavaWrapper;
 
 /**
  * Smooks CSV DataFormat unit test.

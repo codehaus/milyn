@@ -32,7 +32,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.SourceFactory;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
-import org.milyn.smooks.camel.dataformat.SmooksMapper;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;

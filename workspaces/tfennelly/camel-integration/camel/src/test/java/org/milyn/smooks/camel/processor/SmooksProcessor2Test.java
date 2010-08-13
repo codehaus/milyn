@@ -18,16 +18,10 @@ package org.milyn.smooks.camel.processor;
 
 import java.io.InputStream;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.milyn.smooks.camel.dataformat.SmooksMapper;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -87,6 +81,7 @@ public class SmooksProcessor2Test extends CamelTestSupport {
             public void configure() throws Exception {
                 SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
                 processor.setResultType("javax.xml.transform.dom.DOMResult");
+                
                 /*
                 processor.setSmooksMapper(new SmooksMapper() {
                     public void mapResult(Result result, Exchange exchange) {
