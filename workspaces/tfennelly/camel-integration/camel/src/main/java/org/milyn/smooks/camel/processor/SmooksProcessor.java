@@ -52,7 +52,6 @@ public class SmooksProcessor implements Processor
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private Smooks smooks;
 	private Resource smooksConfig;
-	private SmooksMapper smooksMapper;
 
 	private String resultType;
 
@@ -189,17 +188,6 @@ public class SmooksProcessor implements Processor
 		setSmooksConfig(getSmooksConfig(smooksConfig));
 	}
 
-	public SmooksMapper getSmooksMapper()
-	{
-		return smooksMapper;
-	}
-
-	public SmooksProcessor setSmooksMapper(SmooksMapper smooksMapper)
-	{
-		this.smooksMapper = smooksMapper;
-		return this;
-	}
-	
 	public SmooksProcessor setResultType(String resultType)
 	{
 		this.resultType = resultType;
