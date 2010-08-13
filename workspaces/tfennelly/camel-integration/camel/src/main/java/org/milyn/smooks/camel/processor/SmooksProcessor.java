@@ -143,8 +143,7 @@ public class SmooksProcessor implements Processor
 
 	private Source getSource(Exchange exchange)
 	{
-		Object payload = exchange.getIn().getBody();
-		return exchange.getContext().getTypeConverter().convertTo(Source.class, payload);
+		return exchange.getIn().getBody(Source.class);
 	}
 
 	public Resource getSmooksConfig()

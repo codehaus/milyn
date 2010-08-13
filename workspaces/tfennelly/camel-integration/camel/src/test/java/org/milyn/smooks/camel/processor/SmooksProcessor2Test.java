@@ -95,7 +95,8 @@ public class SmooksProcessor2Test extends CamelTestSupport {
                 SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
                 processor.setResultType("javax.xml.transform.dom.DOMResult");
                 processor.setReportPath("target/smooks-report.html");
-                from("file://src/test/data?noop=true").convertBodyTo(InputStream.class)
+                
+                from("file://src/test/data?noop=true")
                 .process(processor).convertBodyTo(Node.class)
                 .to("mock:result");
             }

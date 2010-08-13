@@ -46,8 +46,8 @@ public class SmooksProcessor_StringResult_Test extends CamelTestSupport {
 	protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                //from("direct:a").convertBodyTo(StringSource.class).process(new SmooksProcessor().setSmooksMapper(new StringInStringOutMapper())).to("direct:b");
-                from("direct:a").process(new SmooksProcessor().setResultType("org.milyn.payload.StringResult")).to("direct:b");
+                from("direct:a").process(new SmooksProcessor().setResultType("org.milyn.payload.StringResult")).
+                to("direct:b");
                 from("direct:b").convertBodyTo(String.class).process(new DirectBProcessor());
             }
         };

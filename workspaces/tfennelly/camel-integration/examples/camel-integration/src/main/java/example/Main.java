@@ -89,14 +89,13 @@ public class Main
 		System.out.println("\n");
 	}
 	
-	static CamelContext configureAndStartCamel(String type) throws Exception
+	private static CamelContext configureAndStartCamel(String type) throws Exception
 	{
 		CamelContext camelContext;
 		if ("SpringDSL".equals(type))
 		{
 	        ApplicationContext springContext =  new ClassPathXmlApplicationContext("META-INF/spring/camel-context.xml");
 	        camelContext = (CamelContext) springContext.getBean("camelContext");
-			
 		}
 		else
 		{

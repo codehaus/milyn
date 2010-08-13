@@ -119,7 +119,7 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
                 SmooksDataFormat2 csvUnmarshal = new SmooksDataFormat2("csv-smooks-unmarshal-config.xml");
                 csvUnmarshal.setResultType("org.milyn.payload.JavaResult");
 
-                from("direct:unmarshal").convertBodyTo(InputStream.class)
+                from("direct:unmarshal")
                 .unmarshal(csvUnmarshal).convertBodyTo(List.class)
                 .to("mock:result");
                 
