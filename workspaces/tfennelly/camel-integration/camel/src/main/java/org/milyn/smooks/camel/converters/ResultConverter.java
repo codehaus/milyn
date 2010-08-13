@@ -110,9 +110,6 @@ public class ResultConverter
 		{
 			return resultMap.values().iterator().next();
 		}
-		else
-		{
-			return resultMap.get("result");
-		}
+		return null;
 	}
 }
