@@ -22,14 +22,12 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.plugin.SourceFactory;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -42,6 +40,7 @@ import org.xml.sax.SAXException;
  * 
  * @version $Revision$
  * @author Christian Mueller
+ * @author Daniel Bevenius
  */
 public class SmooksProcessor implements Processor
 {
@@ -51,7 +50,6 @@ public class SmooksProcessor implements Processor
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private Smooks smooks;
 	private Resource smooksConfig;
-
 	private String resultType;
 
 	/**
@@ -107,6 +105,9 @@ public class SmooksProcessor implements Processor
 
 		if (resultType != null)
 		{
+			// TODO: There are surely other ways of doing this willout having 
+			// to create an new instance everytime. Look into a better solution
+			// if it is decided that we should go with this proposal.
 			Class<?> loadClass = ObjectHelper.loadClass(resultType);
 			Result result = (Result) ObjectHelper.newInstance(loadClass);
 			Source source = getSource(exchange);
@@ -123,8 +124,7 @@ public class SmooksProcessor implements Processor
 
 	private Source getSource(Exchange exchange)
 	{
-		Message in = exchange.getIn();
-		Object payload = in.getBody();
+		Object payload = exchange.getIn().getBody();
 		return exchange.getContext().getTypeConverter().convertTo(Source.class, payload);
 	}
 
