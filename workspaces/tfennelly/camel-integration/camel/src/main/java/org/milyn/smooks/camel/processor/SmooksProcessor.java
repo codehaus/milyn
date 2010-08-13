@@ -26,6 +26,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.SourceFactory;
@@ -45,7 +47,8 @@ import org.xml.sax.SAXException;
 public class SmooksProcessor implements Processor
 {
 	public static final String SMOOKS_EXECUTION_CONTEXT = "CamelSmooksExecutionContext";
-
+	
+    private final Log log = LogFactory.getLog(getClass());
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private Smooks smooks;
 	private Resource smooksConfig;
@@ -89,6 +92,10 @@ public class SmooksProcessor implements Processor
 
 	private Smooks createSmooksFromResource(Resource resource) throws IOException, SAXException
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Using smooks config resource: " + resource);
+		}
 		return new Smooks(resource.getInputStream());
 	}
 

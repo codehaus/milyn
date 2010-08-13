@@ -28,16 +28,7 @@ public class SmooksComponent extends ResourceBasedComponent
 	{
 		Resource resource = resolveMandatoryResource(remaining);
 		SmooksProcessor smooksProcessor = new SmooksProcessor(resource);
-		//smooksProcessor.setSmooksConfig(resource);
-
-		if (log.isDebugEnabled())
-		{
-			log.debug(this + " using smooks config resource: " + resource);
-		}
-
 		configureSmooksProcessor(smooksProcessor, uri, remaining, parameters);
-		//smooksProcessor.getSmooks(); // eager instanciation of smooks
-
 		return new ProcessorEndpoint(uri, this, smooksProcessor);
 	}
 
