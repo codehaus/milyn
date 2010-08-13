@@ -16,6 +16,7 @@
  */
 package org.milyn.smooks.camel.processor;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.apache.camel.EndpointInject;
@@ -26,6 +27,7 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
 
 public class SmooksProcessor2Test extends CamelTestSupport {
 
@@ -75,12 +77,24 @@ public class SmooksProcessor2Test extends CamelTestSupport {
         assertIsInstanceOf(Document.class, exchange.getIn().getBody());
         assertEquals(expectedResponse, exchange.getIn().getBody(String.class));
     }
+    
+    @Test
+    public void assertSmooksReportWasCreated() throws Exception
+    {
+        result.expectedMessageCount(1);
+        assertMockEndpointsSatisfied();
+        
+        File report = new File("target/smooks-report.html");
+        report.deleteOnExit();
+        assertTrue("Smooks report was not generated.", report.exists());
+    }
 
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() throws Exception {
                 SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
                 processor.setResultType("javax.xml.transform.dom.DOMResult");
+                processor.setReportPath("target/smooks-report.html");
                 
                 /*
                 processor.setSmooksMapper(new SmooksMapper() {

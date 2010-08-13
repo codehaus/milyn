@@ -30,6 +30,7 @@ import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -51,6 +52,8 @@ public class SmooksProcessor implements Processor
 	private Smooks smooks;
 	private Resource smooksConfig;
 	private String resultType;
+
+	private String reportPath;
 
 	/**
 	 * Creates an instance of SmooksProcessor with a default configuration
@@ -102,6 +105,7 @@ public class SmooksProcessor implements Processor
 		ExecutionContext executionContext = smooks.createExecutionContext();
 		executionContext.setAttribute(Exchange.class, exchange);
 		exchange.getOut().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
+		setupSmooksReporting(executionContext);
 
 		if (resultType != null)
 		{
@@ -120,6 +124,21 @@ public class SmooksProcessor implements Processor
 			smooks.filterSource(executionContext, source);
 		}
 		executionContext.removeAttribute(Exchange.class);
+	}
+
+	private void setupSmooksReporting(ExecutionContext executionContext)
+	{
+		if (reportPath != null)
+		{
+			try
+			{
+				executionContext.setEventListener(new HtmlReportGenerator(reportPath));
+			} 
+			catch (IOException e)
+			{
+				log.info("Could not generate Smooks Report. The reportPath specified was [" + reportPath + "].", e);
+			}
+		}
 	}
 
 	private Source getSource(Exchange exchange)
@@ -186,6 +205,11 @@ public class SmooksProcessor implements Processor
 	{
 		smooks.addVisitor(appender);
 		return this;
+	}
+
+	public void setReportPath(String reportPath)
+	{
+		this.reportPath = reportPath;
 	}
 
 }

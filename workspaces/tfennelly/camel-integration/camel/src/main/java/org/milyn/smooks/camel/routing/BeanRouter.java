@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Producer;
+import org.apache.camel.util.CamelContextHelper;
 import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
@@ -67,7 +68,7 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 	public void visitAfter(SAXElement element, ExecutionContext smooksExecutionContext) throws SmooksException, IOException {
 		Object bean = getBeanFromExecutionContext(smooksExecutionContext, beanId);
 		Exchange exchange = getExchange(smooksExecutionContext);
-		Endpoint endpoint = exchange.getContext().getEndpoint(toEndpoint);
+		Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(exchange.getContext(), toEndpoint);
 		try
 		{
 			//TODO: Creating a producer migth be expensive (for example JMS)

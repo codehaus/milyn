@@ -51,10 +51,7 @@ public class SmooksDataFormat2 implements DataFormat {
 
     public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception {
         synchronized (processor) {
-        	if (resultType != null)
-		        processor.setResultType(resultType);
-        	else
-		        processor.setResultType("org.milyn.payload.StringResult");
+        	setResultTypeOnProcessor(resultType, "org.milyn.payload.StringResult");
         }
         
         processor.process(exchange);
@@ -65,15 +62,18 @@ public class SmooksDataFormat2 implements DataFormat {
 
     public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
         synchronized (processor) {
-        	if (resultType != null)
-		        processor.setResultType(resultType);
-        	else
-		        processor.setResultType("org.milyn.payload.JavaResult");
+        	setResultTypeOnProcessor(resultType, "org.milyn.payload.JavaResult");
         }
         
         processor.process(exchange);
         exchange.setProperty("SmooksDataFormatKeys", smooksResultKey);
         return exchange.getOut().getBody();
+    }
+    
+    private void setResultTypeOnProcessor(String resultType, String defaultResultType)
+    {
+    	String type = resultType != null ? resultType:defaultResultType;
+        processor.setResultType(type);
     }
     
     public String getSmooksResultKey() {
