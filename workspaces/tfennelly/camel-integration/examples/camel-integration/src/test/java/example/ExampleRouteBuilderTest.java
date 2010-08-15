@@ -31,7 +31,6 @@ public class ExampleRouteBuilderTest extends CamelTestSupport
 	{
 		CamelContext context = super.createCamelContext();
 		context.addComponent("jms", context.getComponent("mock")); 
-		//context.setTracing(true);
 		return context;
 	}
 	

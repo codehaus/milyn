@@ -17,6 +17,7 @@ package example;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -40,7 +41,8 @@ public class Main
 		String payload = readInputMessage();
 		printStartMessage(payload);
 		CamelContext camelContext = configureAndStartCamel(getDSLType(args));
-		sendMessageToCamel(camelContext, payload);
+		Thread.sleep(3000);
+		camelContext.stop();
 		printEndMessage();
 	}
 	
@@ -56,7 +58,7 @@ public class Main
 	{
 		try
 		{
-			byte[] bytes = StreamUtils.readStream(Main.class.getResourceAsStream("/input-message.xml"));
+			byte[] bytes = StreamUtils.readStream(new FileInputStream("input-message.xml"));
 			return new String(bytes);
 		} 
 		catch (IOException e)

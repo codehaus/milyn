@@ -1,5 +1,7 @@
 package example;
 
+import java.io.File;
+
 import org.apache.camel.builder.RouteBuilder;
 
 public class ExampleRouteBuilder extends RouteBuilder
@@ -13,11 +15,19 @@ public class ExampleRouteBuilder extends RouteBuilder
 	public void configure() throws Exception
 	{
 		// Set up the route for the initial input-message.xml
-		from("file://target/classes?include=input-message.xml&noop=true&idempotent=false").to("smooks://smooks-config.xml");
+		from("file://" + getWorkingDir() + "?fileName=input-message.xml&noop=true&idempotent=false").to("smooks://file:./smooks-config.xml");
 		
 		// Set up routes for endpoints defined in smooks-config.xml
 		from("direct:ireland").process(new LogProcessor("ie")).to("jms:queue:ireland");
 		from("direct:greatbritain").process(new LogProcessor("gb")).to("jms:queue:greatbritian");
+	}
+	
+	private File getWorkingDir()
+	{
+		String userDir = System.getProperty("user.dir");
+		File workingDir = new File(userDir);
+		System.out.println(workingDir);
+		return workingDir;
 	}
 
 }

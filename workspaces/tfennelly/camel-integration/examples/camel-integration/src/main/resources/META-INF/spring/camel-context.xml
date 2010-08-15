@@ -10,7 +10,7 @@
   <camelContext xmlns="http://camel.apache.org/schema/spring">
     <route>
       <from uri="direct:input"/>
-      <to uri="smooks://smooks-config.xml"/>
+      <to uri="smooks://file:./smooks-config.xml"/>
     </route>
     
     <route>
