@@ -23,6 +23,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -94,11 +95,12 @@ public class SmooksProcessor2Test extends CamelTestSupport {
     }
     
     @Test
+    @Ignore("need to figure out how I can stop and start the processor in a unit test")
     public void stopStartContext() throws Exception
     {
     	assertOneProcessedMessage();
-    	//stopCamelContext();
-    	//startCamelContext();
+    	stopCamelContext();
+    	startCamelContext();
     	assertOneProcessedMessage();
     }
     
@@ -109,7 +111,7 @@ public class SmooksProcessor2Test extends CamelTestSupport {
                 processor.setResultType("javax.xml.transform.dom.DOMResult");
                 processor.setReportPath("target/smooks-report.html");
                 
-                from("file://src/test/data?noop=true").streamCaching()
+                from("file://src/test/data?noop=true")
                 .process(processor).convertBodyTo(Node.class)
                 .to("mock:result");
             }
