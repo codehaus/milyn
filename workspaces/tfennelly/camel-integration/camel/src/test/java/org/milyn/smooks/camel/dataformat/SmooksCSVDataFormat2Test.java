@@ -17,7 +17,6 @@
 package org.milyn.smooks.camel.dataformat;
 
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,25 +73,6 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
         assertEquals(charlesExpected, charlesActual);
     }
     
-    
-    @BeforeClass
-    public static void createExcpectedCustomers()
-    {
-    	charlesExpected = new Customer();
-    	charlesExpected.setFirstName("charles");
-    	charlesExpected.setLastName("moulliard");
-    	charlesExpected.setAge(43);
-    	charlesExpected.setGender(Gender.Male);
-    	charlesExpected.setCountry("belgium");
-    	
-    	chrisExpected = new Customer();
-    	chrisExpected.setFirstName("christian");
-    	chrisExpected.setLastName("mueller");
-    	chrisExpected.setAge(33);
-    	chrisExpected.setGender(Gender.Male);
-    	chrisExpected.setCountry("germany");
-    }
-    
     @Test
     public void marshalCSV() throws Exception {
         result.expectedMessageCount(1);
@@ -116,20 +96,36 @@ public class SmooksCSVDataFormat2Test extends CamelTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() throws Exception {
-                SmooksDataFormat2 csvUnmarshal = new SmooksDataFormat2("csv-smooks-unmarshal-config.xml");
-                csvUnmarshal.setResultType("org.milyn.payload.JavaResult");
+                SmooksDataFormat2 csvUnmarshal = SmooksDataFormat2.createUnMarshaller("csv-smooks-unmarshal-config.xml", "org.milyn.payload.JavaResult", "result");
 
                 from("direct:unmarshal")
                 .unmarshal(csvUnmarshal).convertBodyTo(List.class)
                 .to("mock:result");
                 
-                SmooksDataFormat2 csvMarshal = new SmooksDataFormat2("csv-smooks-marshal-config.xml");
-                csvMarshal.setResultType("org.milyn.payload.StringResult");
-                
+                SmooksDataFormat2 csvMarshal = SmooksDataFormat2.createMarshaller("csv-smooks-marshal-config.xml", "org.milyn.payload.StringResult");
                 from("direct:marshal").convertBodyTo(JavaSourceWithoutEventStream.class)
                 .marshal(csvMarshal)
                 .to("mock:result");
             }
         };
     }
+
+
+	@BeforeClass
+	public static void createExcpectedCustomers()
+	{
+		charlesExpected = new Customer();
+		charlesExpected.setFirstName("charles");
+		charlesExpected.setLastName("moulliard");
+		charlesExpected.setAge(43);
+		charlesExpected.setGender(Gender.Male);
+		charlesExpected.setCountry("belgium");
+		
+		chrisExpected = new Customer();
+		chrisExpected.setFirstName("christian");
+		chrisExpected.setLastName("mueller");
+		chrisExpected.setAge(33);
+		chrisExpected.setGender(Gender.Male);
+		chrisExpected.setCountry("germany");
+	}
 }

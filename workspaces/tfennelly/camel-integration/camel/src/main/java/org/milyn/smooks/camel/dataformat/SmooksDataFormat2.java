@@ -1,54 +1,74 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Milyn - Copyright (C) 2006 - 2010
+ * 
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License (version 2.1) as published
+ * by the Free Software Foundation.
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License for more details:
+ * http://www.gnu.org/licenses/lgpl.txt
  */
 package org.milyn.smooks.camel.dataformat;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.spi.DataFormat;
 import org.milyn.container.ExecutionContext;
+import org.milyn.smooks.camel.component.SmooksComponent;
 import org.milyn.smooks.camel.processor.SmooksProcessor;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.xml.sax.SAXException;
 
 /**
+ * SmooksDataFormat is a Camel data format which is a pluggable transformer
+ * capable of transforming from one dataformat to another. 
+ * <p/>
+ * 
+ * A smooks configuration for a SmooksDataFormat should not utilize Smooks features such
+ * as routing that might allocated system resources. The reason for this is that there is
+ * no functionality in the SmooksDataFormat which will close those resources. 
+ * If you need to use these Smooks features please take a look at the {@link SmooksComponent} 
+ * or {@link SmooksProcessor} as they hook into Camels lifecycle manegment and will close 
+ * resources correctly.
+ * <p/>
  * 
  * @author Christian Mueller
+ * @author Daniel Bevenius
  *
  */
 public class SmooksDataFormat2 implements DataFormat {
     
-    private SmooksProcessor processor;
-    private String smooksResultKey = "result";
-    private ResourceLoader resourceLoader = new DefaultResourceLoader();
+    public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
+    private String resultBeanId;
 	private String resultType;
-    
-    public SmooksDataFormat2() {
-        processor = new SmooksProcessor();
+	private SmooksProcessor processor;
+	
+    public SmooksDataFormat2(String smooksConfig, String resultType, String resultBeanId) throws Exception {
+    	this.resultType = resultType;
+    	this.resultBeanId = resultBeanId;
+    	createAndStartSmooksProcessor(smooksConfig);
     }
     
-    public SmooksDataFormat2(String smooksConfig) throws IOException, SAXException {
+    public static SmooksDataFormat2 createMarshaller(String smooksConfig, String resultType) throws Exception
+    {
+    	return new SmooksDataFormat2(smooksConfig, resultType, null);
+    }
+    
+    public static SmooksDataFormat2 createUnMarshaller(String smooksConfig, String resultType, String resultBeanId) throws Exception
+    {
+    	return new SmooksDataFormat2(smooksConfig, resultType, resultBeanId);
+    }
+    
+    private void createAndStartSmooksProcessor(String smooksConfig) throws Exception
+    {
         processor = new SmooksProcessor(smooksConfig);
+        processor.start();
     }
-
+    
     public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception {
         synchronized (processor) {
         	setResultTypeOnProcessor(resultType, "org.milyn.payload.StringResult");
@@ -60,13 +80,13 @@ public class SmooksDataFormat2 implements DataFormat {
         stream.write(exchange.getOut().getBody(String.class).getBytes(executionContext.getContentEncoding()));
     }
 
-    public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
+	public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
         synchronized (processor) {
         	setResultTypeOnProcessor(resultType, "org.milyn.payload.JavaResult");
         }
         
         processor.process(exchange);
-        exchange.setProperty("SmooksDataFormatKeys", smooksResultKey);
+        exchange.setProperty(SMOOKS_DATA_FORMAT_RESULT_KEY, resultBeanId);
         return exchange.getOut().getBody();
     }
     
@@ -76,32 +96,12 @@ public class SmooksDataFormat2 implements DataFormat {
         processor.setResultType(type);
     }
     
-    public String getSmooksResultKey() {
-        return smooksResultKey;
+    public String getResultBeanId() {
+        return resultBeanId;
     }
 
-    public void setSmooksResultKey(String smooksResultKey) {
-        this.smooksResultKey = smooksResultKey;
-    }
-
-    public Resource getSmooksConfig() {
+    public String getSmooksConfig() {
         return processor.getSmooksConfig();
     }
 
-    public void setSmooksConfig(Resource smooksConfig) {
-        processor.setSmooksConfig(smooksConfig);
-    }
-    
-    public void setSmooksConfig(String smooksConfig) {
-        Resource resource = resourceLoader.getResource(smooksConfig);
-        if (resource == null) {
-            throw new IllegalArgumentException("Could not find resource for URI: " + smooksConfig + " using: " + resourceLoader);
-        }
-        processor.setSmooksConfig(resource);
-    }
-    
-    public void setResultType(String resultType)
-    {
-    	this.resultType = resultType;
-    }
 }

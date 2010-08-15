@@ -17,7 +17,6 @@
 package org.milyn.smooks.camel.processor;
 
 import java.io.File;
-import java.io.InputStream;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -33,7 +32,7 @@ public class SmooksProcessor2Test extends CamelTestSupport {
 
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
-
+    
     private static final String expectedResponse = "<Order>\n"
         + "\t<header>\n"
         + "\t\t<order-id>1</order-id>\n"
@@ -69,14 +68,19 @@ public class SmooksProcessor2Test extends CamelTestSupport {
 
     @Test
     public void unmarshalEDI() throws Exception {
-        result.expectedMessageCount(1);
+        assertOneProcessedMessage();
+    }
+
+	private void assertOneProcessedMessage() throws InterruptedException
+	{
+		result.expectedMessageCount(1);
 
         assertMockEndpointsSatisfied();
 
         Exchange exchange = result.assertExchangeReceived(0);
         assertIsInstanceOf(Document.class, exchange.getIn().getBody());
         assertEquals(expectedResponse, exchange.getIn().getBody(String.class));
-    }
+	}
     
     @Test
     public void assertSmooksReportWasCreated() throws Exception
@@ -88,7 +92,16 @@ public class SmooksProcessor2Test extends CamelTestSupport {
         report.deleteOnExit();
         assertTrue("Smooks report was not generated.", report.exists());
     }
-
+    
+    @Test
+    public void stopStartContext() throws Exception
+    {
+    	assertOneProcessedMessage();
+    	//stopCamelContext();
+    	//startCamelContext();
+    	assertOneProcessedMessage();
+    }
+    
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() throws Exception {
@@ -96,7 +109,7 @@ public class SmooksProcessor2Test extends CamelTestSupport {
                 processor.setResultType("javax.xml.transform.dom.DOMResult");
                 processor.setReportPath("target/smooks-report.html");
                 
-                from("file://src/test/data?noop=true")
+                from("file://src/test/data?noop=true").streamCaching()
                 .process(processor).convertBodyTo(Node.class)
                 .to("mock:result");
             }

@@ -14,30 +14,35 @@
  */
 package org.milyn.smooks.camel.component;
 
-import org.apache.camel.Endpoint;
-import org.apache.camel.component.ResourceBasedComponent;
-import org.apache.camel.impl.ProcessorEndpoint;
-import org.milyn.smooks.camel.processor.SmooksProcessor;
-import org.springframework.core.io.Resource;
-
 import java.util.Map;
 
+import org.apache.camel.Endpoint;
+import org.apache.camel.component.ResourceBasedComponent;
+import org.milyn.smooks.camel.processor.SmooksProcessor;
+
 /**
+ * Smook Camel Component.
+ * <p/>
+ * 
+ * Example usage:
+ * from("direct:a")
+ * .to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
  * 
  * @author Christian Mueller
+ * @author Daniel Bevenius
  *
  */
 public class SmooksComponent extends ResourceBasedComponent
 {
 	protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception
 	{
-		Resource resource = resolveMandatoryResource(remaining);
-		SmooksProcessor smooksProcessor = new SmooksProcessor(resource);
+		SmooksProcessor smooksProcessor = new SmooksProcessor(remaining);
 		configureSmooksProcessor(smooksProcessor, uri, remaining, parameters);
-		return new ProcessorEndpoint(uri, this, smooksProcessor);
+		return new SmooksEndpoint(uri, this, smooksProcessor);
 	}
 
-	protected void configureSmooksProcessor(SmooksProcessor smooksProcessor, 
+	protected void configureSmooksProcessor(
+			SmooksProcessor smooksProcessor, 
 			String uri, 
 			String remaining, 
 			Map<String, Object> parameters)

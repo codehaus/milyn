@@ -25,11 +25,9 @@ import org.milyn.payload.JavaSourceWithoutEventStream;
 import org.milyn.payload.StringSource;
 
 /**
- * SourceConverter is a Camel {@link Converter} that converts
- * from different formats to {@link Source} instances.
+ * SourceConverter is a Camel {@link Converter} that converts from different formats to 
+ * {@link Source} instances.
  * </p>
- * Usage of this class is mainly intended for converting a message
- * payload to work nicely with a Smooks Camel.  
  * 
  * @author Daniel Bevenius
  */

@@ -1,28 +1,32 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Milyn - Copyright (C) 2006 - 2010
+ * 
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License (version 2.1) as published
+ * by the Free Software Foundation.
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License for more details:
+ * http://www.gnu.org/licenses/lgpl.txt
  */
 package org.milyn.smooks.camel.processor;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.Service;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,51 +47,27 @@ import org.xml.sax.SAXException;
  * @author Christian Mueller
  * @author Daniel Bevenius
  */
-public class SmooksProcessor implements Processor
+public class SmooksProcessor implements Processor, Service
 {
 	public static final String SMOOKS_EXECUTION_CONTEXT = "CamelSmooksExecutionContext";
 	
     private final Log log = LogFactory.getLog(getClass());
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private Smooks smooks;
-	private Resource smooksConfig;
+	private String configUri;
 	private String reportPath;
 	private Result result;
+	
+	private Set<VisitorAppender> visitorAppenders = new HashSet<VisitorAppender>();
+	private Map<String, Visitor> selectorVisitorMap = new HashMap<String, Visitor>();
 
-	/**
-	 * Creates an instance of SmooksProcessor with a default configuration
-	 * of the underlying Smooks instance.
-	 */
 	public SmooksProcessor()
 	{
-		smooks = new Smooks();
 	}
 
-	/**
-	 * Creates an instance of SmooksProcessor with the specified configuration
-	 * for the underlying Smooks instance.
-	 * 
-	 * @param configUri The path to the Smooks configuration file.
-	 * @throws IOException
-	 * @throws SAXException
-	 */
 	public SmooksProcessor(String configUri) throws IOException, SAXException
 	{
-		Resource config = getSmooksConfig(configUri);
-		smooks = createSmooksFromResource(config);
-	}
-
-	/**
-	 * Creates an instance of SmooksProcessor with the specified configuration
-	 * for the underlying Smooks instance.
-	 * 
-	 * @param configUri The path to the Smooks configuration file.
-	 * @throws IOException
-	 * @throws SAXException
-	 */
-	public SmooksProcessor(Resource config) throws IOException, SAXException
-	{
-		smooks = createSmooksFromResource(config);
+		this.configUri = configUri;
 	}
 
 	private Smooks createSmooksFromResource(Resource resource) throws IOException, SAXException
@@ -139,30 +119,25 @@ public class SmooksProcessor implements Processor
 	{
 		return exchange.getIn().getBody(Source.class);
 	}
-
-	public Resource getSmooksConfig()
+	
+	public String getSmooksConfig()
 	{
-		return smooksConfig;
+		return configUri;
 	}
 
-	public Resource getSmooksConfig(String configUri)
+	private Resource getSmooksConfig(String configUri)
 	{
 		Resource resource = resourceLoader.getResource(configUri);
 		if (resource == null)
 		{
-			throw new IllegalArgumentException("Could not find resource for URI: " + smooksConfig + " using: " + resourceLoader);
+			throw new IllegalArgumentException("Could not find resource for URI: " + configUri + " using: " + resourceLoader);
 		}
 		return resource;
 	}
 
-	public void setSmooksConfig(Resource smooksConfig)
-	{
-		this.smooksConfig = smooksConfig;
-	}
-
 	public void setSmooksConfig(String smooksConfig)
 	{
-		setSmooksConfig(getSmooksConfig(smooksConfig));
+		this.configUri = smooksConfig;
 	}
 
 	public SmooksProcessor setResultType(String resultType)
@@ -186,7 +161,7 @@ public class SmooksProcessor implements Processor
 	 */
 	public SmooksProcessor addVisitor(Visitor visitor, String targetSelector)
 	{
-		smooks.addVisitor(visitor, targetSelector);
+		selectorVisitorMap.put(targetSelector, visitor);
 		return this;
 	}
 
@@ -200,13 +175,58 @@ public class SmooksProcessor implements Processor
 	 */
 	public SmooksProcessor addVisitor(VisitorAppender appender)
 	{
-		smooks.addVisitor(appender);
+		visitorAppenders.add(appender);
 		return this;
 	}
 
 	public void setReportPath(String reportPath)
 	{
 		this.reportPath = reportPath;
+	}
+
+	public void start() throws Exception
+	{
+		if (smooks == null)
+		{
+			smooks = createSmooks(configUri);
+			addAppenders(smooks, visitorAppenders);
+			addVisitors(smooks, selectorVisitorMap);
+			log.info(this + " Started");
+		}
+	}
+	
+	private Smooks createSmooks(String configUri) throws IOException, SAXException
+	{
+		return (configUri != null) ? createSmooksFromResource(getSmooksConfig(configUri)) : new Smooks();
+	}
+	
+	private void addAppenders(Smooks smooks, Set<VisitorAppender> appenders)
+	{
+		for (VisitorAppender appender : visitorAppenders)
+			smooks.addVisitor(appender);
+	}
+	
+	private void addVisitors(Smooks smooks, Map<String, Visitor> selectorVisitorMap)
+	{
+		for (Entry<String, Visitor> entry : selectorVisitorMap.entrySet())
+			smooks.addVisitor(entry.getValue(), entry.getKey());
+	}
+
+	public void stop() throws Exception
+	{
+		if (smooks != null)
+		{
+			smooks.close();
+			smooks = null;
+		}
+		log.info(this + " Stopped");
+		
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "SmooksProcessor [configUri=" + configUri + "]";
 	}
 
 }
