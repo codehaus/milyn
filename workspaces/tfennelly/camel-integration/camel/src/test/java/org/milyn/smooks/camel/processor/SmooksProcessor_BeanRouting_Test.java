@@ -81,13 +81,6 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
         		smooks.addVisitor(new BeanRouter().setBeanId("coordinate").setToEndpoint("direct:b"), "coords/coord");
             	
                 from("direct:a1").process(new SmooksProcessor(smooks));
-                		/*
-                		addVisitor(new Bean(Coordinate.class, "coordinate", "coords/coord").
-                				bindTo("x", "coords/coord/@x").
-                				bindTo("y", "coords/coord/@y")).
-                		addVisitor(new BeanRouter().setBeanId("coordinate").setToEndpoint("direct:b"), "coords/coord"));
-                		*/
-
                 from("direct:a2").to("smooks://bean_routing_01.xml");
                 
                 directBProcessor = new DirectProcessor();
