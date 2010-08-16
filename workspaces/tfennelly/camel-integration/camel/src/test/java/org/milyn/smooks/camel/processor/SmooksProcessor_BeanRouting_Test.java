@@ -60,11 +60,7 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
     }
 
 	public void sendTo(String fromEndpoint) throws Exception {
-        template.request(fromEndpoint, new Processor() {
-            public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setBody(new StringSource("<coords><coord x='111' y='222' /><coord x='333' y='444' /></coords>"));
-            }
-        });
+		sendBody(fromEndpoint, new StringSource("<coords><coord x='111' y='222' /><coord x='333' y='444' /></coords>"));
     }
 
 	/* (non-Javadoc)
