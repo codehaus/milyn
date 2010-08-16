@@ -20,6 +20,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+import org.milyn.Smooks;
 import org.milyn.javabean.Bean;
 import org.milyn.javabean.Value;
 import org.milyn.payload.JavaResult;
@@ -46,7 +47,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			public void configure() throws Exception
 			{
                 from("direct:a").
-                process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").addVisitor(new Value("x", "/coord/@x", Integer.class)));
+                process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.JavaResult").addVisitor(new Value("x", "/coord/@x", Integer.class)));
 			}
 			
 		});
@@ -65,7 +66,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:b").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
+                from("direct:b").process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.JavaResult").
                 		addVisitor(new Value("x", "/coord/@x", Integer.class)).
                 		addVisitor(new Value("y", "/coord/@y", Double.class)));
 			}
@@ -89,7 +90,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:c").process(new SmooksProcessor().setResultType("org.milyn.payload.JavaResult").
+                from("direct:c").process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.JavaResult").
                 		addVisitor(new Bean(Coordinate.class, "coordinate").
         				bindTo("x", "/coord/@x").
         				bindTo("y", "/coord/@y")));

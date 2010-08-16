@@ -19,6 +19,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+import org.milyn.Smooks;
 
 /**
  * 
@@ -47,7 +48,7 @@ public class SmooksProcessor_File_In_StringResult_Test extends CamelTestSupport 
         return new RouteBuilder() {
             public void configure() {
                 from("file://target/smooks").
-                process(new SmooksProcessor().setResultType("org.milyn.payload.StringResult")).
+                process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.StringResult")).
         		to("mock:a");
             }
         };

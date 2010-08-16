@@ -61,8 +61,9 @@ public class SmooksProcessor implements Processor, Service
 	private Set<VisitorAppender> visitorAppenders = new HashSet<VisitorAppender>();
 	private Map<String, Visitor> selectorVisitorMap = new HashMap<String, Visitor>();
 
-	public SmooksProcessor()
+	public SmooksProcessor(Smooks smooks)
 	{
+		this.smooks = smooks;
 	}
 
 	public SmooksProcessor(String configUri) throws IOException, SAXException
@@ -189,15 +190,18 @@ public class SmooksProcessor implements Processor, Service
 		if (smooks == null)
 		{
 			smooks = createSmooks(configUri);
-			addAppenders(smooks, visitorAppenders);
-			addVisitors(smooks, selectorVisitorMap);
-			log.info(this + " Started");
 		}
+		addAppenders(smooks, visitorAppenders);
+		addVisitors(smooks, selectorVisitorMap);
+		log.info(this + " Started");
 	}
 	
 	private Smooks createSmooks(String configUri) throws IOException, SAXException
 	{
-		return (configUri != null) ? createSmooksFromResource(getSmooksConfig(configUri)) : new Smooks();
+		if (smooks != null)
+			return smooks;
+		
+		return createSmooksFromResource(getSmooksConfig(configUri));
 	}
 	
 	private void addAppenders(Smooks smooks, Set<VisitorAppender> appenders)
@@ -220,7 +224,6 @@ public class SmooksProcessor implements Processor, Service
 			smooks = null;
 		}
 		log.info(this + " Stopped");
-		
 	}
 	
 	@Override

@@ -20,6 +20,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+import org.milyn.Smooks;
 import org.milyn.payload.StringSource;
 
 /**
@@ -45,7 +46,7 @@ public class SmooksProcessor_Null_Test extends CamelTestSupport {
 	protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("direct:blah").process(new SmooksProcessor());
+                from("direct:blah").process(new SmooksProcessor(new Smooks()));
             }
         };
 	}
