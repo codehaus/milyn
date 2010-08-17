@@ -14,7 +14,8 @@ public class ExampleRouteBuilder extends RouteBuilder
 	public void configure() throws Exception
 	{
 		// Set up the route for the initial input-message.xml
-		from("file://" + getWorkingDir() + "?fileName=input-message.xml&noop=true")
+		from("file://" + getWorkingDir() + "?fileName=input-message.xml&noop=true").routeId("inputFileRoute") 
+		.log("Read file [${file:name}]")
 		.to("smooks://file:./smooks-config.xml");
 		
 		// Set up routes for endpoints defined in smooks-config.xml
