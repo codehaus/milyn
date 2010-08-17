@@ -18,7 +18,6 @@ package org.milyn.smooks.camel.component;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 

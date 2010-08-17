@@ -71,15 +71,6 @@ public class SmooksProcessor implements Processor, Service
 		this.configUri = configUri;
 	}
 
-	private Smooks createSmooksFromResource(Resource resource) throws IOException, SAXException
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Using smooks config resource: " + resource);
-		}
-		return new Smooks(resource.getInputStream());
-	}
-
 	public void process(Exchange exchange) throws Exception
 	{
 		ExecutionContext executionContext = smooks.createExecutionContext();
@@ -204,6 +195,15 @@ public class SmooksProcessor implements Processor, Service
 		return createSmooksFromResource(getSmooksConfig(configUri));
 	}
 	
+	private Smooks createSmooksFromResource(Resource resource) throws IOException, SAXException
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Using smooks config resource: " + resource);
+		}
+		return new Smooks(resource.getInputStream());
+	}
+
 	private void addAppenders(Smooks smooks, Set<VisitorAppender> appenders)
 	{
 		for (VisitorAppender appender : visitorAppenders)
