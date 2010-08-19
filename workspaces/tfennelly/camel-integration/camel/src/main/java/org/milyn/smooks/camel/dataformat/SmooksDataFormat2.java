@@ -47,20 +47,14 @@ public class SmooksDataFormat2 implements DataFormat {
 	private String resultType;
 	private SmooksProcessor processor;
 	
+    public SmooksDataFormat2(String smooksConfig, String resultType) throws Exception {
+    	this(smooksConfig, resultType, null);
+    }
+	
     public SmooksDataFormat2(String smooksConfig, String resultType, String resultBeanId) throws Exception {
     	this.resultType = resultType;
     	this.resultBeanId = resultBeanId;
     	createAndStartSmooksProcessor(smooksConfig);
-    }
-    
-    public static SmooksDataFormat2 createMarshaller(String smooksConfig, String resultType) throws Exception
-    {
-    	return new SmooksDataFormat2(smooksConfig, resultType, null);
-    }
-    
-    public static SmooksDataFormat2 createUnMarshaller(String smooksConfig, String resultType, String resultBeanId) throws Exception
-    {
-    	return new SmooksDataFormat2(smooksConfig, resultType, resultBeanId);
     }
     
     private void createAndStartSmooksProcessor(String smooksConfig) throws Exception

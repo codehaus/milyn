@@ -51,6 +51,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			}
 			
 		});
+		enableJMX();
 		context.start();
         Exchange response = template.request("direct:a", new Processor() {
             public void process(Exchange exchange) throws Exception {

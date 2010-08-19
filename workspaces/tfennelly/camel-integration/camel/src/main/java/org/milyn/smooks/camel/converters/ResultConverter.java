@@ -54,9 +54,13 @@ public class ResultConverter
 	{
         String resultKey = (String) exchange.getProperty(SmooksDataFormat2.SMOOKS_DATA_FORMAT_RESULT_KEY);
         if (resultKey != null)
+        {
 			return (List) getResultsFromJavaResult(javaResult, resultKey);
+        }
         else
+        {
 			return (List) getSingleObjectFromJavaResult(javaResult);
+        }
 	}
 	
 	@Converter

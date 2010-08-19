@@ -20,9 +20,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.Converter;
+import org.milyn.payload.JavaResult;
 import org.milyn.payload.JavaSource;
 import org.milyn.payload.JavaSourceWithoutEventStream;
-import org.milyn.payload.StringSource;
 
 /**
  * SourceConverter is a Camel {@link Converter} that converts from different formats to 
@@ -54,6 +54,12 @@ public class SourceConverter
 	public static Source toStreamSource(InputStream in)
 	{
 		return new StreamSource(in);
+	}
+	
+	@Converter
+	public static JavaSource toJavaSource(JavaResult result)
+	{
+		return new JavaSource(result.getResultMap().values());
 	}
 	
 }
