@@ -35,9 +35,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.event.report.HtmlReportGenerator;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.xml.sax.SAXException;
 
 /**
@@ -52,7 +49,6 @@ public class SmooksProcessor implements Processor, Service
 	public static final String SMOOKS_EXECUTION_CONTEXT = "CamelSmooksExecutionContext";
 	
     private final Log log = LogFactory.getLog(getClass());
-	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private Smooks smooks;
 	private String configUri;
 	private String reportPath;
@@ -115,16 +111,6 @@ public class SmooksProcessor implements Processor, Service
 	public String getSmooksConfig()
 	{
 		return configUri;
-	}
-
-	private Resource getSmooksConfig(String configUri)
-	{
-		Resource resource = resourceLoader.getResource(configUri);
-		if (resource == null)
-		{
-			throw new IllegalArgumentException("Could not find resource for URI: " + configUri + " using: " + resourceLoader);
-		}
-		return resource;
 	}
 
 	public void setSmooksConfig(String smooksConfig)
@@ -192,18 +178,9 @@ public class SmooksProcessor implements Processor, Service
 		if (smooks != null)
 			return smooks;
 		
-		return createSmooksFromResource(getSmooksConfig(configUri));
+		return new Smooks(configUri);
 	}
 	
-	private Smooks createSmooksFromResource(Resource resource) throws IOException, SAXException
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Using smooks config resource: " + resource);
-		}
-		return new Smooks(resource.getInputStream());
-	}
-
 	private void addAppenders(Smooks smooks, Set<VisitorAppender> appenders)
 	{
 		for (VisitorAppender appender : visitorAppenders)

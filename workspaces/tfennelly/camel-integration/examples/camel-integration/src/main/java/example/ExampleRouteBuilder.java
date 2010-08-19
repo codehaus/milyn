@@ -15,8 +15,14 @@ public class ExampleRouteBuilder extends RouteBuilder
 	{
 		// Set up the route for the initial input-message.xml
 		from("file://" + getWorkingDir() + "?fileName=input-message.xml&noop=true").routeId("inputFileRoute") 
+		// Might be able to specify the input directory like shown below if 
+		// https://issues.apache.org/activemq/browse/CAMEL-3063
+		// is excepted.
+		//from("file://./?fileName=input-message.xml&noop=true").routeId("inputFileRoute") 
+		//from("file://.?fileName=input-message.xml&noop=true").routeId("inputFileRoute") 
+		//from("file:.?fileName=input-message.xml&noop=true").routeId("inputFileRoute") 
 		.log("Read file [${file:name}]")
-		.to("smooks://file:./smooks-config.xml");
+		.to("smooks://smooks-config.xml");
 		
 		// Set up routes for endpoints defined in smooks-config.xml
 		from("direct:ireland").process(new LogProcessor("ie")).to("jms:queue:ireland");
