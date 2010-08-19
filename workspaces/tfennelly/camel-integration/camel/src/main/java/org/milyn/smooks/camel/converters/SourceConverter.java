@@ -56,10 +56,4 @@ public class SourceConverter
 		return new StreamSource(in);
 	}
 	
-	@Converter
-	public static Source toStringResult(String payload)
-	{
-		return new StringSource(payload);
-	}
-
 }

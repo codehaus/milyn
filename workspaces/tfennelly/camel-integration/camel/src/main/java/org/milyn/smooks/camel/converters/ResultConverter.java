@@ -53,8 +53,10 @@ public class ResultConverter
 	public static List toList(JavaResult javaResult, Exchange exchange)
 	{
         String resultKey = (String) exchange.getProperty(SmooksDataFormat2.SMOOKS_DATA_FORMAT_RESULT_KEY);
-		List list = (List) getResultsFromJavaResult(javaResult, resultKey);
-		return list;
+        if (resultKey != null)
+			return (List) getResultsFromJavaResult(javaResult, resultKey);
+        else
+			return (List) getSingleObjectFromJavaResult(javaResult);
 	}
 	
 	@Converter
@@ -67,13 +69,6 @@ public class ResultConverter
 	public static Double toDouble(JavaResult result)
 	{
 		return (Double) getSingleObjectFromJavaResult(result);
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Converter
-	public static List toString(JavaResult result)
-	{
-		return (List) getSingleObjectFromJavaResult(result);
 	}
 	
 	@Converter
