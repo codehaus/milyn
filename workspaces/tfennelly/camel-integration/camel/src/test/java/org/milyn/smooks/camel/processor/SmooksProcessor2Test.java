@@ -17,13 +17,22 @@
 package org.milyn.smooks.camel.processor;
 
 import java.io.File;
+import java.util.Set;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
+import javax.management.Query;
+import javax.management.QueryExp;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.management.mbean.ManagedProcessor;
+import org.apache.camel.spi.ManagementAgent;
 import org.apache.camel.test.junit4.CamelTestSupport;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -33,8 +42,22 @@ public class SmooksProcessor2Test extends CamelTestSupport {
 
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
+	private MBeanServer mbeanServer;
     
-    private static final String expectedResponse = "<Order>\n"
+    @Before
+    public void getMbeanServer()
+    {
+    	ManagementAgent managementAgent = context.getManagementStrategy().getManagementAgent();
+    	mbeanServer = managementAgent.getMBeanServer();
+    }
+    
+    @Override
+	protected boolean useJmx()
+	{
+		return true;
+	}
+    
+	private static final String expectedResponse = "<Order>\n"
         + "\t<header>\n"
         + "\t\t<order-id>1</order-id>\n"
         + "\t\t<status-code>0</status-code>\n"
@@ -95,13 +118,43 @@ public class SmooksProcessor2Test extends CamelTestSupport {
     }
     
     @Test
-    @Ignore("need to figure out how I can stop and start the processor in a unit test")
     public void stopStartContext() throws Exception
     {
+    	ObjectInstance smooksProcessorMBean = getSmooksProcessorObjectInstance();
+    	
     	assertOneProcessedMessage();
-    	stopCamelContext();
-    	startCamelContext();
+    	stopSmooksProcessor(smooksProcessorMBean.getObjectName());
+		Thread.sleep(500);
+		
+		startSmooksProcessor(smooksProcessorMBean.getObjectName());
+		Thread.sleep(500);
+		
     	assertOneProcessedMessage();
+    }
+    
+    private void stopSmooksProcessor(ObjectName objectName) throws Exception
+    {
+    	invokeVoidNoArgsMethod(objectName, "stop");
+    }
+    
+    private void invokeVoidNoArgsMethod(ObjectName objectName, String methodName) throws Exception
+    {
+		mbeanServer.invoke(objectName, methodName, null, null);
+    }
+    
+    private void startSmooksProcessor(ObjectName objectName) throws Exception
+    {
+    	invokeVoidNoArgsMethod(objectName, "start");
+    }
+    
+    private ObjectInstance getSmooksProcessorObjectInstance()
+    {
+    	QueryExp instanceOf = Query.isInstanceOf(Query.value(ManagedProcessor.class.getName()));
+		QueryExp query = Query.and(instanceOf, instanceOf);
+		Set<ObjectInstance> queryMBeans = mbeanServer.queryMBeans(null, query);
+		assertEquals(1, queryMBeans.size());
+		ObjectInstance mbean = queryMBeans.iterator().next();
+		return mbean;
     }
     
     protected RouteBuilder createRouteBuilder() throws Exception {
