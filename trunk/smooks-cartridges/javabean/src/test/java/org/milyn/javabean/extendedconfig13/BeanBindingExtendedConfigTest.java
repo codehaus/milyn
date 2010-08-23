@@ -1,24 +1,23 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
-	Foundation.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
-	http://www.gnu.org/licenses/lgpl.txt
-*/
+ * Milyn - Copyright (C) 2006 - 2010
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License (version 2.1) as published by the Free Software
+ *  Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ *  See the GNU Lesser General Public License for more details:
+ *  http://www.gnu.org/licenses/lgpl.txt
+ */
 package org.milyn.javabean.extendedconfig13;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
@@ -32,9 +31,9 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -265,6 +264,43 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test_factory() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_13.xml"));
+
+        JavaResult result = new JavaResult();
+
+        ExecutionContext execContext = smooks.createExecutionContext();
+
+        //execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+        smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
+
+        Map<?, ?> order =  (Map<?, ?>) result.getBean("order");
+
+        assertTrue(order instanceof HashMap);
+    }
+
+    public void test_factory_alias() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_14.xml"));
+
+        JavaResult result = new JavaResult();
+
+        ExecutionContext execContext = smooks.createExecutionContext();
+
+        //execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+        smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
+
+        Map<?, ?> order1 =  (Map<?, ?>) result.getBean("default_order");
+        Map<?, ?> order2 =  (Map<?, ?>) result.getBean("mvel_order");
+        Map<?, ?> order3 =  (Map<?, ?>) result.getBean("mvel_class_order");
+        Map<?, ?> order4 =  (Map<?, ?>) result.getBean("basic_order");
+
+        assertTrue(order1 instanceof HashMap);
+        assertTrue(order2 instanceof HashMap);
+        assertTrue(order3 instanceof HashMap);
+        assertTrue(order4 instanceof HashMap);
+    }
+
+
+    public void test_factory_global_mvel() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_15.xml"));
 
         JavaResult result = new JavaResult();
 
