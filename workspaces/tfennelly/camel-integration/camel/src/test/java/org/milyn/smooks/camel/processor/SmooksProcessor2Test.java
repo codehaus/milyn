@@ -124,11 +124,11 @@ public class SmooksProcessor2Test extends CamelTestSupport {
     	
     	assertOneProcessedMessage();
     	stopSmooksProcessor(smooksProcessorMBean.getObjectName());
-		Thread.sleep(500);
-		
-		startSmooksProcessor(smooksProcessorMBean.getObjectName());
-		Thread.sleep(500);
-		
+    	Thread.sleep(500);
+    	
+    	startSmooksProcessor(smooksProcessorMBean.getObjectName());
+    	Thread.sleep(500);
+    	
     	assertOneProcessedMessage();
     }
     
