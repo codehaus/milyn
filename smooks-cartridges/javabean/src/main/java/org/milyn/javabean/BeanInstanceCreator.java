@@ -1,28 +1,24 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
-	Foundation.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
-	http://www.gnu.org/licenses/lgpl.txt
-*/
+ * Milyn - Copyright (C) 2006 - 2010
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License (version 2.1) as published by the Free Software
+ *  Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ *  See the GNU Lesser General Public License for more details:
+ *  http://www.gnu.org/licenses/lgpl.txt
+ */
 package org.milyn.javabean;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.delivery.Fragment;
-import org.milyn.delivery.sax.SAXUtil;
-import org.milyn.javabean.ext.BeanConfigUtil;
-import org.milyn.util.CollectionsUtil;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -33,24 +29,26 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.ordering.Producer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.ext.BeanConfigUtil;
 import org.milyn.javabean.factory.Factory;
 import org.milyn.javabean.factory.FactoryDefinitionParser.FactoryDefinitionParserFactory;
 import org.milyn.javabean.repository.BeanId;
+import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -151,7 +149,16 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         beanId.setCreateResourceConfiguration(config);
 
         if(StringUtils.isNotBlank(beanFactoryDefinition)) {
-    		factory = FactoryDefinitionParserFactory.getInstance(appContext).parse(beanFactoryDefinition);
+            String alias = null;
+            String definition = beanFactoryDefinition;
+
+            int aliasSplitterIndex = beanFactoryDefinition.indexOf(':');
+            if(aliasSplitterIndex > 0) {
+                alias = beanFactoryDefinition.substring(0, aliasSplitterIndex);
+                definition = beanFactoryDefinition.substring(aliasSplitterIndex+1);
+            }
+
+    		factory = FactoryDefinitionParserFactory.getInstance(alias, appContext).parse(definition);
     	}
 
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, beanClassName, appContext);
