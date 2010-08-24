@@ -1,8 +1,24 @@
 <?xml version="1.0"?>
+<!--
+  ~ Milyn - Copyright (C) 2006 - 2010
+  ~
+  ~  This library is free software; you can redistribute it and/or
+  ~  modify it under the terms of the GNU Lesser General Public
+  ~  License (version 2.1) as published by the Free Software
+  ~  Foundation.
+  ~
+  ~  This library is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~
+  ~  See the GNU Lesser General Public License for more details:
+  ~  http://www.gnu.org/licenses/lgpl.txt
+  -->
+
 <smooks-resource-list
 	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd"
-	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.4.xsd"
+	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.4.xsd">
 
 	<!--
 		This is the normal Javabean binding. Notice that we have a wiring on customer. The
@@ -23,8 +39,10 @@
 		will be added to the bean repository under the bean id "customer".
 		The locator know which method to call via the @Lookup annotation on the method. It knows
 		how to map the parameters because each method parameter is annotated with the @Param annotation.
+		Because only the order bean, in the previous resource, wants to wire the result the locator
+		will by default execute on the same selector as the previous resource.
 	-->
-    <dao:locator beanId="customer" dao="customer" lookup="id" lookupOnElement="order" onNoResult="EXCEPTION" >
+    <dao:locator beanId="customer" dao="customer" lookup="id" onNoResult="EXCEPTION" >
     	<dao:params>
     		<dao:value name="id" data="customer" decoder="Integer"/>
     	</dao:params>
@@ -55,6 +73,6 @@
 		knows which method it needs to call via the @Persist annotation on the method.
 		The insertOrder method is responsible for inserting the Order.
 	-->
-	<dao:inserter beanId="order" dao="order" insertOnElement="order" />
+	<dao:inserter beanId="order" dao="order" />
 
 </smooks-resource-list>
