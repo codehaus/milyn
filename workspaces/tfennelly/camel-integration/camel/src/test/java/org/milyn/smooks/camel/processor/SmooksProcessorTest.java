@@ -38,7 +38,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 
-public class SmooksProcessor2Test extends CamelTestSupport {
+public class SmooksProcessorTest extends CamelTestSupport {
 
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
