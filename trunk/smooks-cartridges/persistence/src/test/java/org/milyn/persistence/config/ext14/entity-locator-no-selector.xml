@@ -16,15 +16,17 @@
   -->
 
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
-	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.4.xsd"
+	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.4.xsd">
 
-	<!-- The updater is set first to see if Smooks gets the ordering right because it
-	     needs to instantiate the String first. -->
+    <jb:bean beanId="theList" class="java.util.ArrayList" createOnElement="$document">
+        <jb:wiring beanIdRef="entity" />
+    </jb:bean>
 
-	<dao:updater beanId="toUpdate" updateOnElement="root" updateBefore="true" />
-
-	<jb:bindings class="java.lang.String" beanId="toUpdate" createOnElement="root" />
-
+	<dao:locator dao="some" lookup="test" beanId="entity" uniqueResult="true">
+        <dao:params type="POSITIONAL">
+			<dao:expression name="1">'value-1'</dao:expression>
+		</dao:params>
+    </dao:locator>
 
 </smooks-resource-list>
