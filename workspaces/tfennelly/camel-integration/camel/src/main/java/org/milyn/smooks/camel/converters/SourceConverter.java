@@ -25,41 +25,40 @@ import org.milyn.payload.JavaSource;
 import org.milyn.payload.JavaSourceWithoutEventStream;
 
 /**
- * SourceConverter is a Camel {@link Converter} that converts from different formats to 
- * {@link Source} instances.
- * </p>
+ * SourceConverter is a Camel {@link Converter} that converts from different
+ * formats to {@link Source} instances. </p>
  * 
  * @author Daniel Bevenius
  */
 @Converter
 public class SourceConverter
 {
-	private SourceConverter()
-	{
-	}
-	
-	@Converter
-	public static JavaSourceWithoutEventStream toJavaSourceWithoutEventStream(Object payload)
-	{
-		return new JavaSourceWithoutEventStream(payload);
-	}
-	
-	@Converter
-	public static JavaSource toJavaSource(Object payload)
-	{
-		return new JavaSource(payload);
-	}
-	
-	@Converter
-	public static Source toStreamSource(InputStream in)
-	{
-		return new StreamSource(in);
-	}
-	
-	@Converter
-	public static JavaSource toJavaSource(JavaResult result)
-	{
-		return new JavaSource(result.getResultMap().values());
-	}
-	
+    private SourceConverter()
+    {
+    }
+
+    @Converter
+    public static JavaSourceWithoutEventStream toJavaSourceWithoutEventStream(Object payload)
+    {
+        return new JavaSourceWithoutEventStream(payload);
+    }
+
+    @Converter
+    public static JavaSource toJavaSource(Object payload)
+    {
+        return new JavaSource(payload);
+    }
+
+    @Converter
+    public static Source toStreamSource(InputStream in)
+    {
+        return new StreamSource(in);
+    }
+
+    @Converter
+    public static JavaSource toJavaSource(JavaResult result)
+    {
+        return new JavaSource(result.getResultMap().values());
+    }
+
 }

@@ -20,32 +20,32 @@ import org.apache.camel.impl.ProcessorEndpoint;
 import org.milyn.smooks.camel.processor.SmooksProcessor;
 
 /**
- * SmooksEndpoint is a wrapper around a {@link SmooksProcessor} instance and adds 
- * lifecycle support by implementing Service. This enables a SmooksEndpoint
+ * SmooksEndpoint is a wrapper around a {@link SmooksProcessor} instance and
+ * adds lifecycle support by implementing Service. This enables a SmooksEndpoint
  * to be stopped and started.
  * <p/>
  * 
  * @author Daniel Bevenius
- *
+ * 
  */
 public class SmooksEndpoint extends ProcessorEndpoint implements Service
 {
-	private SmooksProcessor smooksProcesor;
-	
-	public SmooksEndpoint(String endpointUri, Component component, SmooksProcessor processor)
-	{
-		super(endpointUri, component, processor);
-		this.smooksProcesor = processor;
-	}
+    private SmooksProcessor smooksProcesor;
 
-	public void start() throws Exception
-	{
-		smooksProcesor.start();
-	}
+    public SmooksEndpoint(String endpointUri, Component component, SmooksProcessor processor)
+    {
+        super(endpointUri, component, processor);
+        this.smooksProcesor = processor;
+    }
 
-	public void stop() throws Exception
-	{
-		smooksProcesor.stop();
-	}
+    public void start() throws Exception
+    {
+        smooksProcesor.start();
+    }
+
+    public void stop() throws Exception
+    {
+        smooksProcesor.stop();
+    }
 
 }

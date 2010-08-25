@@ -25,76 +25,86 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
 
 /**
  * SmooksDataFormat is a Camel data format which is a pluggable transformer
- * capable of transforming from one dataformat to another. 
+ * capable of transforming from one dataformat to another.
  * <p/>
  * 
- * A smooks configuration for a SmooksDataFormat should not utilize Smooks features such
- * as routing that might allocated system resources. The reason for this is that there is
- * no functionality in the SmooksDataFormat which will close those resources. 
- * If you need to use these Smooks features please take a look at the {@link SmooksComponent} 
- * or {@link SmooksProcessor} as they hook into Camels lifecycle manegment and will close 
- * resources correctly.
+ * A smooks configuration for a SmooksDataFormat should not utilize Smooks
+ * features such as routing that might allocated system resources. The reason
+ * for this is that there is no functionality in the SmooksDataFormat which will
+ * close those resources. If you need to use these Smooks features please take a
+ * look at the {@link SmooksComponent} or {@link SmooksProcessor} as they hook
+ * into Camels lifecycle manegment and will close resources correctly.
  * <p/>
  * 
  * @author Christian Mueller
  * @author Daniel Bevenius
- *
+ * 
  */
-public class SmooksDataFormat2 implements DataFormat {
-    
+public class SmooksDataFormat2 implements DataFormat
+{
+
     public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
     private String resultBeanId;
-	private String resultType;
-	private SmooksProcessor processor;
-	
-    public SmooksDataFormat2(String smooksConfig, String resultType) throws Exception {
-    	this(smooksConfig, resultType, null);
+    private String resultType;
+    private SmooksProcessor processor;
+
+    public SmooksDataFormat2(String smooksConfig, String resultType) throws Exception
+    {
+        this(smooksConfig, resultType, null);
     }
-	
-    public SmooksDataFormat2(String smooksConfig, String resultType, String resultBeanId) throws Exception {
-    	this.resultType = resultType;
-    	this.resultBeanId = resultBeanId;
-    	createAndStartSmooksProcessor(smooksConfig);
+
+    public SmooksDataFormat2(String smooksConfig, String resultType, String resultBeanId) throws Exception
+    {
+        this.resultType = resultType;
+        this.resultBeanId = resultBeanId;
+        createAndStartSmooksProcessor(smooksConfig);
     }
-    
+
     private void createAndStartSmooksProcessor(String smooksConfig) throws Exception
     {
         processor = new SmooksProcessor(smooksConfig);
         processor.start();
     }
-    
-    public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception {
-        synchronized (processor) {
-        	setResultTypeOnProcessor(resultType, "org.milyn.payload.StringResult");
+
+    public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception
+    {
+        synchronized (processor)
+        {
+            setResultTypeOnProcessor(resultType, "org.milyn.payload.StringResult");
         }
-        
+
         processor.process(exchange);
-        
-        ExecutionContext executionContext = exchange.getOut().getHeader(SmooksProcessor.SMOOKS_EXECUTION_CONTEXT, ExecutionContext.class);
+
+        ExecutionContext executionContext = exchange.getOut().getHeader(SmooksProcessor.SMOOKS_EXECUTION_CONTEXT,
+                ExecutionContext.class);
         stream.write(exchange.getOut().getBody(String.class).getBytes(executionContext.getContentEncoding()));
     }
 
-	public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
-        synchronized (processor) {
-        	setResultTypeOnProcessor(resultType, "org.milyn.payload.JavaResult");
+    public Object unmarshal(Exchange exchange, InputStream stream) throws Exception
+    {
+        synchronized (processor)
+        {
+            setResultTypeOnProcessor(resultType, "org.milyn.payload.JavaResult");
         }
-        
+
         processor.process(exchange);
         exchange.setProperty(SMOOKS_DATA_FORMAT_RESULT_KEY, resultBeanId);
         return exchange.getOut().getBody();
     }
-    
+
     private void setResultTypeOnProcessor(String resultType, String defaultResultType)
     {
-    	String type = resultType != null ? resultType:defaultResultType;
+        String type = resultType != null ? resultType : defaultResultType;
         processor.setResultType(type);
     }
-    
-    public String getResultBeanId() {
+
+    public String getResultBeanId()
+    {
         return resultBeanId;
     }
 
-    public String getSmooksConfig() {
+    public String getSmooksConfig()
+    {
         return processor.getSmooksConfig();
     }
 

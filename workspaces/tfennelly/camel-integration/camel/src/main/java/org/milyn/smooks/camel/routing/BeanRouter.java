@@ -12,7 +12,7 @@
 
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
-*/
+ */
 package org.milyn.smooks.camel.routing;
 
 import java.io.IOException;
@@ -31,90 +31,108 @@ import org.milyn.delivery.sax.SAXVisitAfter;
  * Camel bean routing visitor.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
- * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
+ * @author <a
+ *         href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
-public class BeanRouter implements SAXVisitAfter, Consumer {
+public class BeanRouter implements SAXVisitAfter, Consumer
+{
 
-	@ConfigParam
-	private String beanId;
-	
-	@ConfigParam
-	private String toEndpoint;
-	
-	private ProducerTemplate producerTemplate;
-	
-	/**
-	 * Set the beanId of the bean to be routed.
-	 * @param beanId the beanId to set
-	 * @return This router instance.
-	 */
-	public BeanRouter setBeanId(String beanId) {
-		this.beanId = beanId;
-		return this;
-	}
+    @ConfigParam
+    private String beanId;
 
-	/**
-	 * Set the Camel endpoint to which the bean is to be routed.
-	 * @param toEndpoint the toEndpoint to set
-	 * @return This router instance.
-	 */
-	public BeanRouter setToEndpoint(String toEndpoint) {
-		this.toEndpoint = toEndpoint;
-		return this;
-	}
+    @ConfigParam
+    private String toEndpoint;
 
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
-	 */
-	public void visitAfter(SAXElement element, ExecutionContext smooksExecutionContext) throws SmooksException, IOException {
-		Object bean = getBeanFromExecutionContext(smooksExecutionContext, beanId);
-		Exchange exchange = getExchange(smooksExecutionContext);
-		try
-		{
-			setProducerTemplateFromContext(exchange.getContext());
-			producerTemplate.sendBody(toEndpoint, bean);
-		} 
-		catch (Exception e)
-		{
-			throw new SmooksException("Exception routing beanId '" + beanId +"' to endpoint '" + toEndpoint + "'.", e);
-		}
-	}
-	
-	private Object getBeanFromExecutionContext(ExecutionContext executionContext, String beanId)
-	{
-		Object bean = executionContext.getBeanContext().getBean(beanId);
-		if (bean == null)
-			throw new SmooksException("Exception routing beanId '" + beanId +"'. The bean was not found in the Smooks ExceutionContext.");
-		
-		return bean;
-	}
+    private ProducerTemplate producerTemplate;
 
-	private Exchange getExchange(ExecutionContext smooksExceutionContext)
-	{
-		Exchange exchange = (Exchange) smooksExceutionContext.getAttribute(Exchange.class);
-		if(exchange == null) {
-			throw new SmooksException("Camel Exchange has not set on Smooks ExecutionContext.");
-		}
-		return exchange;
-	}
+    /**
+     * Set the beanId of the bean to be routed.
+     * 
+     * @param beanId
+     *            the beanId to set
+     * @return This router instance.
+     */
+    public BeanRouter setBeanId(String beanId)
+    {
+        this.beanId = beanId;
+        return this;
+    }
 
-	private void setProducerTemplateFromContext(CamelContext camelContext)
-	{
-		if (producerTemplate == null)
-		{
-			this.producerTemplate = camelContext.createProducerTemplate();
-		}
-	}
-	
-	public void setProducerTempalate(ProducerTemplate producerTemplate)
-	{
-		this.producerTemplate = producerTemplate;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.Object)
-	 */
-	public boolean consumes(Object object) {
-		return beanId.equals(object);
-	}
+    /**
+     * Set the Camel endpoint to which the bean is to be routed.
+     * 
+     * @param toEndpoint
+     *            the toEndpoint to set
+     * @return This router instance.
+     */
+    public BeanRouter setToEndpoint(String toEndpoint)
+    {
+        this.toEndpoint = toEndpoint;
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax
+     * .SAXElement, org.milyn.container.ExecutionContext)
+     */
+    public void visitAfter(SAXElement element, ExecutionContext smooksExecutionContext) throws SmooksException,
+            IOException
+    {
+        Object bean = getBeanFromExecutionContext(smooksExecutionContext, beanId);
+        Exchange exchange = getExchange(smooksExecutionContext);
+        try
+        {
+            setProducerTemplateFromContext(exchange.getContext());
+            producerTemplate.sendBody(toEndpoint, bean);
+        } catch (Exception e)
+        {
+            throw new SmooksException("Exception routing beanId '" + beanId + "' to endpoint '" + toEndpoint + "'.", e);
+        }
+    }
+
+    private Object getBeanFromExecutionContext(ExecutionContext executionContext, String beanId)
+    {
+        Object bean = executionContext.getBeanContext().getBean(beanId);
+        if (bean == null)
+            throw new SmooksException("Exception routing beanId '" + beanId
+                    + "'. The bean was not found in the Smooks ExceutionContext.");
+
+        return bean;
+    }
+
+    private Exchange getExchange(ExecutionContext smooksExceutionContext)
+    {
+        Exchange exchange = (Exchange) smooksExceutionContext.getAttribute(Exchange.class);
+        if (exchange == null)
+        {
+            throw new SmooksException("Camel Exchange has not set on Smooks ExecutionContext.");
+        }
+        return exchange;
+    }
+
+    private void setProducerTemplateFromContext(CamelContext camelContext)
+    {
+        if (producerTemplate == null)
+        {
+            this.producerTemplate = camelContext.createProducerTemplate();
+        }
+    }
+
+    public void setProducerTempalate(ProducerTemplate producerTemplate)
+    {
+        this.producerTemplate = producerTemplate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.Object)
+     */
+    public boolean consumes(Object object)
+    {
+        return beanId.equals(object);
+    }
 }

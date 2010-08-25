@@ -25,32 +25,28 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
  * <p/>
  * 
  * Example usage:
+ * 
  * <pre>
- * from("direct:a")
- * .to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
+ * from(&quot;direct:a&quot;).to(&quot;smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult&quot;)
  * </pre>
  * 
  * @author Christian Mueller
  * @author Daniel Bevenius
- *
+ * 
  */
 public class SmooksComponent extends ResourceBasedComponent
 {
-	protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception
-	{
-		SmooksProcessor smooksProcessor = new SmooksProcessor(remaining);
-		configureSmooksProcessor(smooksProcessor, uri, remaining, parameters);
-		return new SmooksEndpoint(uri, this, smooksProcessor);
-	}
+    protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception
+    {
+        SmooksProcessor smooksProcessor = new SmooksProcessor(remaining);
+        configureSmooksProcessor(smooksProcessor, uri, remaining, parameters);
+        return new SmooksEndpoint(uri, this, smooksProcessor);
+    }
 
-	protected void configureSmooksProcessor(
-			SmooksProcessor smooksProcessor, 
-			String uri, 
-			String remaining, 
-			Map<String, Object> parameters)
-			throws Exception
-	{
-		setProperties(smooksProcessor, parameters);
-	}
+    protected void configureSmooksProcessor(SmooksProcessor smooksProcessor, String uri, String remaining,
+            Map<String, Object> parameters) throws Exception
+    {
+        setProperties(smooksProcessor, parameters);
+    }
 
 }

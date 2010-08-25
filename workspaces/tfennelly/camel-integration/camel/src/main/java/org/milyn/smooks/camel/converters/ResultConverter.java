@@ -31,85 +31,84 @@ import org.milyn.smooks.camel.dataformat.SmooksDataFormat2;
 import org.w3c.dom.Node;
 
 /**
- * ResultConverter converts from different {@link Result} types. 
- *  
+ * ResultConverter converts from different {@link Result} types.
+ * 
  * @author Daniel Bevenius
  */
 @Converter
 public class ResultConverter
 {
-	private ResultConverter()
-	{
-	}
-	
-	@Converter
-	public static Node toDocument(DOMResult domResult)
-	{
-		return domResult.getNode();
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Converter
-	public static List toList(JavaResult javaResult, Exchange exchange)
-	{
+    private ResultConverter()
+    {
+    }
+
+    @Converter
+    public static Node toDocument(DOMResult domResult)
+    {
+        return domResult.getNode();
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Converter
+    public static List toList(JavaResult javaResult, Exchange exchange)
+    {
         String resultKey = (String) exchange.getProperty(SmooksDataFormat2.SMOOKS_DATA_FORMAT_RESULT_KEY);
         if (resultKey != null)
         {
-			return (List) getResultsFromJavaResult(javaResult, resultKey);
-        }
-        else
+            return (List) getResultsFromJavaResult(javaResult, resultKey);
+        } else
         {
-			return (List) getSingleObjectFromJavaResult(javaResult);
+            return (List) getSingleObjectFromJavaResult(javaResult);
         }
-	}
-	
-	@Converter
-	public static Integer toInteger(JavaResult result)
-	{
-		return (Integer) getSingleObjectFromJavaResult(result);
-	}
-	
-	@Converter
-	public static Double toDouble(JavaResult result)
-	{
-		return (Double) getSingleObjectFromJavaResult(result);
-	}
-	
-	@Converter
-	public static String toString(StringResult result)
-	{
-		return result.getResult();
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Converter
-	public static Map toMap(JavaResult result, Exchange exchange)
-	{
-		Message outMessage = exchange.getOut();
-		Map<String, Object> resultBeans = result.getResultMap();
-		outMessage.setBody(resultBeans);
-		
-		Set<Entry<String, Object>> entrySet = resultBeans.entrySet();
-		for (Entry<String, Object> entry : entrySet)
-		{
-			outMessage.setBody(entry.getValue(), entry.getValue().getClass());
-		}
-		return resultBeans;
-	}
-	
-	private static Object getResultsFromJavaResult(JavaResult result, String resultKey)
-	{
-		Map<String, Object> resultMap = result.getResultMap();
-		return resultMap.get(resultKey);
-	}
-	
-	private static Object getSingleObjectFromJavaResult(JavaResult result)
-	{
-		Map<String, Object> resultMap = result.getResultMap();
-		if(resultMap.size() == 1) 
-		{
-			return resultMap.values().iterator().next();
-		}
-		return null;
-	}
+    }
+
+    @Converter
+    public static Integer toInteger(JavaResult result)
+    {
+        return (Integer) getSingleObjectFromJavaResult(result);
+    }
+
+    @Converter
+    public static Double toDouble(JavaResult result)
+    {
+        return (Double) getSingleObjectFromJavaResult(result);
+    }
+
+    @Converter
+    public static String toString(StringResult result)
+    {
+        return result.getResult();
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Converter
+    public static Map toMap(JavaResult result, Exchange exchange)
+    {
+        Message outMessage = exchange.getOut();
+        Map<String, Object> resultBeans = result.getResultMap();
+        outMessage.setBody(resultBeans);
+
+        Set<Entry<String, Object>> entrySet = resultBeans.entrySet();
+        for (Entry<String, Object> entry : entrySet)
+        {
+            outMessage.setBody(entry.getValue(), entry.getValue().getClass());
+        }
+        return resultBeans;
+    }
+
+    private static Object getResultsFromJavaResult(JavaResult result, String resultKey)
+    {
+        Map<String, Object> resultMap = result.getResultMap();
+        return resultMap.get(resultKey);
+    }
+
+    private static Object getSingleObjectFromJavaResult(JavaResult result)
+    {
+        Map<String, Object> resultMap = result.getResultMap();
+        if (resultMap.size() == 1)
+        {
+            return resultMap.values().iterator().next();
+        }
+        return null;
+    }
 }
