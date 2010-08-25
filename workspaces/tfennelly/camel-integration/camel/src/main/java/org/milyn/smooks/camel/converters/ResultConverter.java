@@ -14,6 +14,7 @@
  */
 package org.milyn.smooks.camel.converters;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
@@ -109,6 +111,19 @@ public class ResultConverter
         {
             return resultMap.values().iterator().next();
         }
+        return null;
+    }
+
+    @Converter
+    public static StreamSource toStreamSource(StringResult stringResult)
+    {
+        String result = stringResult.getResult();
+        if (result != null)
+        {
+            StringReader stringReader = new StringReader(result);
+            return new StreamSource(stringReader);
+        }
+        
         return null;
     }
 }
