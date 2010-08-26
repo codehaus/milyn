@@ -29,18 +29,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
-import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluator;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.util.DollarBraceDecoder;
@@ -81,12 +78,14 @@ import org.milyn.util.FreeMarkerTemplate;
  *      waiting for it to drop.
  * <li><i>closeOnCondition</i>: An MVEL expression. If it returns true then the output stream is closed on the visitAfter event
  * 		else it is kept open. If the expression is not set then output stream is closed by default.
+ * <li><i>append</i>: Will append to the file specified with the 'fileNamePattern' property. This is useful 
+ *      for example when you want to append to a single csv file.
  * </ul>
  * <p>
  * <b>When does a new file get created?</b><br>
  * As soon as an object tries to retrieve the Writer or the OutputStream from this OutputStreamResource and
  * the Stream isn't open then a new file is created. Using the 'closeOnCondition' property you can control
- * whenn a stream get closed. As long as the stream isn't closed, the same file is used to write too. At then
+ * when a stream get closed. As long as the stream isn't closed, the same file is used to write too. At then
  * end of the filter process the stream always gets closed. Nothing stays open.
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
@@ -112,6 +111,9 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String listFileNamePattern;
     private FreeMarkerTemplate listFileNameTemplate;
+    
+    @ConfigParam (use = ConfigParam.Use.OPTIONAL)
+    private boolean append;
 
     private String listFileNamePatternCtxKey;
 
@@ -171,6 +173,11 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         this.closeOnCondition = new MVELExpressionEvaluator();
         this.closeOnCondition.setExpression(closeOnCondition);
     }
+    
+    public FileOutputStreamResource setAppend(boolean append) {
+        this.append = append;
+        return this;
+    }
 
     @Initialize
     public void intialize() throws SmooksConfigurationException {
@@ -191,6 +198,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
             listFileNamePatternCtxKey = FileOutputStreamResource.class.getName() + "#" + listFileNamePattern;
         }
     }
+    
 
     @Override
 	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws SmooksRoutingException, IOException {
@@ -200,11 +208,16 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 
         assertTargetDirectoryOK(destinationDirectory);
         waitWhileAboveHighWaterMark(destinationDirectory);
-
-        final File tmpFile = File.createTempFile( "." + UUID.randomUUID().toString(), ".working", destinationDirectory );
-		final FileOutputStream fileOutputStream = new FileOutputStream( tmpFile , true );
-		executionContext.setAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName(), tmpFile );
-		return fileOutputStream;
+        
+        if (append) {
+	        File outputFile = new File(destinationDirectory, getOutputFileName(executionContext));
+	        return new FileOutputStream( outputFile , true );
+        } else {
+	        final File tmpFile = File.createTempFile( "." + UUID.randomUUID().toString(), ".working", destinationDirectory );
+	        final FileOutputStream fileOutputStream = new FileOutputStream( tmpFile , false );
+	        executionContext.setAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName(), tmpFile );
+	        return fileOutputStream;
+        }
 	}
 
     private void assertTargetDirectoryOK(File destinationDirectory) throws SmooksRoutingException {
@@ -267,9 +280,11 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         try {
             super.closeResource(executionContext);
         } finally {
-            File newFile = renameWorkingFile(executionContext);
-            if(newFile != null) {
-                addToListFile( executionContext, newFile );
+            if (!append) {
+                File newFile = renameWorkingFile(executionContext);
+                if(newFile != null) {
+                    addToListFile( executionContext, newFile );
+                }
             }
         }
 	}
@@ -284,12 +299,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
             return null;
         }
 
-        String newFileName;
-        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
-
-        //	BeanAccessor guarantees to return a beanMap... run the filename pattern
-        // through FreeMarker to generate the file name...
-        newFileName = fileNameTemplate.apply( beanMap );
+        String newFileName = getOutputFileName(executionContext);
 
         //	create a new file in the destination directory
         File newFile = new File( workingFile.getParentFile(), newFileName );
@@ -307,6 +317,12 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         workingFile.delete();
 
         return newFile;
+    }
+    
+    private String getOutputFileName(ExecutionContext executionContext)
+    {
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
+        return fileNameTemplate.apply( beanMap );
     }
 
     private void addToListFile( ExecutionContext executionContext, File newFile )

@@ -15,36 +15,43 @@
 
 package org.milyn.routing.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.milyn.FilterSettings;
+import org.milyn.Smooks;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.io.StreamUtils;
-import org.milyn.Smooks;
-import org.milyn.FilterSettings;
-import org.milyn.templating.freemarker.FreeMarkerTemplateProcessor;
-import org.milyn.templating.TemplatingConfiguration;
-import org.milyn.templating.OutputTo;
+import org.milyn.io.FileUtils;
 import org.milyn.javabean.Bean;
 import org.milyn.payload.StringSource;
+import org.milyn.templating.OutputTo;
+import org.milyn.templating.TemplatingConfiguration;
+import org.milyn.templating.freemarker.FreeMarkerTemplateProcessor;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-import junit.framework.TestCase;
 
 /**
  * Unit test for {@link FileOutputStreamResource}
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  */
-public class FileOutputStreamResourceTest extends TestCase
+public class FileOutputStreamResourceTest 
 {
 	private String resourceName = "testResourceName";
 	private String fileNamePattern = "testFileName";
@@ -52,53 +59,63 @@ public class FileOutputStreamResourceTest extends TestCase
 	private String listFileName = "testListFileName";
 	private FileOutputStreamResource resource = new FileOutputStreamResource();
 	private SmooksResourceConfiguration config;
+    private File file1 = new File("target/config-01-test/1/1.xml");
+    private File file2 = new File("target/config-01-test/2/2.xml");
+    private File file3 = new File("target/config-01-test/3/3.xml");
 	
-	public void test_configure()
-	{
+	@Before
+    public void setUp() throws Exception {
+        config = createConfig( resourceName, fileNamePattern, destinationDirectory, listFileName);
         Configurator.configure( resource, config, new MockApplicationContext() );
-        
-        assertEquals( resourceName, resource.getResourceName() );
+        deleteFiles();
+    }
+
+    @Test
+	public void configure()
+	{
+        assertEquals(resourceName, resource.getResourceName() );
 	}
 	
-	public void test_visit() throws IOException
+	@Test
+	public void visit() throws Exception
 	{
-        Configurator.configure( resource, config, new MockApplicationContext() );
-        
 		MockExecutionContext executionContext = new MockExecutionContext();
-		resource.visitBefore( (Element)null, executionContext );
+		resource.visitBefore((Element)null, executionContext );
 		
-		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext );
-		assertNotNull( outputStream );
-		assertTrue( outputStream instanceof FileOutputStream );
+		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream(resource.getResourceName(), executionContext );
+		assertTrue(outputStream instanceof FileOutputStream );
 		
 		resource.executeVisitLifecycleCleanup(executionContext );
 		
-		File file = new File ( destinationDirectory, fileNamePattern );
-		assertTrue( file.exists() );
-		
-		List<String> listFileNames = FileListAccessor.getListFileNames( executionContext );
-		assertNotNull( listFileNames );
-		assertTrue( listFileNames.size() == 1 );
-		
-		for (String listFile : listFileNames)
-		{
-			List<String> fileList = FileListAccessor.getFileList( executionContext, listFile );
-    		assertTrue( fileList.size() == 1 );
-			for (String fileName : fileList)
-			{
-				File file2 = new File( fileName );
-        		assertEquals( fileNamePattern, file2.getName() );
-				file2.delete();
-			}
-			new File( listFile ).delete();
-		}
+		assertThatFilesWereGenerated(executionContext);
 	}
-
-    File file1 = new File("target/config-01-test/1/1.xml");
-    File file2 = new File("target/config-01-test/2/2.xml");
-    File file3 = new File("target/config-01-test/3/3.xml");
+	
+	private void assertThatFilesWereGenerated(ExecutionContext executionContext) throws Exception
+	{
+	    File file = new File ( destinationDirectory, fileNamePattern );
+        assertTrue( file.exists() );
+        
+        List<String> listFileNames = FileListAccessor.getListFileNames( executionContext );
+        assertNotNull( listFileNames );
+        assertTrue( listFileNames.size() == 1 );
+        
+        for (String listFile : listFileNames)
+        {
+            List<String> fileList = FileListAccessor.getFileList( executionContext, listFile );
+            assertTrue( fileList.size() == 1 );
+            for (String fileName : fileList)
+            {
+                File file2 = new File( fileName );
+                assertEquals( fileNamePattern, file2.getName() );
+                file2.delete();
+            }
+            new File( listFile ).delete();
+        }
+	    
+	}
     
-    public void test_config_01() throws IOException, SAXException {
+    @Test
+    public void testConfig01() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config-01.xml"));
 
         try {
@@ -112,7 +129,8 @@ public class FileOutputStreamResourceTest extends TestCase
         }
     }
 
-    public void test_config_01_programmatic() throws IOException, SAXException {
+    @Test
+    public void config01Programmatic() throws IOException, SAXException {
         Smooks smooks = new Smooks();
 
         try {
@@ -131,17 +149,42 @@ public class FileOutputStreamResourceTest extends TestCase
             smooks.close();
         }
     }
+    
+    @Test
+    public void testAppendingToOutputFile() throws Exception {
+        final Smooks smooks = new Smooks();
+        final String outputFileName = "appended.txt";
+        final String outputStreamRef = "fileOS";
+        final File destinationDir = new File("target/config-01-test");
+	    final File outputFile = new File(destinationDir, outputFileName);
+
+        try {
+            smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+            smooks.addVisitor(new Bean(HashMap.class, "object").bindTo("a", "a"));
+            smooks.addVisitor(new FreeMarkerTemplateProcessor(new TemplatingConfiguration("${object.a}")
+                    .setUsage(OutputTo.stream(outputStreamRef))), "a");
+            smooks.addVisitor(new FileOutputStreamResource()
+                    .setAppend(true)
+                    .setFileNamePattern(outputFileName)
+                    .setDestinationDirectoryPattern(destinationDir.getAbsolutePath())
+                    .setResourceName(outputStreamRef)
+                    , "a");
+
+            smooks.filterSource(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+
+            assertEquals("123", getFileContents(outputFile));
+        } finally {
+            smooks.close();
+            outputFile.delete();
+        }
+    }
 
     private String getFileContents(File file) throws IOException {
-        return new String(StreamUtils.readFile(file));
+        return new String(FileUtils.readFile(file));
     }
 
-    protected void setUp() throws Exception {
-        config = createConfig( resourceName, fileNamePattern, destinationDirectory, listFileName);
-        deleteFiles();
-    }
-
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         deleteFiles();
     }
 
@@ -151,8 +194,6 @@ public class FileOutputStreamResourceTest extends TestCase
         file3.delete();
     }
 
-    //	private
-	
 	private SmooksResourceConfiguration createConfig( 
 			final String resourceName, 
 			final String fileName ,
