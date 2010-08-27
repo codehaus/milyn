@@ -35,53 +35,53 @@ import org.w3c.dom.Node;
 /**
  * Unit test for {@link SmooksComponent}.
  * 
- * @author 
- *
+ * @author Christian Mueller
+ * @author Daniel Bevenius
+ * 
  */
 public class SmooksComponentTest extends CamelTestSupport
 {
-	@EndpointInject(uri = "mock:result")
-	private MockEndpoint result;
+    @EndpointInject(uri = "mock:result")
+    private MockEndpoint result;
 
-	@BeforeClass
-	public static void setup()
-	{
-		XMLUnit.setIgnoreWhitespace(true);
-	}
+    @BeforeClass
+    public static void setup()
+    {
+        XMLUnit.setIgnoreWhitespace(true);
+    }
 
-	@Test
-	public void unmarshalEDI() throws Exception
-	{
-		result.expectedMessageCount(1);
-		assertMockEndpointsSatisfied();
+    @Test
+    public void unmarshalEDI() throws Exception
+    {
+        result.expectedMessageCount(1);
+        assertMockEndpointsSatisfied();
 
-		Exchange exchange = result.assertExchangeReceived(0);
-		
-		assertIsInstanceOf(Document.class, exchange.getIn().getBody());
-		assertXMLEqual(getExpectedOrderXml(), getBodyAsString(exchange));
-	}
+        Exchange exchange = result.assertExchangeReceived(0);
 
-	private InputStreamReader getExpectedOrderXml()
-	{
-		return new InputStreamReader(getClass().getResourceAsStream("/xml/expected-order.xml"));
-	}
-	
-	private StringReader getBodyAsString(Exchange exchange)
-	{
-		return new StringReader(exchange.getIn().getBody(String.class));
-	}
+        assertIsInstanceOf(Document.class, exchange.getIn().getBody());
+        assertXMLEqual(getExpectedOrderXml(), getBodyAsString(exchange));
+    }
 
-	protected RouteBuilder createRouteBuilder() throws Exception
-	{
-		return new RouteBuilder()
-		{
-			public void configure() throws Exception
-			{
-				from("file://src/test/data?noop=true")
-				.to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
-				.convertBodyTo(Node.class)
-				.to("mock:result");
-			}
-		};
-	}
+    private InputStreamReader getExpectedOrderXml()
+    {
+        return new InputStreamReader(getClass().getResourceAsStream("/xml/expected-order.xml"));
+    }
+
+    private StringReader getBodyAsString(Exchange exchange)
+    {
+        return new StringReader(exchange.getIn().getBody(String.class));
+    }
+
+    protected RouteBuilder createRouteBuilder() throws Exception
+    {
+        return new RouteBuilder()
+        {
+            public void configure() throws Exception
+            {
+                from("file://src/test/data?noop=true")
+                        .to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
+                        .convertBodyTo(Node.class).to("mock:result");
+            }
+        };
+    }
 }
