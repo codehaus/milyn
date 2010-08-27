@@ -40,7 +40,7 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
  * @author Daniel Bevenius
  * 
  */
-public class SmooksDataFormat2 implements DataFormat
+public class SmooksDataFormat implements DataFormat
 {
 
     public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
@@ -48,12 +48,12 @@ public class SmooksDataFormat2 implements DataFormat
     private String resultType;
     private SmooksProcessor processor;
 
-    public SmooksDataFormat2(String smooksConfig, String resultType) throws Exception
+    public SmooksDataFormat(String smooksConfig, String resultType) throws Exception
     {
         this(smooksConfig, resultType, null);
     }
 
-    public SmooksDataFormat2(String smooksConfig, String resultType, String resultBeanId) throws Exception
+    public SmooksDataFormat(String smooksConfig, String resultType, String resultBeanId) throws Exception
     {
         this.resultType = resultType;
         this.resultBeanId = resultBeanId;

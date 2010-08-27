@@ -79,8 +79,8 @@ public class SmooksComponentTest extends CamelTestSupport
             public void configure() throws Exception
             {
                 from("file://src/test/data?noop=true")
-                        .to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
-                        .convertBodyTo(Node.class).to("mock:result");
+                .to("smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult")
+                .convertBodyTo(Node.class).to("mock:result");
             }
         };
     }

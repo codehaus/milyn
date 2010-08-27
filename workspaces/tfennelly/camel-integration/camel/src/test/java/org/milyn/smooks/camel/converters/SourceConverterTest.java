@@ -18,6 +18,9 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
+import org.apache.camel.TypeConverter;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.junit.Before;
 import org.junit.Test;
 import org.milyn.payload.JavaSourceWithoutEventStream;
 
@@ -30,11 +33,19 @@ import org.milyn.payload.JavaSourceWithoutEventStream;
  */
 public class SourceConverterTest
 {
+    private TypeConverter typeConverter;
+    
+    @Before
+    public void getTypeConverter()
+    {
+        DefaultCamelContext camelContext = new DefaultCamelContext();
+        typeConverter = camelContext.getTypeConverter();
+    }
 	
 	@Test
 	public void toJavaSourceWithoutEventStream()
 	{
-		JavaSourceWithoutEventStream javaSource = SourceConverter.toJavaSourceWithoutEventStream("dummyPayload");
+		JavaSourceWithoutEventStream javaSource = typeConverter.convertTo(JavaSourceWithoutEventStream.class, "dummyPayload");
 		assertFalse(javaSource.isEventStreamRequired());
 		Map<String, Object> beans = javaSource.getBeans();
 		String payload = (String) beans.get("string");
