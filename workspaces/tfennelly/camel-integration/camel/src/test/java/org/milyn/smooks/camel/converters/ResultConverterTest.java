@@ -58,7 +58,7 @@ public class ResultConverterTest
     private StringResult createStringResult(final String string)
     {
         StringWriter stringWriter = new StringWriter();
-        stringWriter.write("Bajja");
+        stringWriter.write(string);
         StringResult stringResult = new StringResult();
         stringResult.setWriter(stringWriter);
         return stringResult;
