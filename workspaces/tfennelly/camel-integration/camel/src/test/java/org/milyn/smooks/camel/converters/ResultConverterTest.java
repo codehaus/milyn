@@ -21,6 +21,9 @@ import java.io.StringWriter;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.camel.TypeConverter;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.junit.Before;
 import org.junit.Test;
 import org.milyn.payload.StringResult;
 
@@ -32,18 +35,33 @@ import org.milyn.payload.StringResult;
  */
 public class ResultConverterTest
 {
-    @Test
-    public void stringResultToStreamSource() throws Exception
+    private TypeConverter typeConverter;
+
+    @Before
+    public void getTypeConverter()
     {
-        StringResult stringResult = new StringResult();
+        DefaultCamelContext camelContext = new DefaultCamelContext();
+        typeConverter = camelContext.getTypeConverter();
+    }
+    
+    @Test
+    public void convertStringResultToStreamSource() throws Exception
+    {
+        StringResult stringResult = createStringResult("Bajja");
+        
+        StreamSource streamSource = typeConverter.convertTo(StreamSource.class, stringResult);
+        
+        BufferedReader reader = new BufferedReader(streamSource.getReader());
+        assertEquals("Bajja", reader.readLine());
+    }
+    
+    private StringResult createStringResult(final String string)
+    {
         StringWriter stringWriter = new StringWriter();
         stringWriter.write("Bajja");
+        StringResult stringResult = new StringResult();
         stringResult.setWriter(stringWriter);
-        
-        StreamSource streamSource = ResultConverter.toStreamSource(stringResult);
-        BufferedReader reader = new BufferedReader(streamSource.getReader());
-        String readLine = reader.readLine();
-        assertEquals("Bajja", readLine);
+        return stringResult;
     }
 
 }

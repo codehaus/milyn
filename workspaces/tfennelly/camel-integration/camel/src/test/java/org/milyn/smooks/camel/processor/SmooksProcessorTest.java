@@ -76,7 +76,7 @@ public class SmooksProcessorTest extends CamelTestSupport
     }
 
     @Test
-    public void unmarshalEDI() throws Exception
+    public void process() throws Exception
     {
         assertOneProcessedMessage();
     }
