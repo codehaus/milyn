@@ -30,7 +30,7 @@ import java.util.Properties;
  *
  * @author bardl
  */
-public class ValueNode extends MappingNode {
+public class ValueNode extends MappingNode implements IValueNode {
 
     private String dataType;
     private List<Map.Entry<String,String>> parameters;
@@ -49,6 +49,9 @@ public class ValueNode extends MappingNode {
 		maxLength = 1;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getDataType()
+	 */
 	public String getDataType() {
         return dataType;
     }
@@ -65,14 +68,23 @@ public class ValueNode extends MappingNode {
         }
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getDecoder()
+	 */
     public DataDecoder getDecoder() {
         return decoder;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getTypeClass()
+	 */
     public Class<?> getTypeClass() {
         return typeClass;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getTypeParameters()
+	 */
     public List<Map.Entry<String,String>> getTypeParameters() {
         return parameters;
     }
@@ -95,6 +107,9 @@ public class ValueNode extends MappingNode {
         }
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getDataTypeParametersString()
+	 */
     public String getDataTypeParametersString() {
         if(parameters == null) {
             return null;
@@ -114,6 +129,9 @@ public class ValueNode extends MappingNode {
         return builder.toString();
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getMinLength()
+	 */
     public Integer getMinLength() {
         return minLength;
     }
@@ -122,6 +140,9 @@ public class ValueNode extends MappingNode {
         this.minLength = minLength;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#getMaxLength()
+	 */
     public Integer getMaxLength() {
         return maxLength;
     }
@@ -130,6 +151,9 @@ public class ValueNode extends MappingNode {
         this.maxLength = maxLength;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IValueNode#isValidForType(java.lang.String)
+	 */
     public void isValidForType(String value) throws DataDecodeException {
         decoder.decode(value);
     }

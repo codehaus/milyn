@@ -49,7 +49,7 @@ public class EdimapWriter {
         doc = docBuilderFactory.newDocumentBuilder().newDocument();
     }
 
-    public static void write(Edimap edimap, Writer writer) throws IOException {
+    public static void write(IEdimap edimap, Writer writer) throws IOException {
         try {
             EdimapWriter edimapWriter = new EdimapWriter();
 
@@ -64,14 +64,14 @@ public class EdimapWriter {
         }
     }
 
-    private void write(Edimap edimap) {
+    private void write(IEdimap edimap) {
         Element edimapEl = newElement("edimap", doc);
 
         addImports(edimap.getImports(), edimapEl);
         addDescription(edimap.getDescription(), edimapEl);
         addDelimiters(edimap.getDelimiters(), edimapEl);
 
-        SegmentGroup segments = edimap.getSegments();
+        ISegmentGroup segments = edimap.getSegments();
         Element segmentsEl = newElement("segments", edimapEl, segments);
 
         mapBeanProperties(segments, segmentsEl, "xmltag");
@@ -92,10 +92,10 @@ public class EdimapWriter {
         mapBeanProperties(delimiters, newElement("delimiters", edimapEl), "segment", "field", "component", "subComponent|sub-component", "escape", "fieldRepeat");
     }
 
-    private void addChildSegments(SegmentGroup segmentGroup, Element parentSegment) {
-        List<SegmentGroup> childSegments = segmentGroup.getSegments();
+    private void addChildSegments(ISegmentGroup segmentGroup, Element parentSegment) {
+        List<ISegmentGroup> childSegments = segmentGroup.getSegments();
 
-        for(SegmentGroup childSegment : childSegments) {
+        for(ISegmentGroup childSegment : childSegments) {
             Element segmentEl;
 
             if(childSegment instanceof Segment) {
@@ -187,7 +187,7 @@ public class EdimapWriter {
         return element;
     }
 
-    private Element newElement(String name, Node parent, MappingNode mappingNode) {
+    private Element newElement(String name, Node parent, IMappingNode mappingNode) {
         Element element = newElement(name, parent);
 
         if(mappingNode != null && mappingNode.getDocumentation() != null) {

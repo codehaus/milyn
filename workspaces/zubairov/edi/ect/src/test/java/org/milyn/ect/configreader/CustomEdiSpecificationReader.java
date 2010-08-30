@@ -20,6 +20,7 @@ import org.milyn.ect.EdiParseException;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.model.internal.SegmentGroup;
 
 import java.io.InputStream;
@@ -44,7 +45,7 @@ public class CustomEdiSpecificationReader implements EdiSpecificationReader {
         return new Properties();
     }
 
-    public Edimap getDefinitionModel() throws IOException {
+    public IEdimap getDefinitionModel() throws IOException {
         return createEdimap();
     }
 

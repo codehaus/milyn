@@ -163,15 +163,15 @@ public class EdiConvertionTool {
         return archive;
     }
 
-    private static void removeDuplicateSegments(SegmentGroup segmentGroup) {
+    private static void removeDuplicateSegments(ISegmentGroup segmentGroup) {
         if(segmentGroup instanceof Segment) {
             removeDuplicateFields(((Segment)segmentGroup).getFields()); 
         }
 
-        List<SegmentGroup> segments = segmentGroup.getSegments();
+        List<ISegmentGroup> segments = segmentGroup.getSegments();
         if(segments != null) {
             removeDuplicateMappingNodes(segments);
-            for(SegmentGroup childSegmentGroup : segments) {
+            for(ISegmentGroup childSegmentGroup : segments) {
                 removeDuplicateSegments(childSegmentGroup);
             }
         }
@@ -183,7 +183,7 @@ public class EdiConvertionTool {
             removeDuplicateMappingNodes(fields);
 
             // Drill down into the field components...
-            for(Field field : fields) {
+            for(IField field : fields) {
                 removeDuplicateComponents(field.getComponents());
             }
         }
@@ -195,7 +195,7 @@ public class EdiConvertionTool {
             removeDuplicateMappingNodes(components);
 
             // Remove duplicate sub components from each component...
-            for(Component component : components) {
+            for(IComponent component : components) {
                 removeDuplicateMappingNodes(component.getSubComponents());
             }
         }
@@ -237,7 +237,7 @@ public class EdiConvertionTool {
         Set<String> nodeNames = new LinkedHashSet<String>();
 
         for(Object mappingNode : mappingNodes) {
-            String xmlTag = ((MappingNode) mappingNode).getXmltag();
+            String xmlTag = ((IMappingNode) mappingNode).getXmltag();
             if(xmlTag != null) {
                 nodeNames.add(xmlTag);
             }
@@ -250,7 +250,7 @@ public class EdiConvertionTool {
         int nodeCount = 0;
 
         for(Object mappingNode : mappingNodes) {
-            String xmlTag = ((MappingNode) mappingNode).getXmltag();
+            String xmlTag = ((IMappingNode) mappingNode).getXmltag();
             if(xmlTag != null && xmlTag.equals(nodeName)) {
                 nodeCount++;
             }

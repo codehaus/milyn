@@ -403,34 +403,34 @@ public class EDIParser implements XMLReader {
      * Map a list of EDI Segments to SAX events.
      * <p/>
      * Reads the segments from the input stream and maps them based on the supplied list of expected segments.
-	 * @param expectedSegments The list of expected segments.
+	 * @param list The list of expected segments.
      * @throws IOException Error reading an EDI segment from the input stream.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapSegments(List<SegmentGroup> expectedSegments) throws IOException, SAXException {
-        mapSegments(expectedSegments, null);
+	private void mapSegments(List<ISegmentGroup> list) throws IOException, SAXException {
+        mapSegments(list, null);
     }
 
     /**
      * Map a list of EDI Segments to SAX events.
      * <p/>
      * Reads the segments from the input stream and maps them based on the supplied list of expected segments.
-	 * @param expectedSegments The list of expected segments.
+	 * @param list The list of expected segments.
      * @param preLoadedSegmentFields Preloaded segment.  This can happen in the case of a segmentGroup.
      * @throws IOException Error reading an EDI segment from the input stream.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapSegments(List<SegmentGroup> expectedSegments, String[] preLoadedSegmentFields) throws IOException, SAXException {
+	private void mapSegments(List<ISegmentGroup> list, String[] preLoadedSegmentFields) throws IOException, SAXException {
 		int segmentMappingIndex = 0; // The current index within the supplied segment list.
 		int segmentProcessingCount = 0; // The number of times the current segment definition from the supplied segment list has been applied to message segments on the incomming EDI message.
         String[] currentSegmentFields = preLoadedSegmentFields;
 
-        if(expectedSegments.size() == 0) {
+        if(list.size() == 0) {
 			return;
 		}
 
-		while(segmentMappingIndex < expectedSegments.size() && segmentReader.hasCurrentSegment()) {
-			SegmentGroup expectedSegmentGroup = expectedSegments.get(segmentMappingIndex);
+		while(segmentMappingIndex < list.size() && segmentReader.hasCurrentSegment()) {
+			ISegmentGroup expectedSegmentGroup = list.get(segmentMappingIndex);
             int minOccurs = expectedSegmentGroup.getMinOccurs();
             int maxOccurs = expectedSegmentGroup.getMaxOccurs();
 

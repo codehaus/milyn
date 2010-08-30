@@ -21,6 +21,7 @@ import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.util.ClassUtil;
@@ -94,7 +95,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         return properties;
     }
 
-    private void addMissingDefinitions(Edimap definitionModel) {
+    private void addMissingDefinitions(IEdimap definitionModel) {
         Segment ugh = new Segment();
         Segment ugt = new Segment();
 
@@ -141,7 +142,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
 
             edifactModel = UnEdifactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
             edifactModel.setDescription(EDIUtils.MODEL_SET_DEFINITIONS_DESCRIPTION);
-            edifactModel.getSegments().setXmltag("DefinitionMap");
+            ((Segment)edifactModel.getSegments()).setXmltag("DefinitionMap");
             edifactModel.setDelimiters(UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
         } finally {
             if (dataISR != null) {

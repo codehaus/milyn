@@ -24,13 +24,13 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Edimap {
+public class Edimap implements IEdimap {
 
 	private URI src;
     private List<Import> imports;
     private Description description;
     private Delimiters delimiters;
-    private SegmentGroup segments;
+    private ISegmentGroup segments;
 
     public Edimap() {    	
     }
@@ -39,10 +39,16 @@ public class Edimap {
     	this.src = src;
     }
     
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IEdimap#getSrc()
+	 */
     public URI getSrc() {
     	return src;
     }
     
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IEdimap#getImports()
+	 */
     public List<Import> getImports() {
         if (imports == null) {
             imports = new ArrayList<Import>();
@@ -50,6 +56,9 @@ public class Edimap {
         return this.imports;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IEdimap#getDescription()
+	 */
     public Description getDescription() {
         return description;
     }
@@ -58,6 +67,9 @@ public class Edimap {
         this.description = value;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IEdimap#getDelimiters()
+	 */
     public Delimiters getDelimiters() {
         return delimiters;
     }
@@ -66,7 +78,10 @@ public class Edimap {
         this.delimiters = value;
     }
 
-    public SegmentGroup getSegments() {
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IEdimap#getSegments()
+	 */
+    public ISegmentGroup getSegments() {
         return segments;
     }
 

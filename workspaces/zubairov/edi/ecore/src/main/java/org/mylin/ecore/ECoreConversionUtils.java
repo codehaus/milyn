@@ -17,10 +17,12 @@ import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
-import org.milyn.edisax.model.internal.MappingNode;
+import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.IMappingNode;
+import org.milyn.edisax.model.internal.ISegmentGroup;
+import org.milyn.edisax.model.internal.IValueNode;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.model.internal.SegmentGroup;
-import org.milyn.edisax.model.internal.ValueNode;
 
 /**
  * Utility class that convert EDI model to ECore model elements
@@ -65,7 +67,7 @@ public class ECoreConversionUtils {
 	 * @param mappingModel
 	 * @return
 	 */
-	public static EPackage mappingModelToEPackage(Edimap mappingModel) {
+	public static EPackage mappingModelToEPackage(IEdimap mappingModel) {
 		final EPackage pkg = EcoreFactory.eINSTANCE.createEPackage();
 		Description desc = mappingModel.getDescription();
 		pkg.setName(desc.getName());
@@ -113,7 +115,7 @@ public class ECoreConversionUtils {
 	 * @param grp
 	 * @return
 	 */
-	public static EClass segmentGroupToEClass(SegmentGroup grp) {
+	public static EClass segmentGroupToEClass(ISegmentGroup grp) {
 		EClass clazz = EcoreFactory.eINSTANCE.createEClass();
 		clazz.setName(grp.getXmltag());
 		addMappingInformation(clazz, grp);
@@ -121,7 +123,7 @@ public class ECoreConversionUtils {
 	}
 
 	private static void addMappingInformation(EModelElement element,
-			MappingNode node) {
+			IMappingNode node) {
 		if (node.getDocumentation() != null) {
 			annotate(element, "documentation", node.getDocumentation());
 		}
@@ -288,7 +290,7 @@ public class ECoreConversionUtils {
 	}
 
 	private static void annotateValueNode(EModelElement element,
-			ValueNode valueNode) {
+			IValueNode valueNode) {
 		annotate(element, "datatype", valueNode.getDataType());
 		annotate(element, "maxLength", String.valueOf(valueNode.getMaxLength()));
 		annotate(element, "minLength", String.valueOf(valueNode.getMinLength()));

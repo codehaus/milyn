@@ -16,14 +16,14 @@
 
 package org.milyn.edisax;
 
-import org.milyn.edisax.model.EDIConfigDigester;
-import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Segment;
-import org.milyn.edisax.model.internal.SegmentGroup;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.util.List;
+
+import org.milyn.edisax.model.EDIConfigDigester;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.ISegmentGroup;
+import org.milyn.edisax.model.internal.Segment;
+import org.xml.sax.SAXException;
 
 /**
  * @author tfennelly
@@ -61,7 +61,7 @@ public class EDIParserTest extends AbstractEDIParserTestCase {
 		assertEquals("~", map.getDelimiters().getSubComponent());
 		
 		assertEquals("message-x", map.getEdimap().getSegments().getXmltag());
-		List<SegmentGroup> segments = map.getEdimap().getSegments().getSegments();
+		List<ISegmentGroup> segments = map.getEdimap().getSegments().getSegments();
 		assertEquals(2, segments.size());
 
         Segment segment = (Segment) segments.get(0);

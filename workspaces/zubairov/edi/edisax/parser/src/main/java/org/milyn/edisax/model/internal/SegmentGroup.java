@@ -24,27 +24,39 @@ import java.util.regex.Pattern;
  * 
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class SegmentGroup extends MappingNode {
+public class SegmentGroup extends MappingNode implements ISegmentGroup {
 
-    private List<SegmentGroup> segments;
+    private List<ISegmentGroup> segments;
     private Integer minOccurs;
     private Integer maxOccurs;
 
-    public List<SegmentGroup> getSegments() {
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegmentGroup#getSegments()
+	 */
+    public List<ISegmentGroup> getSegments() {
         if (segments == null) {
-            segments = new ArrayList<SegmentGroup>();
+            segments = new ArrayList<ISegmentGroup>();
         }
         return this.segments;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegmentGroup#getSegcode()
+	 */
     public String getSegcode() {
         return segments.get(0).getSegcode();
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegmentGroup#getSegcodePattern()
+	 */
     public Pattern getSegcodePattern() {
         return segments.get(0).getSegcodePattern();
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegmentGroup#getMinOccurs()
+	 */
     public int getMinOccurs() {
         if (minOccurs == null) {
             return  1;
@@ -57,6 +69,9 @@ public class SegmentGroup extends MappingNode {
         this.minOccurs = value;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegmentGroup#getMaxOccurs()
+	 */
     public int getMaxOccurs() {
         if (maxOccurs == null) {
             return  1;

@@ -16,14 +16,14 @@
 
 package org.milyn.edisax.model.internal;
 
-public class MappingNode {
+public class MappingNode implements IMappingNode {
 
     public static final String INDEXED_NODE_SEPARATOR = "_-_-";
 
     private String xmltag;
     private String nodeTypeRef;
     private String documentation;
-    private MappingNode parent;
+    private IMappingNode parent;
     
 	public MappingNode() {
 	}
@@ -32,6 +32,9 @@ public class MappingNode {
 		this.xmltag = xmltag;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IMappingNode#getXmltag()
+	 */
 	public String getXmltag() {
         return xmltag;
     }
@@ -40,6 +43,9 @@ public class MappingNode {
         this.xmltag = value;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IMappingNode#getNodeTypeRef()
+	 */
     public String getNodeTypeRef() {
         return nodeTypeRef;
     }
@@ -48,6 +54,9 @@ public class MappingNode {
         this.nodeTypeRef = nodeTypeRef;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IMappingNode#getDocumentation()
+	 */
     public String getDocumentation() {
         return documentation;
     }
@@ -56,14 +65,20 @@ public class MappingNode {
         this.documentation = documentation;
     }
 
-    public MappingNode getParent() {
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IMappingNode#getParent()
+	 */
+    public IMappingNode getParent() {
         return parent;
     }
 
-    public void setParent(MappingNode parent) {
+    public void setParent(IMappingNode parent) {
         this.parent = parent;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IMappingNode#getJavaName()
+	 */
     public String getJavaName() {
         int separatorIndex = xmltag.indexOf(INDEXED_NODE_SEPARATOR);
 

@@ -15,26 +15,26 @@
 */
 package org.milyn.ect;
 
-import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.model.internal.IEdimap;
 
 /**
  * EdimapConfiguration
  * @author bardl
  */
 public class EdimapConfiguration {
-    private Edimap edimap;
+    private IEdimap edimap;
     private String filename;
 
-    public EdimapConfiguration(Edimap edimap, String filename) {
+    public EdimapConfiguration(IEdimap edimap, String filename) {
         this.edimap = edimap;
         this.filename = filename;
     }
 
-    public Edimap getEdimap() {
+    public IEdimap getEdimap() {
         return edimap;
     }
 
-    public void setEdimap(Edimap edimap) {
+    public void setEdimap(IEdimap edimap) {
         this.edimap = edimap;
     }
 

@@ -17,8 +17,8 @@
 package org.milyn.edisax;
 
 import org.xml.sax.SAXException;
-import org.milyn.edisax.model.internal.Edimap;
-import org.milyn.edisax.model.internal.MappingNode;
+import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.IMappingNode;
 
 /**
  * EDI message parsing exception.
@@ -27,7 +27,7 @@ import org.milyn.edisax.model.internal.MappingNode;
 public class EDIParseException extends SAXException {
 
 	private static final long serialVersionUID = 1L;
-    private MappingNode errorNode;
+    private IMappingNode errorNode;
     private int segmentNumber;
     private String[] segmentline; 
 
@@ -53,7 +53,7 @@ public class EDIParseException extends SAXException {
 	 * @param mappingModel The mapping model for the message on which the exception was encoutered.
 	 * @param message Exception message.
 	 */
-	public EDIParseException(Edimap mappingModel, String message) {
+	public EDIParseException(IEdimap mappingModel, String message) {
 		super(getMessagePrefix(mappingModel) + "  " + message);
 	}
 
@@ -63,7 +63,7 @@ public class EDIParseException extends SAXException {
 	 * @param message Exception message.
 	 * @param cause Exception cause.
 	 */
-	public EDIParseException(Edimap mappingModel, String message, Exception cause) {
+	public EDIParseException(IEdimap mappingModel, String message, Exception cause) {
 		super(getMessagePrefix(mappingModel) + "  " + message, cause);
 	}
 
@@ -75,7 +75,7 @@ public class EDIParseException extends SAXException {
      * @param segmentNumber the segment number where the error occured.
      * @param segmentLine the segment line where the error occured.
 	 */
-	public EDIParseException(String message, Exception cause, MappingNode mappingNode, int segmentNumber, String[] segmentLine) {
+	public EDIParseException(String message, Exception cause, IMappingNode mappingNode, int segmentNumber, String[] segmentLine) {
 		super(message, cause);
         this.errorNode = mappingNode;
         this.segmentNumber = segmentNumber;
@@ -90,7 +90,7 @@ public class EDIParseException extends SAXException {
      * @param segmentNumber the segment number where the error occured.
      * @param segmentLine the segment line where the error occured.
 	 */
-	public EDIParseException(Edimap mappingModel, String message, MappingNode mappingNode, int segmentNumber, String[] segmentLine) {
+	public EDIParseException(IEdimap mappingModel, String message, IMappingNode mappingNode, int segmentNumber, String[] segmentLine) {
 		super(getMessagePrefix(mappingModel) + "  " + message);
         this.errorNode = mappingNode;
         this.segmentNumber = segmentNumber;
@@ -106,18 +106,18 @@ public class EDIParseException extends SAXException {
      * @param segmentNumber the segment number where the error occured.
      * @param segmentLine the segment line where the error occured.
 	 */
-	public EDIParseException(Edimap mappingModel, String message, Exception cause, MappingNode mappingNode, int segmentNumber, String[] segmentLine) {
+	public EDIParseException(IEdimap mappingModel, String message, Exception cause, IMappingNode mappingNode, int segmentNumber, String[] segmentLine) {
 		super(getMessagePrefix(mappingModel) + "  " + message, cause);
         this.errorNode = mappingNode;
         this.segmentNumber = segmentNumber;
         this.segmentline = segmentLine;
 	}
 
-	private static String getMessagePrefix(Edimap mappingModel) {
+	private static String getMessagePrefix(IEdimap mappingModel) {
 		return "EDI message processing failed [" + mappingModel.getDescription().getName() + "][" + mappingModel.getDescription().getVersion() + "].";
 	}
 
-    public MappingNode getErrorNode() {
+    public IMappingNode getErrorNode() {
         return errorNode;
     }
 

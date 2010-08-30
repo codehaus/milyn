@@ -119,7 +119,7 @@ public class UnEdifactMessage {
     private String agency;
     private Edimap edimap;
 
-    public UnEdifactMessage(Reader reader, boolean isSplitIntoImport, Edimap definitionModel) throws EdiParseException, IOException {
+    public UnEdifactMessage(Reader reader, boolean isSplitIntoImport, IEdimap definitionModel) throws EdiParseException, IOException {
 
         BufferedReader breader = null;
         try {
@@ -193,9 +193,9 @@ public class UnEdifactMessage {
         return agency;
     }
 
-    private Map<String, Segment> getSegmentDefinitions(Edimap definitionModel) {
+    private Map<String, Segment> getSegmentDefinitions(IEdimap definitionModel) {
         Map<String, Segment> result = new HashMap<String, Segment>();
-        for (SegmentGroup segmentGroup : definitionModel.getSegments().getSegments()) {
+        for (ISegmentGroup segmentGroup : definitionModel.getSegments().getSegments()) {
             result.put(segmentGroup.getSegcode(), (Segment)segmentGroup);
         }
         return result;
@@ -215,7 +215,7 @@ public class UnEdifactMessage {
         }
     }
 
-    private void parseMessageStructure(BufferedReader reader, SegmentGroup group, Map<String, String> definitions, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
+    private void parseMessageStructure(BufferedReader reader, ISegmentGroup group, Map<String, String> definitions, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
         String line = reader.readLine();
         while (!line.matches(SEGMENT_TABLE)) {
             line = reader.readLine();
@@ -262,7 +262,7 @@ public class UnEdifactMessage {
         return definitions;
     }
 
-    private int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
+    private int parseNextSegment(BufferedReader reader, ISegmentGroup parentGroup, Map<String, String> definitions, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
         String line = reader.readLine();
         while (line != null) {
             if (line.matches(SEGMENT_GROUP_START)) {

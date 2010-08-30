@@ -19,7 +19,7 @@ package org.milyn.edisax.model.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Component extends ValueNode implements ContainerNode {
+public class Component extends ValueNode implements IComponent {
 
     private List<SubComponent> subComponent;
     private Boolean required;
@@ -40,6 +40,9 @@ public class Component extends ValueNode implements ContainerNode {
 		this.truncatable = truncatable;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IComponent#getSubComponents()
+	 */
 	public List<SubComponent> getSubComponents() {
         if (subComponent == null) {
             subComponent = new ArrayList<SubComponent>();
@@ -47,11 +50,14 @@ public class Component extends ValueNode implements ContainerNode {
         return this.subComponent;
     }
     
-    public Component addSubComponent(SubComponent subComponent) {
+    public IComponent addSubComponent(SubComponent subComponent) {
     	getSubComponents().add(subComponent);
     	return this;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IComponent#isRequired()
+	 */
     public boolean isRequired() {
         return required != null && required;
     }
@@ -60,6 +66,9 @@ public class Component extends ValueNode implements ContainerNode {
         this.required = value;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.IComponent#isTruncatable()
+	 */
     public boolean isTruncatable() {
         return truncatable != null && truncatable;
     }

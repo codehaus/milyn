@@ -17,6 +17,8 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.model.internal.SegmentGroup;
 
@@ -50,7 +52,7 @@ public class ECoreGenerator {
 
 		// Creating common package
 		Map<String, EClass> commonClasses = new HashMap<String, EClass>();
-		Edimap commonModel = reader.getMappingModel(COMMON_MAPPING_MODEL_NAME);
+		IEdimap commonModel = reader.getMappingModel(COMMON_MAPPING_MODEL_NAME);
 		EPackage commonPackage = EcoreFactory.eINSTANCE.createEPackage();
 		commonPackage.setName(COMMON_PACKAGE_NAME);
 		commonPackage.setNsPrefix("common");
@@ -64,7 +66,7 @@ public class ECoreGenerator {
 		Set<String> messageNames = reader.getMessageNames();
 		for (String messageName : messageNames) {
 			if (!COMMON_MAPPING_MODEL_NAME.equals(messageName)) {
-				Edimap mappingModel = reader.getMappingModel(messageName);
+				IEdimap mappingModel = reader.getMappingModel(messageName);
 				EPackage pkg = ECoreConversionUtils
 						.mappingModelToEPackage(mappingModel);
 				pkg.getEClassifiers().addAll(
@@ -86,7 +88,7 @@ public class ECoreGenerator {
 	 * @param commonClasses
 	 * @return
 	 */
-	private Set<EClass> createMappingClases(SegmentGroup root,
+	private Set<EClass> createMappingClases(ISegmentGroup root,
 			Map<String, EClass> commonClasses) {
 		Set<EClass> result = new HashSet<EClass>();
 		EClass rootClass = ECoreConversionUtils.segmentGroupToEClass(root);
@@ -106,10 +108,10 @@ public class ECoreGenerator {
 	 * @param result
 	 * @param rootClass
 	 */
-	private void processSegments(List<SegmentGroup> segments,
+	private void processSegments(List<ISegmentGroup> segments,
 			final Map<String, EClass> commonClasses, final Set<EClass> result,
 			final EClass parent) {
-		for (SegmentGroup arg0 : segments) {
+		for (ISegmentGroup arg0 : segments) {
 			if (arg0 instanceof Segment) {
 				Segment segment = (Segment) arg0;
 				EClass refClass = commonClasses.get(getLocalPart(segment));
@@ -152,10 +154,10 @@ public class ECoreGenerator {
 	 * @param commonClasses
 	 * @param commonPackage
 	 */
-	private Collection<EClass> createCommonClasses(Edimap commonModel,
+	private Collection<EClass> createCommonClasses(IEdimap commonModel,
 			final Map<String, EClass> commonClasses) {
 		Map<String, EClass> result = new HashMap<String, EClass>();
-		for (SegmentGroup grp : commonModel.getSegments().getSegments()) {
+		for (ISegmentGroup grp : commonModel.getSegments().getSegments()) {
 			// No segment groups are allowed in common part
 			Segment segment = (Segment) grp;
 			EClass clazz = ECoreConversionUtils.segmentToEClass(segment);

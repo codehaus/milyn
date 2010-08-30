@@ -16,20 +16,31 @@
 
 package org.milyn.edisax.model;
 
-import org.milyn.assertion.AssertArgument;
-import org.milyn.edisax.EDIConfigurationException;
-import org.milyn.edisax.EDIParseException;
-import org.milyn.edisax.model.internal.*;
-import org.milyn.io.StreamUtils;
-import org.milyn.resource.URIResourceLocator;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.milyn.assertion.AssertArgument;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDIParseException;
+import org.milyn.edisax.model.internal.Component;
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.model.internal.Description;
+import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.ISegmentGroup;
+import org.milyn.edisax.model.internal.Import;
+import org.milyn.edisax.model.internal.Segment;
+import org.milyn.io.StreamUtils;
+import org.milyn.resource.URIResourceLocator;
+import org.xml.sax.SAXException;
 
 /**                                          
  * EdifactModel contains all logic for handling imports for the
@@ -42,14 +53,14 @@ public class EdifactModel {
     private URI modelURI;
     private URI importBaseURI;
 
-    private volatile Edimap edimap;
+    private volatile IEdimap edimap;
     private Collection<EdifactModel> associateModels;
 
     /**
      * Public Constructor.
      * @param edimap Mapping Model.
      */
-    public EdifactModel(Edimap edimap) {
+    public EdifactModel(IEdimap edimap) {
         AssertArgument.isNotNull(edimap, "edimap");
         this.edimap = edimap;
     }
@@ -120,7 +131,7 @@ public class EdifactModel {
      * Returns the edimap containing the parser logic.
      * @return edi-message-mapping.
      */
-    public Edimap getEdimap() {
+    public IEdimap getEdimap() {
         if(edimap == null) {
             // Lazy parsing of the Edimap configuration...
             try {
@@ -191,8 +202,8 @@ public class EdifactModel {
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when edi-message-mapping contains multiple or no namespace declaration.
      * @throws java.io.IOException is thrown when error occurs when parsing edi-message-mapping.
      */
-    private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws SAXException, EDIConfigurationException, IOException {
-        Edimap importedEdimap;
+    private void importFiles(Node<String> parent, IEdimap edimap, DependencyTree<String> tree) throws SAXException, EDIConfigurationException, IOException {
+        IEdimap importedEdimap;
         Node<String> child, conflictNode;
 
         for (Import imp : edimap.getImports()) {
@@ -233,8 +244,8 @@ public class EdifactModel {
         return null;
     }
 
-    private void applyImportOnSegments(List<SegmentGroup> segmentGroup, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
-        for (SegmentGroup segment : segmentGroup) {
+    private void applyImportOnSegments(List<ISegmentGroup> segmentGroup, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
+        for (ISegmentGroup segment : segmentGroup) {
             if(segment instanceof Segment) {
                 applyImportOnSegment((Segment)segment, imp, importedSegments);
             }
@@ -307,9 +318,9 @@ public class EdifactModel {
      * @param edimap the edimap containing segments to be inserted into Map.
      * @return Map containing all segment in edimap.
      */
-    private Map<String, Segment> createImportMap(Edimap edimap) {
+    private Map<String, Segment> createImportMap(IEdimap edimap) {
         HashMap<String, Segment> result = new HashMap<String, Segment>();
-        for (SegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
+        for (ISegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
             if(segmentGroup instanceof Segment) {
                 result.put(((Segment)segmentGroup).getSegcode(), (Segment) segmentGroup);
             }

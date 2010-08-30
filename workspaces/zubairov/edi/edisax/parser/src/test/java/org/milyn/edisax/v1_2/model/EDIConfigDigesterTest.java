@@ -46,13 +46,13 @@ public class EDIConfigDigesterTest extends TestCase {
      */
     public void testParentMappingNodes() throws IOException, EDIConfigurationException, SAXException {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-all-new-elements.xml")));
-        Edimap edimap = EDIConfigDigester.digestConfig(input);
+        IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
         //SegmentGroup
-        SegmentGroup rootSegmentGroup = edimap.getSegments();
+        ISegmentGroup rootSegmentGroup = edimap.getSegments();
         assertNull("Root segmentGroup should have no parent", rootSegmentGroup.getParent());
 
-        SegmentGroup segmentGroup = edimap.getSegments().getSegments().get(0);
+        ISegmentGroup segmentGroup = edimap.getSegments().getSegments().get(0);
         assertEquals("SegmentGroup[" + segmentGroup.getXmltag() + "] should have the root SegmentGroup[" + rootSegmentGroup.getXmltag() + "] as parent but had parent[" + segmentGroup.getParent().getXmltag() + "]", segmentGroup.getParent(), rootSegmentGroup);
 
         //Segment
@@ -79,10 +79,10 @@ public class EDIConfigDigesterTest extends TestCase {
      */
     public void testReadValueNodes() throws IOException, EDIConfigurationException, SAXException {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-all-new-elements.xml")));
-        Edimap edimap = EDIConfigDigester.digestConfig(input);
+        IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
         //SegmentGroup
-        SegmentGroup segmentGroup = edimap.getSegments().getSegments().get(0);
+        ISegmentGroup segmentGroup = edimap.getSegments().getSegments().get(0);
         assertEquals("Failed to digest documentation for SegmentGroup", segmentGroup.getDocumentation(), "segmentGroup-documentation");
 
         Segment segment = (Segment)segmentGroup.getSegments().get(0);
@@ -126,7 +126,7 @@ public class EDIConfigDigesterTest extends TestCase {
      */
     public void testReadSegmentDescription() throws IOException, EDIConfigurationException, SAXException {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-all-new-elements.xml")));
-        Edimap edimap = EDIConfigDigester.digestConfig(input);
+        IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
         Segment segment = (Segment)edimap.getSegments().getSegments().get(0).getSegments().get(0);
         String expected = "This segment is used for testing all new elements in v.1.2";
@@ -136,7 +136,7 @@ public class EDIConfigDigesterTest extends TestCase {
     public void testCorrectParametersNoCustomType() throws IOException, SAXException, EDIConfigurationException {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-correct-no-custom-parameter.xml")));
 
-        Edimap edimap = EDIConfigDigester.digestConfig(input);
+        IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
         Segment segment = (Segment)edimap.getSegments().getSegments().get(0);
         Field field = segment.getFields().get(0);
@@ -188,7 +188,7 @@ public class EDIConfigDigesterTest extends TestCase {
     public void testCorrectParametersCustomType() throws IOException, SAXException, EDIConfigurationException {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-correct-custom-parameter.xml")));
 
-        Edimap edimap = EDIConfigDigester.digestConfig(input);
+        IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
         Segment segment = (Segment)edimap.getSegments().getSegments().get(0);
         Field field = segment.getFields().get(0);
