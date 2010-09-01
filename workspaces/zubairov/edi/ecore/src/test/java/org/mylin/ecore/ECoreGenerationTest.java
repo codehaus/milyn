@@ -1,6 +1,5 @@
 package org.mylin.ecore;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -41,7 +40,7 @@ public class ECoreGenerationTest extends TestCase {
 		// First write the common package
 		for (EPackage pkg : packages) {
 			String pkgName = pkg.getName();
-			if (pkgName.startsWith("com")) {
+			if (pkgName.startsWith("common")) {
 				Resource resource = resourceSet.createResource(URI
 						.createFileURI(pkgName + ".ecore"));
 				resource.getContents().add(pkg);
@@ -50,7 +49,7 @@ public class ECoreGenerationTest extends TestCase {
 		}
 		for (EPackage pkg : packages) {
 			String pkgName = pkg.getName();
-			if (!pkgName.startsWith("CUSCAR")) {
+			if (pkgName.startsWith("CUSCAR")) {
 				Resource resource = resourceSet.createResource(URI
 						.createFileURI(pkgName + ".ecore"));
 				resource.getContents().add(pkg);
