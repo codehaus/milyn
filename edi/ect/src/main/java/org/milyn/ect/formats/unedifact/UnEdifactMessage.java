@@ -40,27 +40,29 @@ public class UnEdifactMessage {
      * Group1 = id
      * Group2 = documentation
      */
-    private static final String MESSAGE_DEFINITION_START = "^(\\d{4}) *(.*)";
+    //private static final String MESSAGE_DEFINITION_START = "^(\\d{4})* *(.*)";
+    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[ \\+]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
 
     /**
      * Marks the end of the Message Definition section.
      */
-    private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment index .*)";
-
+    //private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment index .*)";
+    private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment index .*) |( *[\\d\\.]+ *[M|m]essage [S|s]tructure.*)";
 
     /**
      * Extracts the value for Message type, version, release and agency.
      */
-    private static final Pattern MESSAGE_TYPE = Pattern.compile(".*Message Type *: *(\\w*)");
-    private static final Pattern MESSAGE_RELEASE = Pattern.compile(".*Release *: *(\\w*)");
-    private static final Pattern MESSAGE_AGENCY = Pattern.compile(".*Contr. Agency *: *(\\w*)");
-    private static final Pattern MESSAGE_VERSION = Pattern.compile(".*Version *: *(\\w*)");
+    private static final Pattern MESSAGE_TYPE = Pattern.compile(".*Message Type *: *(\\w*) *");
+    private static final Pattern MESSAGE_RELEASE = Pattern.compile(".*Release *: *(\\w*) *");
+    private static final Pattern MESSAGE_AGENCY = Pattern.compile(".*Contr. Agency *: *(\\w*) *");
+    private static final Pattern MESSAGE_VERSION = Pattern.compile(".*Version *: *(\\w*) *");
 
     /**
      * Marks the start of the Segment table section.
      */
-    private static final String SEGMENT_TABLE = "[\\d\\. ]*Segment table";
-    private static final String SEGMENT_TABLE_HEADER = "Pos *Tag *Name *S *R.*";
+    private static final String SEGMENT_TABLE = "[\\d\\. ]*[S|s]egment [T|t]able";
+    private static final String SEGMENT_TABLE_HEADER = "(Pos *Tag *Name *S *R.*)|( *TAG *NAME *S *REPT *S *REPT)";
+
 
     /**
      * Extracts information from Regular segment definition.
@@ -69,8 +71,25 @@ public class UnEdifactMessage {
      * Group3 = description
      * Group4 = isMandatory
      * Group5 = max occurance
+     */                  
+    private static String SEGMENT_REGULAR = "(\\d{4})*[\\+\\* ]*(\\w{3}) *(.*) *(M|C) *(\\d*)[ \\|]*";
+
+    /**
+     * Extracts information from Regular segment definition.
+     * Group1 = id
+     * Group2 = segcode
+     * Group3 = description
      */
-    private static String SEGMENT_REGULAR = "(\\d{4})[\\+\\* ]*(\\w{3}) *(.*) *(M|C) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR_START = "(\\d{4})*[\\+\\* ]*(\\w{3}) *(.*) *\\|";
+
+    /**
+     * Extracts information from Regular segment definition.
+     * Group1 = description
+     * Group2 = isMandatory
+     * Group3 = max occurance
+     */
+    private static String SEGMENT_REGULAR_END = " *(.*) *(M|C) *(\\d*)[ \\|]*";
+
 
     /**
      * Matches and extracts information from start of segment group.
@@ -79,7 +98,7 @@ public class UnEdifactMessage {
      * Group4 = isMandatory
      * Group5 = max occurance 
      */
-    private static String SEGMENT_GROUP_START = "(\\d{4})[\\+\\* ]*-* *(Segment group \\d*) *-* *(C|M) *(\\d*)[-+|]*";
+    private static String SEGMENT_GROUP_START = "(\\d{4})*[\\+\\* ]*-* *([S|s]egment [G|g]roup \\d*) *-* *(C|M) *(\\d*)[ \\-\\+\\|]*";
 
     /**
      * Matches and extracts information from segment at end of segment group.
@@ -90,7 +109,7 @@ public class UnEdifactMessage {
      * Group5 = max occurance
      * Group6 = nrOfClosedGroups
      */
-    private static String SEGMENT_GROUP_END = "(\\d{4})[\\+\\* ]*(\\w{3}) *([\\w /]*) *(C|M) *(\\d*)([-|\\+]*)";
+    private static String SEGMENT_GROUP_END = "(\\d{4})*[\\+\\* ]*(\\w{3}) *([\\w /-]*) *(C|M) *(\\d*) *-+([ |\\+]*)";
 
     /**
      * Newline character applied between documentation lines.
@@ -154,7 +173,7 @@ public class UnEdifactMessage {
             if (isSplitIntoImport) {
                 Import ediImport = new Import();
                 ediImport.setNamespace(agency);
-                ediImport.setResource(definitionModel.getDescription().getName() + ".xml");  // TODO: Review with BŒrd
+                ediImport.setResource(definitionModel.getDescription().getName() + ".xml");  // TODO: Review with Bï¿½rd
                 edimap.getImports().add(ediImport);
             }  else {
                 segmentDefinitions = getSegmentDefinitions(definitionModel);
@@ -224,19 +243,27 @@ public class UnEdifactMessage {
         while (!line.matches(SEGMENT_TABLE_HEADER)) {
             line = reader.readLine();
         }
-        parseNextSegment(reader, group, definitions, isSplitIntoImport, segmentDefinitions);
+        parseNextSegment(reader, group, definitions, isSplitIntoImport, segmentDefinitions, new LineNumber());
     }
 
     private Map<String, String> parseMessageDefinition(BufferedReader reader) throws IOException {
         String line = reader.readLine();
-        while (!line.matches(MESSAGE_DEFINITION)) {
+        while (!line.toUpperCase().matches(MESSAGE_DEFINITION)) {
             line = reader.readLine();
         }
 
-        while (!line.matches(MESSAGE_DEFINITION_START)) {
+        line = reader.readLine();
+        while (!line.toUpperCase().matches(MESSAGE_DEFINITION)) {
             line = reader.readLine();
         }
 
+        line = reader.readLine();
+        while (!line.matches(MESSAGE_DEFINITION_START) || line.isEmpty()) {
+            line = reader.readLine();
+        }
+
+
+        LineNumber lineNo = new LineNumber();
         Map<String, String> definitions = new HashMap<String, String>();
         while (!line.matches(MESSAGE_DEFINITION_END)) {
             if (line.matches(MESSAGE_DEFINITION_START)) {
@@ -244,7 +271,8 @@ public class UnEdifactMessage {
                 Matcher matcher = pattern.matcher(line);
                 matcher.matches();
 
-                String id = matcher.group(1);
+                String id = getLineId(lineNo, matcher.group(1));
+
                 StringBuilder definition = new StringBuilder();
                 definition.append(matcher.group(2)).append(NEW_LINE);
                 line = reader.readLine();
@@ -262,16 +290,17 @@ public class UnEdifactMessage {
         return definitions;
     }
 
-    private int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
+    private int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions, LineNumber lineNo) throws IOException {
         String line = reader.readLine();
         while (line != null) {
             if (line.matches(SEGMENT_GROUP_START)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_START).matcher(line);
                 matcher.matches();
-                SegmentGroup group = createGroup(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), definitions);
+                String id = getLineId(lineNo, matcher.group(1));
+                SegmentGroup group = createGroup(id, matcher.group(2), matcher.group(3), matcher.group(4), definitions);
                 parentGroup.getSegments().add(group);
 
-                int result = parseNextSegment(reader, group, definitions, isSplitIntoImport, segmentDefinitions);
+                int result = parseNextSegment(reader, group, definitions, isSplitIntoImport, segmentDefinitions, lineNo);
                 if (result != 0) {
                     return result - 1;
                 }
@@ -279,14 +308,30 @@ public class UnEdifactMessage {
             } else if (line.matches(SEGMENT_GROUP_END)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_END).matcher(line);
                 matcher.matches();
-                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, isSplitIntoImport, segmentDefinitions);
+                String id = getLineId(lineNo, matcher.group(1));
+                Segment segment = createSegment(id, matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, isSplitIntoImport, segmentDefinitions);
                 parentGroup.getSegments().add(segment);
                 return extractPlusCharacter(matcher.group(6)).length() - 1;
             } else if (line.matches(SEGMENT_REGULAR)) {
                 Matcher matcher = Pattern.compile(SEGMENT_REGULAR).matcher(line);
                 matcher.matches();
+                String id = getLineId(lineNo, matcher.group(1));
                 if (!ignoreSegments.contains(matcher.group(2))) {
-                    Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, isSplitIntoImport, segmentDefinitions);
+                    Segment segment = createSegment(id, matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, isSplitIntoImport, segmentDefinitions);
+                    parentGroup.getSegments().add(segment);
+                }
+            } else if (!line.trim().equals("") && line.matches(SEGMENT_REGULAR_START)) {
+                Matcher matcher = Pattern.compile(SEGMENT_REGULAR_START).matcher(line);
+                matcher.matches();
+                String id = getLineId(lineNo, matcher.group(1));
+                String segcode = matcher.group(2);
+                String description = matcher.group(3);
+                line = reader.readLine();
+                matcher = Pattern.compile(SEGMENT_REGULAR_END).matcher(line);
+                matcher.matches();
+                description += " " + matcher.group(1);
+                if (!ignoreSegments.contains(matcher.group(2))) {
+                    Segment segment = createSegment(id, segcode, description, matcher.group(2), matcher.group(3), definitions, isSplitIntoImport, segmentDefinitions);
                     parentGroup.getSegments().add(segment);
                 }
             }
@@ -296,6 +341,13 @@ public class UnEdifactMessage {
         return 0;
     }
 
+    private String getLineId(UnEdifactMessage.LineNumber lineNo, String id) {
+        if (id == null || id.trim().equals("")) {
+            id = String.valueOf(lineNo.increment());
+        }
+        return id.trim();
+    }
+
     private String extractPlusCharacter(String value) {
         return value.replaceAll("[^\\+]", "");
     }
@@ -303,7 +355,11 @@ public class UnEdifactMessage {
     private SegmentGroup createGroup(String id, String name, String mandatory, String maxOccurance, Map<String, String> definitions) {
         SegmentGroup group = new SegmentGroup();
         group.setXmltag(XmlTagEncoder.encode(name.trim()));
-        group.setDocumentation(definitions.get(id).trim());
+        String test = definitions.get(id);
+        if (test == null) {
+            System.out.println("");
+        }
+        group.setDocumentation(test.trim());
         group.setMinOccurs(mandatory.equals("M") ? 1 : 0);
         group.setMaxOccurs(Integer.valueOf(maxOccurance));
         return group;
@@ -329,6 +385,10 @@ public class UnEdifactMessage {
             }
         }
         segment.setXmltag(XmlTagEncoder.encode(description.trim()));
+        String test = definitions.get(id);
+        if (test == null) {
+            System.out.println("");
+        }
         segment.setDocumentation(definitions.get(id).trim());
         segment.setMinOccurs(mandatory.equals("M") ? 1 : 0);
         segment.setMaxOccurs(Integer.valueOf(maxOccurance));
@@ -344,5 +404,17 @@ public class UnEdifactMessage {
             matcher = pattern.matcher(line);
         }
         return matcher.group(1);
+    }
+
+    private class LineNumber {
+        private int value = 0;
+
+        public int getValue() {
+            return value;
+        }
+
+        public int increment() {
+            return value++;
+        }
     }
 }

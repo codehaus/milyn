@@ -52,7 +52,7 @@ public class UnEdifactDefinitionReader {
      * Group6 = min occurance
      * Group7 = max occurance
      */
-    private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
+    private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
 
     /**
      * Extracts information from Data element occuring on one single row in Composite definition.
@@ -61,7 +61,7 @@ public class UnEdifactDefinitionReader {
      * Group2 = id
      * Group3 = name
      */
-    private static final Pattern FIRST_DATA_ELEMENT_PART = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *");
+    private static final Pattern FIRST_DATA_ELEMENT_PART = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *");
 
     /**
      * Extracts information from Data element occuring on one single row in Composite definition.
@@ -108,7 +108,7 @@ public class UnEdifactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern SEGMENT_ELEMENT = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
+    private static final Pattern SEGMENT_ELEMENT = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
 
     /**
      * Extracts information from first SegmentElement when Composite or Data element description exists on several
@@ -120,7 +120,7 @@ public class UnEdifactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*)");
+    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*)");
 
     /**
      * Extracts information from second SegmentElement when Composite or Data element description exists on several
@@ -180,6 +180,11 @@ public class UnEdifactDefinitionReader {
             matcher = SEGMENT_ELEMENT.matcher(line);
             if (matcher.matches()) {
                 addFieldToSegment(fields, componens, segment, matcher.group(2), matcher.group(4).trim().equalsIgnoreCase("M"));
+                if (matcher.group(2).startsWith("C")) {
+                    while (line != null && !line.equals("")) {
+                        line = reader.readLine();
+                    }
+                }
             } else {
                 matcher = FIRST_SEGMENT_ELEMENT.matcher(line);
                 if (matcher.matches()) {

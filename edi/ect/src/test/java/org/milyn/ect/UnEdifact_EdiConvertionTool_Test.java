@@ -19,8 +19,11 @@ package org.milyn.ect;
 import junit.framework.TestCase;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EDIConfigDigester;
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.resource.URIResourceLocator;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.*;
@@ -52,5 +55,18 @@ public class UnEdifact_EdiConvertionTool_Test extends TestCase {
         jupreq.write(writer);
 
         EDIConfigDigester.digestConfig(new ByteArrayInputStream(serializedMap.toByteArray()));
+    }
+
+    public void test_MILYN_476() throws IOException, EDIConfigurationException, SAXException {
+        ZipInputStream zipInputStream = new ZipInputStream(getClass().getResourceAsStream("D93A.zip"));
+        UnEdifactSpecificationReader specReader = new UnEdifactSpecificationReader(zipInputStream, false);
+        ByteArrayOutputStream serializedMap = new ByteArrayOutputStream();
+
+        Edimap jupreq = specReader.getMappingModel("INVOIC");
+        Writer writer = new OutputStreamWriter(serializedMap);
+
+        jupreq.write(writer);
+
+        Edimap edimap = EDIConfigDigester.digestConfig(new ByteArrayInputStream(serializedMap.toByteArray()));
     }
 }
