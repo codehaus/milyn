@@ -63,12 +63,8 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
 
         Set<String> messages = ediSpecificationReader.getMessageNames();
         for(String message : messages) {
-
-//            System.out.println(message);
-
             Edimap model = ediSpecificationReader.getMappingModel(message);
             StringWriter writer = new StringWriter();
-
             model.write(writer);
         }
     }
@@ -86,15 +82,13 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
 
         String result = stringWriter.toString();
 
-//        System.out.println(result);
-
         testSegment("BGM", result);
         testSegment("DTM", result);
         testSegment("NAD", result);
         testSegment("PRI", result);        
     }
 
-    public void testRealLifeInputFiles() throws IOException, InstantiationException, IllegalAccessException, EDIConfigurationException, SAXException {
+    public void testRealLifeInputFilesD08A() throws IOException, InstantiationException, IllegalAccessException, EDIConfigurationException, SAXException {
         InputStream inputStream = ClassUtil.getResourceAsStream("D08A.zip", this.getClass());
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
@@ -103,6 +97,17 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
         //Test INVOIC
         String mappingModel = getEdiMessageAsString(ediSpecificationReader, "INVOIC");
         testPackage("d96a-invoic-1", mappingModel);
+    }
+
+    public void testRealLifeInputFilesD93A() throws IOException, InstantiationException, IllegalAccessException, EDIConfigurationException, SAXException {
+        InputStream inputStream = ClassUtil.getResourceAsStream("D93A.zip", this.getClass());
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+
+        EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(zipInputStream, false);
+
+        //Test INVOIC
+        String mappingModel = getEdiMessageAsString(ediSpecificationReader, "INVOIC");
+        testPackage("d93a-invoic-1", mappingModel);
     }
 
     public void testPackage(String packageName, String mappingModel) throws IOException, InstantiationException, IllegalAccessException, SAXException, EDIConfigurationException {
