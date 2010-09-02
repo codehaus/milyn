@@ -223,6 +223,7 @@ public class ECoreConversionUtils {
 		annotate(attr, "truncable", String.valueOf(field.isTruncatable()));
 		annotate(attr, "required", String.valueOf(field.isRequired()));
 		annotate(attr, "type", FIELD_TYPE);
+		annotateValueNode(attr, field);
 	}
 
 	/**
@@ -286,6 +287,7 @@ public class ECoreConversionUtils {
 		annotate(result, "truncable", String.valueOf(component.isTruncatable()));
 		annotate(result, "required", String.valueOf(component.isRequired()));
 		annotate(result, "type", COMPONENT_TYPE);
+		annotateValueNode(result, component);
 		addMappingInformation(result, component);
 		return result;
 	}
@@ -326,6 +328,8 @@ public class ECoreConversionUtils {
 		if (valueNode.getDecoder() != null) {
 			annotate(element, "decoder", valueNode.getDecoder().getClass()
 					.getCanonicalName());
+		} else {
+			annotate(element, "decoder", "");
 		}
 	}
 

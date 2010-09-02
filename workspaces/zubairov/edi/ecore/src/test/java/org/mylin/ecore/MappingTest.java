@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.MockContentHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.IEdimap;
@@ -28,6 +29,7 @@ public class MappingTest extends TestCase {
 		EPackage pkg = loadCUSCARModel();
 		IEdimap edimap = new EdimapAdapter(pkg);
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
+		parser.setFeature(EDIParser.FEATURE_VALIDATE, true);
 		parser.addMappingModel(new EdifactModel(edimap));
 		parser.ignoreNewLines(true);
 

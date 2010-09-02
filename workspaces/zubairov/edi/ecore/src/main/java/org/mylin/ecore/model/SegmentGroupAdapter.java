@@ -130,6 +130,9 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 		return Integer.parseInt(getAnnotationValue(ref, "maxOccurs"));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getSegcode() {
 		if (getSegments().isEmpty()) {
 			throw new IllegalArgumentException("Segments list of segment group empty : " + clazz);
