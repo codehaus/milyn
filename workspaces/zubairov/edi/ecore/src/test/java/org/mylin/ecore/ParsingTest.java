@@ -22,8 +22,21 @@ import org.mylin.ecore.model.EdimapAdapter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class MappingTest extends TestCase {
+/**
+ * Test that we can consume ECORE model to feed into EcoreParser (UN EDIFACT parser)
+ * 
+ * @author zubairov
+ *
+ */
+public class ParsingTest extends TestCase {
 
+	/**
+	 * Parsing CUSCAR 99A CUSCAR message with validation
+	 * 
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws EDIConfigurationException
+	 */
 	public void testParser() throws IOException, SAXException,
 			EDIConfigurationException {
 		EPackage pkg = loadCUSCARModel();
@@ -43,6 +56,12 @@ public class MappingTest extends TestCase {
 		System.out.println(handler.xmlMapping);
 	}
 
+	/**
+	 * Loading CUSCAR ecore model
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	private EPackage loadCUSCARModel() throws IOException {
 		ResourceSet rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry()
