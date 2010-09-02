@@ -20,27 +20,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Segment extends SegmentGroup implements ContainerNode {
+public class Segment extends SegmentGroup implements ContainerNode, ISegment {
 
-    private List<Field> fields;
+    private List<IField> fields;
     private String segcode;
     private Pattern segcodePattern;
     private Boolean truncatable;
     private Boolean ignoreUnmappedFields;
     private String description;
 
-    public List<Field> getFields() {
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#getFields()
+	 */
+    public List<IField> getFields() {
         if (fields == null) {
-            fields = new ArrayList<Field>();
+            fields = new ArrayList<IField>();
         }
         return this.fields;
     }
     
-    public Segment addField(Field field) {
+    public ISegment addField(Field field) {
     	getFields().add(field);
     	return this;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#getSegcode()
+	 */
     public String getSegcode() {
         return segcode;
     }
@@ -50,10 +56,16 @@ public class Segment extends SegmentGroup implements ContainerNode {
         segcodePattern = Pattern.compile("^" + segcode, Pattern.DOTALL);
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#getSegcodePattern()
+	 */
     public Pattern getSegcodePattern() {
         return segcodePattern;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#getJavaName()
+	 */
     @Override
     public String getJavaName() {
         if(getNodeTypeRef() != null) {
@@ -63,6 +75,9 @@ public class Segment extends SegmentGroup implements ContainerNode {
         }
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#isTruncatable()
+	 */
     public boolean isTruncatable() {
         return truncatable != null && truncatable;
     }
@@ -75,10 +90,16 @@ public class Segment extends SegmentGroup implements ContainerNode {
     	this.ignoreUnmappedFields = value;
     }
     
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#isIgnoreUnmappedFields()
+	 */
     public boolean isIgnoreUnmappedFields() {
     	return ignoreUnmappedFields != null && ignoreUnmappedFields;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.edisax.model.internal.ISegment#getDescription()
+	 */
     public String getDescription() {
         return description;
     }

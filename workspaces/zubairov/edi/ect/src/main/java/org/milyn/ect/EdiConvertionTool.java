@@ -165,7 +165,7 @@ public class EdiConvertionTool {
 
     private static void removeDuplicateSegments(ISegmentGroup segmentGroup) {
         if(segmentGroup instanceof Segment) {
-            removeDuplicateFields(((Segment)segmentGroup).getFields()); 
+            removeDuplicateFields(((ISegment)segmentGroup).getFields()); 
         }
 
         List<ISegmentGroup> segments = segmentGroup.getSegments();
@@ -177,7 +177,7 @@ public class EdiConvertionTool {
         }
     }
 
-    private static void removeDuplicateFields(List<Field> fields) {
+    private static void removeDuplicateFields(List<IField> fields) {
         if(fields != null && !fields.isEmpty()) {
             // Remove the duplicates from the fields themselves...
             removeDuplicateMappingNodes(fields);

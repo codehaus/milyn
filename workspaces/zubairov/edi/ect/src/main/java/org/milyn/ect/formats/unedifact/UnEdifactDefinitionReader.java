@@ -198,7 +198,7 @@ public class UnEdifactDefinitionReader {
         return segment;
     }
 
-    private static void addFieldToSegment(Map<String, Field> fields, Map<String, Component> componens, Segment segment, String id, boolean isMandatory) {
+    private static void addFieldToSegment(Map<String, Field> fields, Map<String, Component> componens, ISegment segment, String id, boolean isMandatory) {
         if (id.startsWith("C")) {
             segment.getFields().add(copyField(fields.get(id), isMandatory));
         } else {

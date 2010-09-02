@@ -15,7 +15,7 @@ import org.milyn.edisax.MockContentHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
-import org.mylin.ecore.model.ECOREEdimap;
+import org.mylin.ecore.model.EdimapAdapter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -24,15 +24,15 @@ public class MappingTest extends TestCase {
 	public void testParser() throws IOException, SAXException,
 			EDIConfigurationException {
 		ResourceSet rs = new ResourceSetImpl();
-		rs
-				.getResourceFactoryRegistry()
+		rs.getResourceFactoryRegistry()
 				.getExtensionToFactoryMap()
 				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
 						new EcoreResourceFactoryImpl());
-		Resource resource = rs.createResource(URI.createFileURI("./CUSCAR.ecore"));
+		Resource resource = rs.createResource(URI
+				.createFileURI("./CUSCAR.ecore"));
 		resource.load(null);
 		EPackage pkg = (EPackage) resource.getAllContents().next();
-		IEdimap edimap = new ECOREEdimap(pkg);
+		IEdimap edimap = new EdimapAdapter(pkg);
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
 		parser.addMappingModel(new EdifactModel(edimap));
 		parser.ignoreNewLines(true);
@@ -43,7 +43,7 @@ public class MappingTest extends TestCase {
 		handler = new MockContentHandler();
 		parser.setContentHandler(handler);
 		parser.parse(new InputSource(getClass().getResourceAsStream(
-				"/unedifact-msg-01.edi")));
+				"/99a_cuscar.edi")));
 		System.out.println(handler.xmlMapping);
 	}
 

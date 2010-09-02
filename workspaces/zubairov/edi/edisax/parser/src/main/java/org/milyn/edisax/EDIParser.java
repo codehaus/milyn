@@ -477,8 +477,8 @@ public class EDIParser implements XMLReader {
             // The current read message segment appears to match that expected according to the mapping model.
             // Proceed to process the segment fields and the segments sub-segments...
 
-            if(expectedSegmentGroup instanceof Segment) {
-                mapSegment(currentSegmentFields, (Segment) expectedSegmentGroup);
+            if(expectedSegmentGroup instanceof ISegment) {
+                mapSegment(currentSegmentFields, (ISegment) expectedSegmentGroup);
             } else {
                 String xmlTag = expectedSegmentGroup.getXmltag();
 
@@ -510,7 +510,7 @@ public class EDIParser implements XMLReader {
      * reader tries to move to the next segment after performing this mapping.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapSegment(String[] currentSegmentFields, Segment expectedSegment) throws IOException, SAXException {
+	private void mapSegment(String[] currentSegmentFields, ISegment expectedSegment) throws IOException, SAXException {
         startElement(expectedSegment.getXmltag(), true);
 
         mapFields(currentSegmentFields, expectedSegment);
@@ -528,10 +528,10 @@ public class EDIParser implements XMLReader {
 	 * are expected to map to.
      * @throws SAXException EDI processing exception.
 	 */
-	public void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
+	public void mapFields(String[] currentSegmentFields, ISegment segment) throws SAXException {
         String segmentCode = segment.getSegcode();
 
-        List<Field> expectedFields = segment.getFields();
+        List<IField> expectedFields = segment.getFields();
 
         // Make sure all required fields are present in the incoming message...
         assertFieldsOK(currentSegmentFields, segment);
@@ -547,7 +547,7 @@ public class EDIParser implements XMLReader {
                 break;
             }
 			String fieldMessageVal = currentSegmentFields[i + 1]; // +1 to skip the segment code
-			Field expectedField = expectedFields.get(i);
+			IField expectedField = expectedFields.get(i);
 
 			if(fieldRepeat != null) {
 				String[] repeatedFields = EDIUtils.split(fieldMessageVal, fieldRepeat, delimiters.getEscape());
@@ -568,7 +568,7 @@ public class EDIParser implements XMLReader {
 	 * @param segmentCode The segment code within which the field exists.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapField(String fieldMessageVal, Field expectedField, int fieldIndex, String segmentCode) throws SAXException {
+	private void mapField(String fieldMessageVal, IField expectedField, int fieldIndex, String segmentCode) throws SAXException {
 		List<Component> expectedComponents = expectedField.getComponents();
 
         startElement(expectedField.getXmltag(), true);
@@ -639,9 +639,9 @@ public class EDIParser implements XMLReader {
 		}
 	}
 
-    private void assertFieldsOK(String[] currentSegmentFields, Segment segment) throws EDIParseException {
+    private void assertFieldsOK(String[] currentSegmentFields, ISegment segment) throws EDIParseException {
         
-        List<Field> expectedFields = segment.getFields();
+        List<IField> expectedFields = segment.getFields();
 
         int numFieldsExpected = expectedFields.size() + 1; // It's "expectedFields.length + 1" because the segment code is included.
         int numberOfFieldsToValidate = 0;
@@ -682,14 +682,14 @@ public class EDIParser implements XMLReader {
         }
 
         for (int i = 1; i < numberOfFieldsToValidate; i++) {
-            Field field = expectedFields.get(i-1);
+            IField field = expectedFields.get(i-1);
             if (field.getComponents().size() == 0 && (!currentSegmentFields[i].equals(""))) {
                 validateValueNode(field, currentSegmentFields[i]);
             }
         }
     }
 
-    private void assertComponentsOK(Field expectedField, int fieldIndex, String segmentCode, List<Component> expectedComponents, String[] currentFieldComponents) throws EDIParseException {        
+    private void assertComponentsOK(IField expectedField, int fieldIndex, String segmentCode, List<Component> expectedComponents, String[] currentFieldComponents) throws EDIParseException {        
         if (currentFieldComponents.length != expectedComponents.size()) {
             boolean throwException = false;            
 
@@ -765,7 +765,7 @@ public class EDIParser implements XMLReader {
         }
     }
 
-    private void validateValueNode(ValueNode valueNode, String value) throws EDIParseException {
+    private void validateValueNode(IValueNode valueNode, String value) throws EDIParseException {
 
         // Return when validation is turned off.
         try {

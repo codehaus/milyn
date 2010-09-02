@@ -60,7 +60,7 @@ public class EDIConfigDigesterTest extends TestCase {
         assertEquals("Segment[" + segment.getXmltag() + "] should have the SegmentGroup[" + segmentGroup.getXmltag() + "] as parent", segment.getParent(), segmentGroup);
 
         //Fields
-        for (Field field : segment.getFields()) {
+        for (IField field : segment.getFields()) {
             assertEquals("Field[" + field.getXmltag() + "] should have the Segment[" + segment.getXmltag() + "] as parent", field.getParent(), segment);
             for (Component component : field.getComponents()) {
                 assertEquals("Component[" + component.getXmltag() + "] should have the Field[" + field.getXmltag() + "] as parent", component.getParent(), field);
@@ -87,7 +87,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         Segment segment = (Segment)segmentGroup.getSegments().get(0);
         assertEquals("Failed to digest documentation for Segment", segment.getDocumentation(), "segment-documentation");
-        List<Field> fields = segment.getFields();
+        List<IField> fields = segment.getFields();
 
         // Assert field is read correctly.
         // <medi:field xmltag="aTime" type="Time" format="HHmm" minLength="0" maxLength="4"/>
@@ -128,7 +128,7 @@ public class EDIConfigDigesterTest extends TestCase {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-all-new-elements.xml")));
         IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
-        Segment segment = (Segment)edimap.getSegments().getSegments().get(0).getSegments().get(0);
+        ISegment segment = (ISegment)edimap.getSegments().getSegments().get(0).getSegments().get(0);
         String expected = "This segment is used for testing all new elements in v.1.2";
         assertEquals("Description in segment [" + segment.getDescription() + "] doesn't match expected value [" + expected + "].", segment.getDescription(), expected);
     }
@@ -138,8 +138,8 @@ public class EDIConfigDigesterTest extends TestCase {
 
         IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
-        Segment segment = (Segment)edimap.getSegments().getSegments().get(0);
-        Field field = segment.getFields().get(0);
+        ISegment segment = (ISegment)edimap.getSegments().getSegments().get(0);
+        IField field = segment.getFields().get(0);
 
         assertEquals("Number of parameters in list [" + field.getTypeParameters().size() + "] doesn't match expected value [2].", field.getTypeParameters().size(), 2);
 
@@ -190,8 +190,8 @@ public class EDIConfigDigesterTest extends TestCase {
 
         IEdimap edimap = EDIConfigDigester.digestConfig(input);
 
-        Segment segment = (Segment)edimap.getSegments().getSegments().get(0);
-        Field field = segment.getFields().get(0);
+        ISegment segment = (ISegment)edimap.getSegments().getSegments().get(0);
+        IField field = segment.getFields().get(0);
 
         assertEquals("Number of parameters in list [" + field.getTypeParameters().size() + "] doesn't match expected value [2].", field.getTypeParameters().size(), 2);
 

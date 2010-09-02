@@ -19,7 +19,7 @@ import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 public class ECoreGenerationTest extends TestCase {
 
 	public void testECoreGeneration() throws Exception {
-		InputStream inputStream = getClass().getResourceAsStream("/D08A.zip");
+		InputStream inputStream = getClass().getResourceAsStream("/D99A.zip");
 		ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
 		EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(

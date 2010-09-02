@@ -18,6 +18,7 @@ import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.IField;
 import org.milyn.edisax.model.internal.IMappingNode;
 import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.milyn.edisax.model.internal.IValueNode;
@@ -39,7 +40,14 @@ public class ECoreConversionUtils {
 	private static final EDataType ETYPES[] = { EcorePackage.Literals.ESTRING,
 			EcorePackage.Literals.ELONG, EcorePackage.Literals.EBIG_DECIMAL,
 			EcorePackage.Literals.EFLOAT };
-	private static final String ANNOTATION_TYPE = "smooks-mapping-data";
+	
+	public static final String ANNOTATION_TYPE = "smooks-mapping-data";
+	
+	public static final String SEGMENT_TYPE = "segment";
+	
+	public static final String SEGMENT_GROUP_TYPE = "group";
+
+	private static final String FIELD_TYPE = "field";
 
 	/**
 	 * Converting {@link Segment} to {@link EClass}
@@ -56,7 +64,7 @@ public class ECoreConversionUtils {
 		annotate(clazz, "ignoreUnmappedFields",
 				String.valueOf(segment.isIgnoreUnmappedFields()));
 		annotate(clazz, "description", segment.getDescription());
-		annotate(clazz, "type", "segment");
+		annotate(clazz, "type", SEGMENT_TYPE);
 		return clazz;
 	}
 
@@ -106,6 +114,7 @@ public class ECoreConversionUtils {
 	public static EReference segmentToEReference(Segment segment,
 			EClass refClass) {
 		EReference reference = segmentGroupToEReference(segment, refClass);
+		annotate(reference, "type", SEGMENT_TYPE);
 		return reference;
 	}
 
@@ -168,6 +177,7 @@ public class ECoreConversionUtils {
 		addMappingInformation(reference, grp);
 		annotate(reference, "minOccurs", String.valueOf(grp.getMinOccurs()));
 		annotate(reference, "maxOccurs", String.valueOf(grp.getMaxOccurs()));
+		annotate(reference, "type", SEGMENT_GROUP_TYPE);
 		return reference;
 	}
 
@@ -178,7 +188,7 @@ public class ECoreConversionUtils {
 	 * @param field
 	 * @return
 	 */
-	public static EAttribute fieldToEAttribute(Field field) {
+	public static EAttribute fieldToEAttribute(IField field) {
 		if (!field.getComponents().isEmpty()) {
 			throw new IllegalArgumentException(
 					"Can't convert field with components to "
@@ -197,6 +207,7 @@ public class ECoreConversionUtils {
 		}
 		addMappingInformation(attr, field);
 		annotate(attr, "trunkable", String.valueOf(field.isTruncatable()));
+		annotate(attr, "type", FIELD_TYPE);
 		return attr;
 	}
 
@@ -211,7 +222,7 @@ public class ECoreConversionUtils {
 	 * @param classes
 	 * @return
 	 */
-	public static EReference fieldToEReference(Field field,
+	public static EReference fieldToEReference(IField field,
 			Map<String, EClass> classes) {
 		EClass newClass = fieldToEClass(field);
 		if (!classes.containsKey(newClass.getName())) {
@@ -236,6 +247,7 @@ public class ECoreConversionUtils {
 		result.setLowerBound(field.isRequired() ? 1 : 0);
 		result.setUpperBound(1);
 		result.setEType(newClass);
+		annotate(result, "type", FIELD_TYPE);
 		addMappingInformation(result, field);
 		return result;
 	}
@@ -279,12 +291,12 @@ public class ECoreConversionUtils {
 	 * @param field
 	 * @return
 	 */
-	private static EClass fieldToEClass(Field field) {
+	private static EClass fieldToEClass(IField field) {
 		String classifierName = field.getNodeTypeRef() + field.getXmltag();
 		EClass newClass = EcoreFactory.eINSTANCE.createEClass();
 		newClass.setName(classifierName);
 		addMappingInformation(newClass, field);
-		annotate(newClass, "type", "field");
+		annotate(newClass, "type", FIELD_TYPE);
 		annotateValueNode(newClass, field);
 		return newClass;
 	}

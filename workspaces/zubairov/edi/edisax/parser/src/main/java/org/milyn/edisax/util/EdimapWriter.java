@@ -102,7 +102,7 @@ public class EdimapWriter {
                 segmentEl = newElement("segment", parentSegment, childSegment);
                 mapBeanProperties(childSegment, segmentEl, "segcode", "nodeTypeRef", "description", "ignoreUnmappedFields", "truncatable");
 
-                addFields(((Segment)childSegment).getFields(), segmentEl);
+                addFields(((ISegment)childSegment).getFields(), segmentEl);
             } else {
                 segmentEl = newElement("segmentGroup", parentSegment, childSegment);
             }
@@ -113,8 +113,8 @@ public class EdimapWriter {
         }
     }
 
-    private void addFields(List<Field> fields, Element segmentEl) {
-        for(Field field : fields) {
+    private void addFields(List<IField> fields, Element segmentEl) {
+        for(IField field : fields) {
             Element fieldEl = newElement("field", segmentEl, field);
 
             mapBeanProperties(field, fieldEl, "xmltag", "nodeTypeRef", "truncatable", "maxLength", "minLength", "required", "dataType", "dataTypeParametersString|dataTypeParameters");

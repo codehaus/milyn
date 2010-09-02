@@ -18,6 +18,7 @@ import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.IField;
 import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.model.internal.SegmentGroup;
@@ -182,10 +183,10 @@ public class ECoreGenerator {
 	 * @param fields
 	 * @param result
 	 */
-	private Collection<EStructuralFeature> processFields(List<Field> fields,
+	private Collection<EStructuralFeature> processFields(List<IField> fields,
 			Map<String, EClass> classes) {
 		Map<String, EStructuralFeature> result = new HashMap<String, EStructuralFeature>();
-		for (Field field : fields) {
+		for (IField field : fields) {
 			if (field.getComponents().isEmpty()) {
 				// We have a simple field without components
 				EAttribute attribute = ECoreConversionUtils.fieldToEAttribute(field);

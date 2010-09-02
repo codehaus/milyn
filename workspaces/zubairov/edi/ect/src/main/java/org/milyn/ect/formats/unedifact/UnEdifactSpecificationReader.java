@@ -23,6 +23,7 @@ import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.internal.SegmentGroup;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.util.ClassUtil;
 
@@ -142,7 +143,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
 
             edifactModel = UnEdifactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
             edifactModel.setDescription(EDIUtils.MODEL_SET_DEFINITIONS_DESCRIPTION);
-            ((Segment)edifactModel.getSegments()).setXmltag("DefinitionMap");
+            ((SegmentGroup)edifactModel.getSegments()).setXmltag("DefinitionMap");
             edifactModel.setDelimiters(UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
         } finally {
             if (dataISR != null) {

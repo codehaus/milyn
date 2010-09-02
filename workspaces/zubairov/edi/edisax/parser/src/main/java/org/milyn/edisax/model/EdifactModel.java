@@ -35,6 +35,8 @@ import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.IEdimap;
+import org.milyn.edisax.model.internal.IField;
+import org.milyn.edisax.model.internal.ISegment;
 import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.milyn.edisax.model.internal.Import;
 import org.milyn.edisax.model.internal.Segment;
@@ -301,8 +303,8 @@ public class EdifactModel {
         }
         
         if (truncatableFields != null || truncatableComponents != null) {
-            for ( Field field : segment.getFields()) {
-                field.setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
+            for ( IField field : segment.getFields()) {
+                ((Field)field).setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
                 if ( truncatableComponents != null ) {
                     for (Component component : field.getComponents()) {
                         component.setTruncatable(isTruncatable(truncatableComponents, component.isTruncatable()));
@@ -322,7 +324,7 @@ public class EdifactModel {
         HashMap<String, Segment> result = new HashMap<String, Segment>();
         for (ISegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
             if(segmentGroup instanceof Segment) {
-                result.put(((Segment)segmentGroup).getSegcode(), (Segment) segmentGroup);
+                result.put(((ISegment)segmentGroup).getSegcode(), (Segment) segmentGroup);
             }
         }
         return result;
