@@ -41,7 +41,7 @@ public class UnEdifactMessage {
      * Group2 = documentation
      */
     //private static final String MESSAGE_DEFINITION_START = "^(\\d{4})* *(.*)";
-    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[ \\+]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
+    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[ \\+\\|]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
 
     /**
      * Marks the end of the Message Definition section.
