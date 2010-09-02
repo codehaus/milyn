@@ -1,6 +1,7 @@
 package org.mylin.ecore;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -185,13 +186,17 @@ public class ECoreGenerator {
 	 */
 	private Collection<EStructuralFeature> processFields(List<IField> fields,
 			Map<String, EClass> classes) {
-		Map<String, EStructuralFeature> result = new HashMap<String, EStructuralFeature>();
+		// We need to preserve order therefore we are going
+		// to use separate list and set for controlling duplicates
+		List<EStructuralFeature> result = new ArrayList<EStructuralFeature>();
+		Set<String> names = new HashSet<String>();
 		for (IField field : fields) {
 			if (field.getComponents().isEmpty()) {
 				// We have a simple field without components
 				EAttribute attribute = ECoreConversionUtils.fieldToEAttribute(field);
-				if (!result.containsKey(attribute.getName())) {
-					result.put(attribute.getName(), attribute);
+				if (!names.contains(attribute.getName())) {
+					result.add(attribute);
+					names.add(attribute.getName());
 				} else {
 					System.err.println("WARN: Duplicate attribute " + attribute.getName());
 				}
@@ -200,14 +205,15 @@ public class ECoreGenerator {
 				// class
 				EReference reference = ECoreConversionUtils.fieldToEReference(field,
 						classes);
-				if (!result.containsKey(reference.getName())) {
-					result.put(reference.getName(), reference);
+				if (!names.contains(reference.getName())) {
+					result.add(reference);
+					names.add(reference.getName());
 				} else {
 					System.err.println("WARN: Duplicate reference " + reference.getName());
 				}
 			}
 		}
-		return result.values();
+		return result;
 	}
 
 	/**

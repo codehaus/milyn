@@ -1,38 +1,30 @@
 package org.mylin.ecore.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.milyn.edisax.model.internal.IComponent;
-import org.milyn.edisax.model.internal.IField;
 import org.milyn.edisax.model.internal.IMappingNode;
+import org.milyn.edisax.model.internal.SubComponent;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 
 /**
- * Adapt {@link EReference} or {@link EAttribute} to {@link IField}
+ * Adapts {@link EStructuralFeature} to {@link IComponent}
  * 
  * @author zubairov
  *
  */
-public class FieldAdapter extends ModelAdapter implements IField {
+public class ComponentAdapter extends ModelAdapter implements IComponent {
 
+	private final EAttribute attribute;
 
-	private EStructuralFeature feature;
-	
-	private ArrayList<IComponent> components;
-
-	public FieldAdapter(EStructuralFeature feature) {
-		this.feature = feature;
+	public ComponentAdapter(EAttribute attr) {
+		this.attribute = attr;
 	}
-	
 
 	public String getDataType() {
 		throw new UnsupportedOperationException("TODO Implement");
@@ -67,7 +59,7 @@ public class FieldAdapter extends ModelAdapter implements IField {
 	}
 
 	public String getXmltag() {
-		return getAnnotationValue(feature, "xmlTag");
+		return getAnnotationValue(attribute, "xmlTag");
 	}
 
 	public String getNodeTypeRef() {
@@ -87,28 +79,16 @@ public class FieldAdapter extends ModelAdapter implements IField {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<IComponent> getComponents() {
-		if (feature instanceof EReference) {
-			EReference ref = (EReference) feature;
-			EClass clazz = ref.getEReferenceType();
-			if (components == null) {
-				components = new ArrayList<IComponent>();
-				EList<EStructuralFeature> features = clazz.getEStructuralFeatures();
-				for (EStructuralFeature compFeature : features) {
-					components.add(new ComponentAdapter((EAttribute) compFeature));
-				}
-			}
-			return components;
-		} 
+	public List<SubComponent> getSubComponents() {
+		// TODO Clarify why we don't have subcomponents
 		return Collections.EMPTY_LIST;
 	}
 
 	public boolean isRequired() {
-		return Boolean.valueOf(getAnnotationValue(feature, "required"));
+		return Boolean.valueOf(getAnnotationValue(attribute, "required"));
 	}
 
 	public boolean isTruncatable() {
-		return Boolean.valueOf(getAnnotationValue(feature, "truncable"));
+		throw new UnsupportedOperationException("TODO Implement");
 	}
-
 }

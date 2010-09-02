@@ -1,6 +1,7 @@
 package org.mylin.ecore.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -40,16 +41,17 @@ public class SegmentAdapter extends SegmentGroupAdapter implements ISegment {
 	}
 
 	public boolean isIgnoreUnmappedFields() {
-		throw new UnsupportedOperationException("TODO Implement");
+		return Boolean.valueOf(getAnnotationValue(clazz, "ignoreUnmappedFields"));
 	}
 
 	public String getDescription() {
 		throw new UnsupportedOperationException("TODO Implement");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ISegmentGroup> getSegments() {
-		throw new UnsupportedOperationException("Segment can not contain any other SegmentGroups");
+		return Collections.EMPTY_LIST;
 	}
 
 }

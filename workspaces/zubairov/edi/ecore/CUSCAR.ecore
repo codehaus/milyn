@@ -13,6 +13,540 @@
     <details key="delimeters.escape" value="?"/>
     <details key="delimeters.ignoreCLRF" value="true"/>
   </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_16">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 16: QTY-FTX&#xA;                A group of segments to specify, at goods item level,&#xA;                the quantity manifested, quantity landed and reason&#xA;                for change."/>
+      <details key="xmlTag" value="Segment_group_16"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Quantity" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//QUANTITY">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="QTY, Quantity&#xA;                   A segment identifying quantity manifested and&#xA;                   quantity landed."/>
+        <details key="xmlTag" value="Quantity"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Free_text" eType="ecore:EClass commonDefinitions.ecore#//FREE_TEXT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="FTX, Free text&#xA;                   A segment to indicate the reason for change e.g.&#xA;                   part/short/overshipped cargo."/>
+        <details key="xmlTag" value="Free_text"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_7">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 7:  CNI-CNT-SG8&#xA;       A group of segments to provide details of the consignment(s)."/>
+      <details key="xmlTag" value="Segment_group_7"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Consignment_information"
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//CONSIGNMENT_INFORMATION">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="CNI, Consignment information&#xA;          A segment to sequentially number master bills reported in a&#xA;          multi-consignment message. For a single consignment message,&#xA;          this sequence number will always be 1."/>
+        <details key="xmlTag" value="Consignment_information"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Control_total" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//CONTROL_TOTAL">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="CNT, Control total&#xA;          A segment to specify the total number of house bills&#xA;          reported under one master bill."/>
+        <details key="xmlTag" value="Control_total"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_8" upperBound="9999"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_8">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 8:  RFF-CNT-MOA-LOC-GIS-CUX-CPI-SG9-SG11-SG13-&#xA;                            SG14&#xA;          A group of segments specifying the details of each&#xA;          consignment."/>
+        <details key="xmlTag" value="Segment_group_8"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9999"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_10">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 10: RFF-TSR&#xA;                A group of segments to provide booking details&#xA;                (reference and type)."/>
+      <details key="xmlTag" value="Segment_group_10"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Reference" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//REFERENCE">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="RFF, Reference&#xA;                   A segment to specify onward carriage control&#xA;                   number, onward carriage bond number and secondary&#xA;                   conveyance identification numbers."/>
+        <details key="xmlTag" value="Reference"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Transport_service_requirements"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//TRANSPORT_SERVICE_REQUIREMENTS">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="TSR, Transport service requirements&#xA;                   A segment to specify the contract and carriage&#xA;                   conditions and service and priority requirements&#xA;                   for the transport."/>
+        <details key="xmlTag" value="Transport_service_requirements"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_9">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 9:  TDT-LOC-DTM-MEA-SG10&#xA;             A group of segments to identify details of onward&#xA;             carriage for each consignment."/>
+      <details key="xmlTag" value="Segment_group_9"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Details_of_transport" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//DETAILS_OF_TRANSPORT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="TDT, Details of transport&#xA;                A segment to specify the identity of the onward&#xA;                conveyance."/>
+        <details key="xmlTag" value="Details_of_transport"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Place_location_identification"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PLACE_LOCATION_IDENTIFICATION">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="LOC, Place/location identification&#xA;                A segment to indicate locations relevant to the onward&#xA;                transport of the goods."/>
+        <details key="xmlTag" value="Place_location_identification"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;                A segment to specify dates/times related to details of&#xA;                onward transport."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Measurements" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//MEASUREMENTS">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="MEA, Measurements&#xA;                A segment to specify physical measurements, including&#xA;                dimension tolerances, weights and counts (e.g. vehicle&#xA;                weight details)."/>
+        <details key="xmlTag" value="Measurements"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_10" upperBound="9"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_10">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 10: RFF-TSR&#xA;                A group of segments to provide booking details&#xA;                (reference and type)."/>
+        <details key="xmlTag" value="Segment_group_10"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_17">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
+      <details key="xmlTag" value="Segment_group_17"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Authentication_result"
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//AUTHENTICATION_RESULT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="AUT, Authentication result&#xA;          A segment to specify the results of the application of an&#xA;          authentication procedure, including the authenticity of&#xA;          sender to ensure integrity of data."/>
+        <details key="xmlTag" value="Authentication_result"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify the date/time/period when a message is&#xA;          authenticated."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Reference" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//REFERENCE">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="RFF, Reference&#xA;          A segment to indicate any references to the authentication&#xA;          process."/>
+        <details key="xmlTag" value="Reference"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_1">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
+      <details key="xmlTag" value="Segment_group_1"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Reference" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//REFERENCE">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="RFF, Reference&#xA;          A segment to provide the unique reference number for the&#xA;          message, e.g. manifest number."/>
+        <details key="xmlTag" value="Reference"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to indicate the date/time of the reference number&#xA;          for the message."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_15">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 15: GIS-DTM-DOC-PAC-MEA&#xA;                A group of segments specifying general indicators,&#xA;                associated date/time/details, documentary requirements&#xA;                and the weight and number of packages transported to&#xA;                another place in the port."/>
+      <details key="xmlTag" value="Segment_group_15"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="General_indicator" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//GENERAL_INDICATOR">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="GIS, General indicator&#xA;                   A segment to indicate other government requirements&#xA;                   (e.g. government quarantine indicator) to be met&#xA;                   prior to onward movement and status of the goods."/>
+        <details key="xmlTag" value="General_indicator"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;                   A segment to specify a date/time related to the&#xA;                   whole group."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Document_message_details"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//DOCUMENT_MESSAGE_DETAILS">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DOC, Document/message details&#xA;                   A segment to indicate other government agency&#xA;                   documentary requirements which must be met prior to&#xA;                   onward movement."/>
+        <details key="xmlTag" value="Document_message_details"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Package" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//PACKAGE">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="PAC, Package&#xA;                   A segment to indicate the number of packages&#xA;                   transported to another place within the port."/>
+        <details key="xmlTag" value="Package"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Measurements" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//MEASUREMENTS">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="MEA, Measurements&#xA;                   A segment to indicate the gross weight of the&#xA;                   packages transported to another place within the&#xA;                   port."/>
+        <details key="xmlTag" value="Measurements"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_13">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 13: QTY-FTX&#xA;             A group of segments to specify, at the consignment level,&#xA;             the quantity manifested, quantity landed and reason for&#xA;             change."/>
+      <details key="xmlTag" value="Segment_group_13"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Quantity" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//QUANTITY">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="QTY, Quantity&#xA;                A segment identifying quantity manifested and quantity&#xA;                landed."/>
+        <details key="xmlTag" value="Quantity"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Free_text" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//FREE_TEXT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="FTX, Free text&#xA;                A segment to indicate the reason for change e.g.&#xA;                part/short/overshipped cargo."/>
+        <details key="xmlTag" value="Free_text"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_12">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 12: CTA-COM&#xA;                A group of segments identifying a contact and its&#xA;                communication related to the party."/>
+      <details key="xmlTag" value="Segment_group_12"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Contact_information" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//CONTACT_INFORMATION">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="CTA, Contact information&#xA;                   A segment to identify a person or department within&#xA;                   a party."/>
+        <details key="xmlTag" value="Contact_information"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Communication_contact"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//COMMUNICATION_CONTACT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="COM, Communication contact&#xA;                   A segment to identify the communication numbers of&#xA;                   persons or department to whom communication should&#xA;                   be directed."/>
+        <details key="xmlTag" value="Communication_contact"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_4">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
+      <details key="xmlTag" value="Segment_group_4"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Details_of_transport" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//DETAILS_OF_TRANSPORT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="TDT, Details of transport&#xA;          A segment to identify the primary identity of the conveyance&#xA;          e.g. voyage/flight number, vehicle number, railway car&#xA;          initials and numbers and name of vessel reference number."/>
+        <details key="xmlTag" value="Details_of_transport"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Place_location_identification"
+        upperBound="99" eType="ecore:EClass commonDefinitions.ecore#//PLACE_LOCATION_IDENTIFICATION">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="LOC, Place/location identification&#xA;          A segment to indicate locations relevant to the details of&#xA;          transport, such as port/place of loading, port/place of&#xA;          discharge and port/place of initial arrival."/>
+        <details key="xmlTag" value="Place_location_identification"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="99"
+        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify dates/times related to details of&#xA;          transport."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CUSCARRoot">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="xmlTag" value="CUSCAR"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Beginning_of_message" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//BEGINNING_OF_MESSAGE">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="BGM, Beginning of message&#xA;       A segment to indicate the message name, type, number and&#xA;       functionality."/>
+        <details key="xmlTag" value="Beginning_of_message"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;       A segment to indicate the date/time of message creation and the&#xA;       date and time of cargo report to Customs."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Place_location_identification"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PLACE_LOCATION_IDENTIFICATION">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="LOC, Place/location identification&#xA;       A segment to indicate the place and/or port where report is&#xA;       made."/>
+        <details key="xmlTag" value="Place_location_identification"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Quantity" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//QUANTITY">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="QTY, Quantity&#xA;       A segment to indicate the number of persons onboard."/>
+        <details key="xmlTag" value="Quantity"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_1" upperBound="99"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_1">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
+        <details key="xmlTag" value="Segment_group_1"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_2" upperBound="99"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_2">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
+        <details key="xmlTag" value="Segment_group_2"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Free_text" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//FREE_TEXT">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="FTX, Free text&#xA;       A segment to provide reason for change in report."/>
+        <details key="xmlTag" value="Free_text"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_4" upperBound="9"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_4">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
+        <details key="xmlTag" value="Segment_group_4"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="General_indicator" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//GENERAL_INDICATOR">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="GIS, General indicator&#xA;       A segment to specify the various customs processing indicators&#xA;       for the whole message."/>
+        <details key="xmlTag" value="General_indicator"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_5" upperBound="9999"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_5">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 5:  EQD-TSR-MEA-DIM-SEL-NAD-GIS-SG6&#xA;       A group of segments to specify details of the equipment&#xA;       including information related to measurement, dimensions,&#xA;       seals, empty container responsible party, container quarantine&#xA;       indicator, as well as temperature/range and use indicator."/>
+        <details key="xmlTag" value="Segment_group_5"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9999"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Control_total" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//CONTROL_TOTAL">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="CNT, Control total&#xA;       A segment to specify the total number of masters bills in the&#xA;       message."/>
+        <details key="xmlTag" value="Control_total"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_7" upperBound="9999"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_7">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 7:  CNI-CNT-SG8&#xA;       A group of segments to provide details of the consignment(s)."/>
+        <details key="xmlTag" value="Segment_group_7"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9999"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_17" eType="ecore:EClass CUSCAR.ecore#//Segment_group_17">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
+        <details key="xmlTag" value="Segment_group_17"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_2">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
+      <details key="xmlTag" value="Segment_group_2"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Name_and_address" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//NAME_AND_ADDRESS">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="NAD, Name and address&#xA;          A segment to identify the person or party reporting the&#xA;          cargo."/>
+        <details key="xmlTag" value="Name_and_address"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_3" upperBound="9"
+        eType="ecore:EClass CUSCAR.ecore#//Segment_group_3">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
+        <details key="xmlTag" value="Segment_group_3"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_6">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 6:  TMP-RNG&#xA;          A group of segments to indicate temperature information."/>
+      <details key="xmlTag" value="Segment_group_6"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Temperature" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//TEMPERATURE">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="TMP, Temperature&#xA;             A segment to specify temperature settings and indicator&#xA;             that refrigeration is in use."/>
+        <details key="xmlTag" value="Temperature"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Range_details" eType="ecore:EClass commonDefinitions.ecore#//RANGE_DETAILS">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="RNG, Range details&#xA;             A segment to specify a range of temperatures to be&#xA;             maintained on refrigeration equipment."/>
+        <details key="xmlTag" value="Range_details"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Segment_group_11">
     <eAnnotations source="smooks-mapping-data">
       <details key="documentation" value="Segment group 11: NAD-DTM-RFF-SG12&#xA;             A group of segments to identify the parties, contacts and&#xA;             related references and dates."/>
@@ -59,207 +593,6 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_7">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 7:  CNI-CNT-SG8&#xA;       A group of segments to provide details of the consignment(s)."/>
-      <details key="xmlTag" value="Segment_group_7"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Consignment_information"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//CONSIGNMENT_INFORMATION">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CNI, Consignment information&#xA;          A segment to sequentially number master bills reported in a&#xA;          multi-consignment message. For a single consignment message,&#xA;          this sequence number will always be 1."/>
-        <details key="xmlTag" value="Consignment_information"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Control_total" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//CONTROL_TOTAL">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CNT, Control total&#xA;          A segment to specify the total number of house bills&#xA;          reported under one master bill."/>
-        <details key="xmlTag" value="Control_total"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_8" upperBound="9999"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_8">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 8:  RFF-CNT-MOA-LOC-GIS-CUX-CPI-SG9-SG11-SG13-&#xA;                            SG14&#xA;          A group of segments specifying the details of each&#xA;          consignment."/>
-        <details key="xmlTag" value="Segment_group_8"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9999"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_12">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 12: CTA-COM&#xA;                A group of segments identifying a contact and its&#xA;                communication related to the party."/>
-      <details key="xmlTag" value="Segment_group_12"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Contact_information" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//CONTACT_INFORMATION">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CTA, Contact information&#xA;                   A segment to identify a person or department within&#xA;                   a party."/>
-        <details key="xmlTag" value="Contact_information"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Communication_contact"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//COMMUNICATION_CONTACT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="COM, Communication contact&#xA;                   A segment to identify the communication numbers of&#xA;                   persons or department to whom communication should&#xA;                   be directed."/>
-        <details key="xmlTag" value="Communication_contact"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_1">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
-      <details key="xmlTag" value="Segment_group_1"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Reference" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//REFERENCE">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RFF, Reference&#xA;          A segment to provide the unique reference number for the&#xA;          message, e.g. manifest number."/>
-        <details key="xmlTag" value="Reference"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to indicate the date/time of the reference number&#xA;          for the message."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_2">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
-      <details key="xmlTag" value="Segment_group_2"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Name_and_address" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//NAME_AND_ADDRESS">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="NAD, Name and address&#xA;          A segment to identify the person or party reporting the&#xA;          cargo."/>
-        <details key="xmlTag" value="Name_and_address"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_3" upperBound="9"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_3">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
-        <details key="xmlTag" value="Segment_group_3"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_17">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
-      <details key="xmlTag" value="Segment_group_17"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Authentication_result"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//AUTHENTICATION_RESULT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="AUT, Authentication result&#xA;          A segment to specify the results of the application of an&#xA;          authentication procedure, including the authenticity of&#xA;          sender to ensure integrity of data."/>
-        <details key="xmlTag" value="Authentication_result"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify the date/time/period when a message is&#xA;          authenticated."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Reference" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//REFERENCE">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RFF, Reference&#xA;          A segment to indicate any references to the authentication&#xA;          process."/>
-        <details key="xmlTag" value="Reference"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_6">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 6:  TMP-RNG&#xA;          A group of segments to indicate temperature information."/>
-      <details key="xmlTag" value="Segment_group_6"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Temperature" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//TEMPERATURE">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TMP, Temperature&#xA;             A segment to specify temperature settings and indicator&#xA;             that refrigeration is in use."/>
-        <details key="xmlTag" value="Temperature"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Range_details" eType="ecore:EClass commonDefinitions.ecore#//RANGE_DETAILS">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RNG, Range details&#xA;             A segment to specify a range of temperatures to be&#xA;             maintained on refrigeration equipment."/>
-        <details key="xmlTag" value="Range_details"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_13">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 13: QTY-FTX&#xA;             A group of segments to specify, at the consignment level,&#xA;             the quantity manifested, quantity landed and reason for&#xA;             change."/>
-      <details key="xmlTag" value="Segment_group_13"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Quantity" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//QUANTITY">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="QTY, Quantity&#xA;                A segment identifying quantity manifested and quantity&#xA;                landed."/>
-        <details key="xmlTag" value="Quantity"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Free_text" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//FREE_TEXT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="FTX, Free text&#xA;                A segment to indicate the reason for change e.g.&#xA;                part/short/overshipped cargo."/>
-        <details key="xmlTag" value="Free_text"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Segment_group_3">
     <eAnnotations source="smooks-mapping-data">
       <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
@@ -282,42 +615,6 @@
         <details key="xmlTag" value="Communication_contact"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_4">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
-      <details key="xmlTag" value="Segment_group_4"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Details_of_transport" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//DETAILS_OF_TRANSPORT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TDT, Details of transport&#xA;          A segment to identify the primary identity of the conveyance&#xA;          e.g. voyage/flight number, vehicle number, railway car&#xA;          initials and numbers and name of vessel reference number."/>
-        <details key="xmlTag" value="Details_of_transport"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Place_location_identification"
-        upperBound="99" eType="ecore:EClass commonDefinitions.ecore#//PLACE_LOCATION_IDENTIFICATION">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="LOC, Place/location identification&#xA;          A segment to indicate locations relevant to the details of&#xA;          transport, such as port/place of loading, port/place of&#xA;          discharge and port/place of initial arrival."/>
-        <details key="xmlTag" value="Place_location_identification"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="99"
-        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify dates/times related to details of&#xA;          transport."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
         <details key="type" value="segment"/>
       </eAnnotations>
     </eStructuralFeatures>
@@ -405,87 +702,6 @@
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
         <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_9">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 9:  TDT-LOC-DTM-MEA-SG10&#xA;             A group of segments to identify details of onward&#xA;             carriage for each consignment."/>
-      <details key="xmlTag" value="Segment_group_9"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Details_of_transport" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//DETAILS_OF_TRANSPORT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TDT, Details of transport&#xA;                A segment to specify the identity of the onward&#xA;                conveyance."/>
-        <details key="xmlTag" value="Details_of_transport"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Place_location_identification"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PLACE_LOCATION_IDENTIFICATION">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="LOC, Place/location identification&#xA;                A segment to indicate locations relevant to the onward&#xA;                transport of the goods."/>
-        <details key="xmlTag" value="Place_location_identification"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;                A segment to specify dates/times related to details of&#xA;                onward transport."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Measurements" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//MEASUREMENTS">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="MEA, Measurements&#xA;                A segment to specify physical measurements, including&#xA;                dimension tolerances, weights and counts (e.g. vehicle&#xA;                weight details)."/>
-        <details key="xmlTag" value="Measurements"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_10" upperBound="9"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_10">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 10: RFF-TSR&#xA;                A group of segments to provide booking details&#xA;                (reference and type)."/>
-        <details key="xmlTag" value="Segment_group_10"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_16">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 16: QTY-FTX&#xA;                A group of segments to specify, at goods item level,&#xA;                the quantity manifested, quantity landed and reason&#xA;                for change."/>
-      <details key="xmlTag" value="Segment_group_16"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Quantity" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//QUANTITY">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="QTY, Quantity&#xA;                   A segment identifying quantity manifested and&#xA;                   quantity landed."/>
-        <details key="xmlTag" value="Quantity"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Free_text" eType="ecore:EClass commonDefinitions.ecore#//FREE_TEXT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="FTX, Free text&#xA;                   A segment to indicate the reason for change e.g.&#xA;                   part/short/overshipped cargo."/>
-        <details key="xmlTag" value="Free_text"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -631,222 +847,6 @@
         <details key="xmlTag" value="Segment_group_16"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_10">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 10: RFF-TSR&#xA;                A group of segments to provide booking details&#xA;                (reference and type)."/>
-      <details key="xmlTag" value="Segment_group_10"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Reference" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//REFERENCE">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RFF, Reference&#xA;                   A segment to specify onward carriage control&#xA;                   number, onward carriage bond number and secondary&#xA;                   conveyance identification numbers."/>
-        <details key="xmlTag" value="Reference"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Transport_service_requirements"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//TRANSPORT_SERVICE_REQUIREMENTS">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TSR, Transport service requirements&#xA;                   A segment to specify the contract and carriage&#xA;                   conditions and service and priority requirements&#xA;                   for the transport."/>
-        <details key="xmlTag" value="Transport_service_requirements"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Segment_group_15">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 15: GIS-DTM-DOC-PAC-MEA&#xA;                A group of segments specifying general indicators,&#xA;                associated date/time/details, documentary requirements&#xA;                and the weight and number of packages transported to&#xA;                another place in the port."/>
-      <details key="xmlTag" value="Segment_group_15"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="General_indicator" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//GENERAL_INDICATOR">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="GIS, General indicator&#xA;                   A segment to indicate other government requirements&#xA;                   (e.g. government quarantine indicator) to be met&#xA;                   prior to onward movement and status of the goods."/>
-        <details key="xmlTag" value="General_indicator"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;                   A segment to specify a date/time related to the&#xA;                   whole group."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Document_message_details"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//DOCUMENT_MESSAGE_DETAILS">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DOC, Document/message details&#xA;                   A segment to indicate other government agency&#xA;                   documentary requirements which must be met prior to&#xA;                   onward movement."/>
-        <details key="xmlTag" value="Document_message_details"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Package" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//PACKAGE">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="PAC, Package&#xA;                   A segment to indicate the number of packages&#xA;                   transported to another place within the port."/>
-        <details key="xmlTag" value="Package"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Measurements" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//MEASUREMENTS">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="MEA, Measurements&#xA;                   A segment to indicate the gross weight of the&#xA;                   packages transported to another place within the&#xA;                   port."/>
-        <details key="xmlTag" value="Measurements"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="CUSCARRoot">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="xmlTag" value="CUSCAR"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Beginning_of_message" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//BEGINNING_OF_MESSAGE">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="BGM, Beginning of message&#xA;       A segment to indicate the message name, type, number and&#xA;       functionality."/>
-        <details key="xmlTag" value="Beginning_of_message"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Date_time_period" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DATE_TIME_PERIOD">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;       A segment to indicate the date/time of message creation and the&#xA;       date and time of cargo report to Customs."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Place_location_identification"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PLACE_LOCATION_IDENTIFICATION">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="LOC, Place/location identification&#xA;       A segment to indicate the place and/or port where report is&#xA;       made."/>
-        <details key="xmlTag" value="Place_location_identification"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Quantity" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//QUANTITY">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="QTY, Quantity&#xA;       A segment to indicate the number of persons onboard."/>
-        <details key="xmlTag" value="Quantity"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_1" upperBound="99"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_1">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
-        <details key="xmlTag" value="Segment_group_1"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_2" upperBound="99"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_2">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
-        <details key="xmlTag" value="Segment_group_2"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Free_text" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//FREE_TEXT">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="FTX, Free text&#xA;       A segment to provide reason for change in report."/>
-        <details key="xmlTag" value="Free_text"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_4" upperBound="9"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_4">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
-        <details key="xmlTag" value="Segment_group_4"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="General_indicator" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//GENERAL_INDICATOR">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="GIS, General indicator&#xA;       A segment to specify the various customs processing indicators&#xA;       for the whole message."/>
-        <details key="xmlTag" value="General_indicator"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_5" upperBound="9999"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_5">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 5:  EQD-TSR-MEA-DIM-SEL-NAD-GIS-SG6&#xA;       A group of segments to specify details of the equipment&#xA;       including information related to measurement, dimensions,&#xA;       seals, empty container responsible party, container quarantine&#xA;       indicator, as well as temperature/range and use indicator."/>
-        <details key="xmlTag" value="Segment_group_5"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9999"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Control_total" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//CONTROL_TOTAL">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CNT, Control total&#xA;       A segment to specify the total number of masters bills in the&#xA;       message."/>
-        <details key="xmlTag" value="Control_total"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_7" upperBound="9999"
-        eType="ecore:EClass CUSCAR.ecore#//Segment_group_7">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 7:  CNI-CNT-SG8&#xA;       A group of segments to provide details of the consignment(s)."/>
-        <details key="xmlTag" value="Segment_group_7"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9999"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Segment_group_17" eType="ecore:EClass CUSCAR.ecore#//Segment_group_17">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
-        <details key="xmlTag" value="Segment_group_17"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="1"/>
         <details key="type" value="group"/>
       </eAnnotations>
     </eStructuralFeatures>

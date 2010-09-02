@@ -50,6 +50,8 @@ public class ECoreConversionUtils {
 
 	private static final String FIELD_TYPE = "field";
 
+	private static final String COMPONENT_TYPE = "component";
+
 	/**
 	 * Converting {@link Segment} to {@link EClass}
 	 * 
@@ -218,7 +220,7 @@ public class ECoreConversionUtils {
 	 * @param attr
 	 */
 	private static void annotateField(IField field, EModelElement attr) {
-		annotate(attr, "trunkable", String.valueOf(field.isTruncatable()));
+		annotate(attr, "truncable", String.valueOf(field.isTruncatable()));
 		annotate(attr, "required", String.valueOf(field.isRequired()));
 		annotate(attr, "type", FIELD_TYPE);
 	}
@@ -281,6 +283,9 @@ public class ECoreConversionUtils {
 		result.setLowerBound(component.isRequired() ? 1 : 0);
 		result.setUpperBound(1);
 		result.setEType(toEType(component.getTypeClass()));
+		annotate(result, "truncable", String.valueOf(component.isTruncatable()));
+		annotate(result, "required", String.valueOf(component.isRequired()));
+		annotate(result, "type", COMPONENT_TYPE);
 		addMappingInformation(result, component);
 		return result;
 	}

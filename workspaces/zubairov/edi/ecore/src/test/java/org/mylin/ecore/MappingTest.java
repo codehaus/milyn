@@ -5,7 +5,9 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -23,15 +25,7 @@ public class MappingTest extends TestCase {
 
 	public void testParser() throws IOException, SAXException,
 			EDIConfigurationException {
-		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry()
-				.getExtensionToFactoryMap()
-				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
-						new EcoreResourceFactoryImpl());
-		Resource resource = rs.createResource(URI
-				.createFileURI("./CUSCAR.ecore"));
-		resource.load(null);
-		EPackage pkg = (EPackage) resource.getAllContents().next();
+		EPackage pkg = loadCUSCARModel();
 		IEdimap edimap = new EdimapAdapter(pkg);
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
 		parser.addMappingModel(new EdifactModel(edimap));
@@ -47,4 +41,44 @@ public class MappingTest extends TestCase {
 		System.out.println(handler.xmlMapping);
 	}
 
+	private EPackage loadCUSCARModel() throws IOException {
+		ResourceSet rs = new ResourceSetImpl();
+		rs.getResourceFactoryRegistry()
+				.getExtensionToFactoryMap()
+				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
+						new EcoreResourceFactoryImpl());
+		Resource resource = rs.createResource(URI
+				.createFileURI("./CUSCAR.ecore"));
+		resource.load(null);
+		EPackage pkg = (EPackage) resource.getAllContents().next();
+		return pkg;
+	}
+
+	/**
+	 * We need to test that component definitions are in the right order
+	 * 
+	 * @throws Exception
+	 */
+	public void testComponentOrder() throws Exception {
+		EPackage pkg = loadCUSCARModel();
+		EClass root = (EClass) pkg.getEClassifier("CUSCARRoot");
+		assertNotNull(root);
+		EReference feature = (EReference) root
+				.getEStructuralFeature("Place_location_identification");
+		assertNotNull(feature);
+		EClass clazz = feature.getEReferenceType();
+		String[] expected = new String[] { "Place_location_qualifier",
+				"LOCATION_IDENTIFICATION",
+				"RELATED_LOCATION_ONE_IDENTIFICATION",
+				"RELATED_LOCATION_TWO_IDENTIFICATION", "Relation__coded" };
+		String[] parsed = new String[clazz.getEStructuralFeatures().size()];
+		for (int i = 0; i < clazz.getEStructuralFeatures().size(); i++) {
+			String name = clazz.getEStructuralFeatures().get(i).getName();
+			System.err.println("Parsed sequence: " + name);
+			parsed[i] = name;
+		}
+		for (int i = 0; i < parsed.length; i++) {
+			assertEquals(expected[i], parsed[i]);
+		}
+	}
 }
