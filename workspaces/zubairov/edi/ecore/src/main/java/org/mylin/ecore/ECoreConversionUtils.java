@@ -81,7 +81,7 @@ public class ECoreConversionUtils {
 	public static EPackage mappingModelToEPackage(IEdimap mappingModel) {
 		final EPackage pkg = EcoreFactory.eINSTANCE.createEPackage();
 		Description desc = mappingModel.getDescription();
-		pkg.setName(desc.getName());
+		pkg.setName(desc.getName().toLowerCase());
 		pkg.setNsPrefix(desc.getName().toLowerCase());
 		pkg.setNsURI("http://smooks.org/UNEDI/" 
 				+ desc.getVersion().replace(':', '_') + "/" + desc.getName());

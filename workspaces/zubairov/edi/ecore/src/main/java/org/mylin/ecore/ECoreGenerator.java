@@ -96,7 +96,7 @@ public class ECoreGenerator {
 		EClass rootClass = ECoreConversionUtils.segmentGroupToEClass(root);
 		// We need to change the name of the Root class so it is not 
 		// the same as name of the package
-		rootClass.setName(rootClass.getName() + "Root");
+		rootClass.setName(rootClass.getName());
 		result.add(rootClass);
 		processSegments(root.getSegments(), commonClasses, result, rootClass);
 		return result;

@@ -54,7 +54,7 @@ public class EdimapAdapter extends ModelAdapter implements IEdimap {
 
 	public ISegmentGroup getSegments() {
 		if (segments == null) {
-			segments = new SegmentGroupAdapter((EClass) pkg.getEClassifier(pkg.getName() + "Root"));
+			segments = new SegmentGroupAdapter((EClass) pkg.getEClassifier(pkg.getName().toUpperCase()));
 		}
 		return segments;
 	}

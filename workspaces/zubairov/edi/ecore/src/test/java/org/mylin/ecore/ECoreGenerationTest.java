@@ -49,7 +49,7 @@ public class ECoreGenerationTest extends TestCase {
 		}
 		for (EPackage pkg : packages) {
 			String pkgName = pkg.getName();
-			if (pkgName.startsWith("CUSCAR")) {
+			if (pkgName.startsWith("cuscar")) {
 				Resource resource = resourceSet.createResource(URI
 						.createFileURI(pkgName + ".ecore"));
 				resource.getContents().add(pkg);

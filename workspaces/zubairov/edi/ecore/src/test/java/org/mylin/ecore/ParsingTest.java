@@ -69,9 +69,10 @@ public class ParsingTest extends TestCase {
 				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
 						new EcoreResourceFactoryImpl());
 		Resource resource = rs.createResource(URI
-				.createFileURI("./CUSCAR.ecore"));
+				.createFileURI("cuscar.ecore"));
 		resource.load(null);
 		EPackage pkg = (EPackage) resource.getAllContents().next();
+		assertNotNull(pkg);
 		return pkg;
 	}
 
@@ -82,7 +83,7 @@ public class ParsingTest extends TestCase {
 	 */
 	public void testComponentOrder() throws Exception {
 		EPackage pkg = loadCUSCARModel();
-		EClass root = (EClass) pkg.getEClassifier("CUSCARRoot");
+		EClass root = (EClass) pkg.getEClassifier("CUSCAR");
 		assertNotNull(root);
 		EReference feature = (EReference) root
 				.getEStructuralFeature("Place_location_identification");
