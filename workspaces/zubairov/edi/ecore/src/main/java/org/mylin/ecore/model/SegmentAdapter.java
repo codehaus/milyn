@@ -3,6 +3,7 @@ package org.mylin.ecore.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EReference;
@@ -53,5 +54,23 @@ public class SegmentAdapter extends SegmentGroupAdapter implements ISegment {
 	public List<ISegmentGroup> getSegments() {
 		return Collections.EMPTY_LIST;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getSegcode() {
+		return getAnnotationValue(clazz, "segcode");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Pattern getSegcodePattern() {
+		if (pattern == null) {
+			pattern = Pattern.compile(getAnnotationValue(clazz, "segcodePattern"));
+		}
+		return pattern;
+	}
+
 
 }

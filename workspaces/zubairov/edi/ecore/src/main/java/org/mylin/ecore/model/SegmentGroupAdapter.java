@@ -23,7 +23,7 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 	protected final EClass clazz;
 	protected final EReference ref;
 	private List<ISegmentGroup> segments;
-	private Pattern pattern;
+	protected Pattern pattern;
 
 	public SegmentGroupAdapter(EClass clazz) {
 		this.clazz = clazz;
@@ -96,20 +96,16 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 		return segments;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getSegcode() {
-		return getAnnotationValue(clazz, "segcode");
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public Pattern getSegcodePattern() {
 		if (pattern == null) {
-			pattern = Pattern.compile(getAnnotationValue(clazz,
-					"segcodePattern"));
+			if (getSegments().isEmpty()) {
+				throw new IllegalArgumentException("Segments list of segment group empty : " + clazz);
+			}
+			pattern = getSegments().get(0).getSegcodePattern();
 		}
 		return pattern;
 	}
@@ -132,6 +128,13 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 			throw new NullPointerException("Reference value missing");
 		}
 		return Integer.parseInt(getAnnotationValue(ref, "maxOccurs"));
+	}
+
+	public String getSegcode() {
+		if (getSegments().isEmpty()) {
+			throw new IllegalArgumentException("Segments list of segment group empty : " + clazz);
+		}
+		return getSegments().get(0).getSegcode();
 	}
 
 }

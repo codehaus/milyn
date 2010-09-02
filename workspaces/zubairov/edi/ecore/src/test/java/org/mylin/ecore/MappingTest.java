@@ -74,7 +74,7 @@ public class MappingTest extends TestCase {
 		String[] parsed = new String[clazz.getEStructuralFeatures().size()];
 		for (int i = 0; i < clazz.getEStructuralFeatures().size(); i++) {
 			String name = clazz.getEStructuralFeatures().get(i).getName();
-			System.err.println("Parsed sequence: " + name);
+			//System.err.println("Parsed sequence: " + name);
 			parsed[i] = name;
 		}
 		for (int i = 0; i < parsed.length; i++) {
