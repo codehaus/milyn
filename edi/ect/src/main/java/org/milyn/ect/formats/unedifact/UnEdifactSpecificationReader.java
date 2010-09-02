@@ -203,7 +203,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
                 result = true;
                 if (entry.equals("*")) {
                     if (fileEntry.getName().indexOf('_') != -1) {
-                        files.put(fileEntry.getName().substring(0, fileEntry.getName().indexOf('_')), baos.toByteArray());
+                        files.put(fName.substring(0, fName.indexOf('_')).toUpperCase(), baos.toByteArray());
                     }
                 } else {
                     files.put(entry, baos.toByteArray());
