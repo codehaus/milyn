@@ -569,7 +569,7 @@ public class EDIParser implements XMLReader {
      * @throws SAXException EDI processing exception.
 	 */
 	private void mapField(String fieldMessageVal, IField expectedField, int fieldIndex, String segmentCode) throws SAXException {
-		List<Component> expectedComponents = expectedField.getComponents();
+		List<IComponent> expectedComponents = expectedField.getComponents();
 
         startElement(expectedField.getXmltag(), true);
 
@@ -583,7 +583,7 @@ public class EDIParser implements XMLReader {
             // Iterate over the field components and map them...
 			for(int i = 0; i < currentFieldComponents.length; i++) {
 				String componentMessageVal = currentFieldComponents[i];
-				Component expectedComponent = expectedComponents.get(i);
+				IComponent expectedComponent = expectedComponents.get(i);
 
 				mapComponent(componentMessageVal, expectedComponent, fieldIndex, i, segmentCode, expectedField.getXmltag());
 			}
@@ -608,7 +608,7 @@ public class EDIParser implements XMLReader {
 	 * @param field Field within which the component exists.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapComponent(String componentMessageVal, Component expectedComponent, int fieldIndex, int componentIndex, String segmentCode, String field) throws SAXException {
+	private void mapComponent(String componentMessageVal, IComponent expectedComponent, int fieldIndex, int componentIndex, String segmentCode, String field) throws SAXException {
 		List<SubComponent> expectedSubComponents = expectedComponent.getSubComponents();
 
 		startElement(expectedComponent.getXmltag(), true);
@@ -689,7 +689,7 @@ public class EDIParser implements XMLReader {
         }
     }
 
-    private void assertComponentsOK(IField expectedField, int fieldIndex, String segmentCode, List<Component> expectedComponents, String[] currentFieldComponents) throws EDIParseException {        
+    private void assertComponentsOK(IField expectedField, int fieldIndex, String segmentCode, List<IComponent> expectedComponents, String[] currentFieldComponents) throws EDIParseException {        
         if (currentFieldComponents.length != expectedComponents.size()) {
             boolean throwException = false;            
 
@@ -720,14 +720,14 @@ public class EDIParser implements XMLReader {
         }
 
         for (int i = 0; i < currentFieldComponents.length; i++) {
-            Component component = expectedComponents.get(i);
+            IComponent component = expectedComponents.get(i);
             if (component.getSubComponents().size() == 0 && (!currentFieldComponents[i].equals(""))) {
                 validateValueNode(component, currentFieldComponents[i]);
             }
         }
     }
 
-    private void assertSubComponentsOK(Component expectedComponent, int fieldIndex, int componentIndex, String segmentCode, String field, List<SubComponent> expectedSubComponents, String[] currentComponentSubComponents) throws EDIParseException {
+    private void assertSubComponentsOK(IComponent expectedComponent, int fieldIndex, int componentIndex, String segmentCode, String field, List<SubComponent> expectedSubComponents, String[] currentComponentSubComponents) throws EDIParseException {
         if (currentComponentSubComponents.length != expectedSubComponents.size()) {
             boolean throwException = false;
 

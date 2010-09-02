@@ -17,6 +17,7 @@ import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.IComponent;
 import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.model.internal.IField;
 import org.milyn.edisax.model.internal.IMappingNode;
@@ -60,7 +61,7 @@ public class ECoreConversionUtils {
 		annotate(clazz, "segcode", segment.getSegcode());
 		annotate(clazz, "segcodePattern", segment.getSegcodePattern()
 				.toString());
-		annotate(clazz, "truncatable", String.valueOf(segment.isTruncatable()));
+		annotate(clazz, "truncable", String.valueOf(segment.isTruncatable()));
 		annotate(clazz, "ignoreUnmappedFields",
 				String.valueOf(segment.isIgnoreUnmappedFields()));
 		annotate(clazz, "description", segment.getDescription());
@@ -206,9 +207,20 @@ public class ECoreConversionUtils {
 			attr.setEType(EcorePackage.Literals.ESTRING);
 		}
 		addMappingInformation(attr, field);
-		annotate(attr, "trunkable", String.valueOf(field.isTruncatable()));
-		annotate(attr, "type", FIELD_TYPE);
+		annotateField(field, attr);
 		return attr;
+	}
+
+	/**
+	 * Add field specific annotations
+	 * 
+	 * @param field
+	 * @param attr
+	 */
+	private static void annotateField(IField field, EModelElement attr) {
+		annotate(attr, "trunkable", String.valueOf(field.isTruncatable()));
+		annotate(attr, "required", String.valueOf(field.isRequired()));
+		annotate(attr, "type", FIELD_TYPE);
 	}
 
 	/**
@@ -232,7 +244,7 @@ public class ECoreConversionUtils {
 					+ " is duplicated");
 			newClass = classes.get(newClass.getName());
 		}
-		for (Component component : field.getComponents()) {
+		for (IComponent component : field.getComponents()) {
 			EStructuralFeature attribute = componentToEAttribute(component);
 			if (newClass.getEStructuralFeature(attribute.getName()) == null) {
 				newClass.getEStructuralFeatures().add(attribute);
@@ -247,7 +259,7 @@ public class ECoreConversionUtils {
 		result.setLowerBound(field.isRequired() ? 1 : 0);
 		result.setUpperBound(1);
 		result.setEType(newClass);
-		annotate(result, "type", FIELD_TYPE);
+		annotateField(field, result);
 		addMappingInformation(result, field);
 		return result;
 	}
@@ -258,7 +270,7 @@ public class ECoreConversionUtils {
 	 * @param component
 	 * @return
 	 */
-	private static EStructuralFeature componentToEAttribute(Component component) {
+	private static EStructuralFeature componentToEAttribute(IComponent component) {
 		if (!component.getSubComponents().isEmpty()) {
 			throw new IllegalArgumentException(
 					"Sub-components are not supported yet for component "

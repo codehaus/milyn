@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Field extends ValueNode implements IField {
 
-    private List<Component> component;
+    private List<IComponent> component;
     private Boolean required;
     private Boolean truncatable;
     
@@ -43,9 +43,9 @@ public class Field extends ValueNode implements IField {
 	/* (non-Javadoc)
 	 * @see org.milyn.edisax.model.internal.IField#getComponents()
 	 */
-	public List<Component> getComponents() {
+	public List<IComponent> getComponents() {
         if (component == null) {
-            component = new ArrayList<Component>();
+            component = new ArrayList<IComponent>();
         }
         return this.component;
     }

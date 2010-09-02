@@ -62,7 +62,7 @@ public class EDIConfigDigesterTest extends TestCase {
         //Fields
         for (IField field : segment.getFields()) {
             assertEquals("Field[" + field.getXmltag() + "] should have the Segment[" + segment.getXmltag() + "] as parent", field.getParent(), segment);
-            for (Component component : field.getComponents()) {
+            for (IComponent component : field.getComponents()) {
                 assertEquals("Component[" + component.getXmltag() + "] should have the Field[" + field.getXmltag() + "] as parent", component.getParent(), field);
                 for (SubComponent subComponent : component.getSubComponents()) {
                     assertEquals("SubComponent[" + subComponent.getXmltag() + "] should have the Component[" + component.getXmltag() + "] as parent", subComponent.getParent(), component);
@@ -100,7 +100,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         // Assert Component is read correctly.
         // <medi:component xmltag="aBinary" required="true" type="Binary" minLength="0" maxLength="8"/>
-        Component component = fields.get(1).getComponents().get(0);
+        IComponent component = fields.get(1).getComponents().get(0);
         assertEquals("Failed to digest type-attribute for Component", component.getDataType(), "Binary");
         assertNull("Parameters-attribute should be null in Component", component.getTypeParameters());
         assertEquals("Failed to digest minLength-attribute for Component", component.getMinLength(), new Integer(0));

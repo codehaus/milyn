@@ -4,10 +4,8 @@ import java.util.List;
 
 public interface IField extends IValueNode, ContainerNode {
 
-	public abstract List<Component> getComponents();
+	public abstract List<IComponent> getComponents();
 
 	public abstract boolean isRequired();
-
-	public abstract boolean isTruncatable();
 
 }

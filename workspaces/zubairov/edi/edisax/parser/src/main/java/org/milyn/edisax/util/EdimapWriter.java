@@ -122,8 +122,8 @@ public class EdimapWriter {
         }
     }
 
-    private void addComponents(List<Component> components, Element fieldEl) {
-        for(Component component : components) {
+    private void addComponents(List<IComponent> components, Element fieldEl) {
+        for(IComponent component : components) {
             Element componentEl = newElement("component", fieldEl, component);
 
             mapBeanProperties(component, componentEl, "xmltag", "nodeTypeRef", "truncatable", "maxLength", "minLength", "required", "dataType", "dataTypeParametersString|dataTypeParameters");

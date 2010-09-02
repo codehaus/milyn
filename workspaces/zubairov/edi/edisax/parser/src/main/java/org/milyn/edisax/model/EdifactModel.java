@@ -34,6 +34,7 @@ import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.IComponent;
 import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.model.internal.IField;
 import org.milyn.edisax.model.internal.ISegment;
@@ -306,8 +307,8 @@ public class EdifactModel {
             for ( IField field : segment.getFields()) {
                 ((Field)field).setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
                 if ( truncatableComponents != null ) {
-                    for (Component component : field.getComponents()) {
-                        component.setTruncatable(isTruncatable(truncatableComponents, component.isTruncatable()));
+                    for (IComponent component : field.getComponents()) {
+                        ((Component)component).setTruncatable(isTruncatable(truncatableComponents, component.isTruncatable()));
                     }
                 }
             }

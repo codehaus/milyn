@@ -29,14 +29,14 @@ public class SegmentAdapter extends SegmentGroupAdapter implements ISegment {
 			fields = new ArrayList<IField>();
 			EList<EStructuralFeature> features = clazz.getEStructuralFeatures();
 			for (EStructuralFeature feature : features) {
-				
+				fields.add(new FieldAdapter(feature));
 			}
 		}
 		return fields;
 	}
 
 	public boolean isTruncatable() {
-		throw new UnsupportedOperationException("TODO Implement");
+		return Boolean.valueOf(getAnnotationValue(clazz, "truncable"));
 	}
 
 	public boolean isIgnoreUnmappedFields() {

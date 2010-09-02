@@ -189,7 +189,7 @@ public class EdiConvertionTool {
         }
     }
 
-    private static void removeDuplicateComponents(List<Component> components) {
+    private static void removeDuplicateComponents(List<IComponent> components) {
         if(components != null && !components.isEmpty()) {
             // Remove the duplicates from the components themselves...
             removeDuplicateMappingNodes(components);
