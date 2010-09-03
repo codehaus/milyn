@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
-import org.milyn.edisax.MockContentHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;

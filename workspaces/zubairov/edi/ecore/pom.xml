@@ -9,7 +9,7 @@
     </parent>
 	<name>Milyn EdiSax Parser</name>
 	<groupId>org.milyn</groupId>
-	<artifactId>milyn-edisax-parser</artifactId>
+	<artifactId>milyn-edisax-ecore</artifactId>
 	<version>${milyn.smooks.core.version}</version>
 
 	<build>
