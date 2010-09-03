@@ -15,7 +15,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.mylin.ecore.ECoreBindingHandler.MessageHanlder;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -156,7 +155,8 @@ public class ECoreBindingHandler extends DefaultHandler implements
 			throws SAXException {
 		if (localName.equalsIgnoreCase(root.getName())) {
 			log.debug("Reached the end of the mapping");
-			objStack.pop();
+			Object message = objStack.pop();
+			handler.messageElement((EObject) message);
 		} else if (!objStack.isEmpty()) {
 			Object subject = objStack.pop();
 			EStructuralFeature feature = featureStack.pop();

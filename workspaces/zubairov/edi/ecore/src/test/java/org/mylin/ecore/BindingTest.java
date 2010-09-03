@@ -7,8 +7,10 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -63,6 +65,23 @@ public class BindingTest extends TestCase implements MessageHanlder {
 		parser.parse(new InputSource(getClass().getResourceAsStream(
 				"/99a_cuscar.edi")));
 		assertEquals(2, testContent.size());
+		EObject one = testContent.get(0);
+		EObject two = testContent.get(1);
+		EObject bgm1 = (EObject) get(one, "Beginning_of_message");
+		EObject bgm2 = (EObject) get(two, "Beginning_of_message");
+		EObject docid1 = (EObject) get(bgm1, "DOCUMENT_MESSAGE_IDENTIFICATION");
+		EObject docid2 = (EObject) get(bgm2, "DOCUMENT_MESSAGE_IDENTIFICATION");
+		assertEquals("MOL-EU2-HFA-012W-XXXX8896514-01", get(docid1, "Document_message_number"));
+		assertEquals("MOL-EU2-HFA-012W-XXXX5086746-01", get(docid2, "Document_message_number"));
+	}
+
+	private Object get(EObject one, String string) {
+		EClass clazz = one.eClass();
+		EStructuralFeature feature = clazz.getEStructuralFeature(string);
+		assertNotNull("Can't find feature " + string, feature);
+		Object object = one.eGet(feature);
+		assertNotNull("Field " + string + " is null", object);
+		return object;
 	}
 
 	/**
