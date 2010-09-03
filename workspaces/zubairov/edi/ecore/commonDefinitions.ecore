@@ -4303,8 +4303,8 @@
       <details key="description" value=" To identify the sequence in which physical packing ispresented in the consignment, and optionally toidentify the hierarchical relationship between packinglayers."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalId.Number"
-        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalIdNumber" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="documentation" value=" A unique number assigned by the sender to identify a levelwithin a hierarchical structure."/>
         <details key="xmlTag" value="Hierarchical_id._number"/>
@@ -4317,8 +4317,7 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalParentId."
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalParentId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="documentation" value=" Identification number of the next higher level in ahierarchical structure."/>
         <details key="xmlTag" value="Hierarchical_parent_id."/>
@@ -14081,8 +14080,8 @@
       <details key="description" value=" To identify regulatory safety information."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalId.Number"
-        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalIdNumber" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="documentation" value=" A unique number assigned by the sender to identify a levelwithin a hierarchical structure."/>
         <details key="xmlTag" value="Hierarchical_id._number"/>
@@ -14410,8 +14409,7 @@
       <details key="minLength" value="null"/>
       <details key="decoder" value=""/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalId.Number"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalIdNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16265,8 +16263,8 @@
       <details key="minLength" value="null"/>
       <details key="decoder" value=""/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="streetAndNumberP.o.Box"
-        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="streetAndNumberPOBox" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -16380,7 +16378,7 @@
       <details key="description" value=" To specify additional or substitutional itemidentification codes."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="productId.FunctionQualifier"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="productIdFunctionQualifier"
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="documentation" value=" Indication of the function of the product code."/>
@@ -16796,8 +16794,7 @@
         <details key="xmlTag" value="ITEM_NUMBER_IDENTIFICATION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalParentId."
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalParentId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="documentation" value=" Identification number of the next higher level in ahierarchical structure."/>
         <details key="xmlTag" value="Hierarchical_parent_id."/>
@@ -17326,7 +17323,7 @@
       <details key="minLength" value="null"/>
       <details key="decoder" value=""/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelOneId." eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelOneId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17339,7 +17336,7 @@
         <details key="xmlTag" value="Level_one_id."/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelTwoId." eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelTwoId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17352,7 +17349,7 @@
         <details key="xmlTag" value="Level_two_id."/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelThreeId." eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelThreeId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17365,7 +17362,7 @@
         <details key="xmlTag" value="Level_three_id."/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelFourId." eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelFourId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17378,7 +17375,7 @@
         <details key="xmlTag" value="Level_four_id."/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelFiveId." eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelFiveId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17391,7 +17388,7 @@
         <details key="xmlTag" value="Level_five_id."/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelSixId." eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="levelSixId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18594,7 +18591,7 @@
       <details key="minLength" value="null"/>
       <details key="decoder" value=""/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id.OfMeansOfTransportIdentification"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="idOfMeansOfTransportIdentification"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18635,7 +18632,7 @@
         <details key="xmlTag" value="Code_list_responsible_agency__coded"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id.OfTheMeansOfTransport"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="idOfTheMeansOfTransport"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>

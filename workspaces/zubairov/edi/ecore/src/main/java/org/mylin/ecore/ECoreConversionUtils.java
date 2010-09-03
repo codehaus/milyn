@@ -343,7 +343,7 @@ public class ECoreConversionUtils {
 		boolean cap = className;
 		for (int i = 0; i < name.length(); i++) {
 			char ch = name.charAt(i);
-			if ('_' == ch) {
+			if ('_' == ch || '.' == ch) {
 				cap = true;
 			} else {
 				if (cap) {

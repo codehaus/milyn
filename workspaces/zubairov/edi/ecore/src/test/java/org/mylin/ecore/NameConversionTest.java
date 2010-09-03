@@ -22,5 +22,6 @@ public class NameConversionTest extends TestCase {
 		assertEquals("beginningOfMessage", toJavaName("BEGINNING_OF_MESSAGE", false));
 		assertEquals("documentMessageIdentification", toJavaName("DOCUMENT_MESSAGE_IDENTIFICATION", false));
 		assertEquals("carrier", toJavaName("CARRIER", false));
+		assertEquals("documentMessageIdentification", toJavaName("DOCUMENT_MESSAGE_.IDENTIFICATION.", false));
 	}
 }
