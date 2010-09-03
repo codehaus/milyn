@@ -67,12 +67,12 @@ public class BindingTest extends TestCase implements MessageHanlder {
 		assertEquals(2, testContent.size());
 		EObject one = testContent.get(0);
 		EObject two = testContent.get(1);
-		EObject bgm1 = (EObject) get(one, "Beginning_of_message");
-		EObject bgm2 = (EObject) get(two, "Beginning_of_message");
-		EObject docid1 = (EObject) get(bgm1, "DOCUMENT_MESSAGE_IDENTIFICATION");
-		EObject docid2 = (EObject) get(bgm2, "DOCUMENT_MESSAGE_IDENTIFICATION");
-		assertEquals("MOL-EU2-HFA-012W-XXXX8896514-01", get(docid1, "Document_message_number"));
-		assertEquals("MOL-EU2-HFA-012W-XXXX5086746-01", get(docid2, "Document_message_number"));
+		EObject bgm1 = (EObject) get(one, "beginningOfMessage");
+		EObject bgm2 = (EObject) get(two, "beginningOfMessage");
+		EObject docid1 = (EObject) get(bgm1, "documentMessageIdentification");
+		EObject docid2 = (EObject) get(bgm2, "documentMessageIdentification");
+		assertEquals("MOL-EU2-HFA-012W-XXXX8896514-01", get(docid1, "documentMessageNumber"));
+		assertEquals("MOL-EU2-HFA-012W-XXXX5086746-01", get(docid2, "documentMessageNumber"));
 	}
 
 	private Object get(EObject one, String string) {

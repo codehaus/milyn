@@ -41,11 +41,11 @@ public class ECoreConversionUtils {
 	private static final EDataType ETYPES[] = { EcorePackage.Literals.ESTRING,
 			EcorePackage.Literals.ELONG, EcorePackage.Literals.EBIG_DECIMAL,
 			EcorePackage.Literals.EFLOAT };
-	
+
 	public static final String ANNOTATION_TYPE = "smooks-mapping-data";
-	
+
 	public static final String SEGMENT_TYPE = "segment";
-	
+
 	public static final String SEGMENT_GROUP_TYPE = "group";
 
 	private static final String FIELD_TYPE = "field";
@@ -75,35 +75,32 @@ public class ECoreConversionUtils {
 	 * This method transforms {@link Edimap} to {@link EPackage} where classes
 	 * related to this {@link Edimap} will be stored
 	 * 
-	 * @param mappingModel
+	 * @param mapModel
 	 * @return
 	 */
-	public static EPackage mappingModelToEPackage(IEdimap mappingModel) {
+	public static EPackage mappingModelToEPackage(IEdimap mapModel) {
 		final EPackage pkg = EcoreFactory.eINSTANCE.createEPackage();
-		Description desc = mappingModel.getDescription();
+		Description desc = mapModel.getDescription();
 		pkg.setName(desc.getName().toLowerCase());
 		pkg.setNsPrefix(desc.getName().toLowerCase());
-		pkg.setNsURI("http://smooks.org/UNEDI/" 
+		pkg.setNsURI("http://smooks.org/UNEDI/"
 				+ desc.getVersion().replace(':', '_') + "/" + desc.getName());
-		if (mappingModel.getSrc() != null) {
-			annotate(pkg, "src", mappingModel.getSrc().toASCIIString());
+		if (mapModel.getSrc() != null) {
+			annotate(pkg, "src", mapModel.getSrc().toASCIIString());
 		}
-		annotate(pkg, "description.name", mappingModel.getDescription()
-				.getName());
-		annotate(pkg, "description.version", mappingModel.getDescription()
+		annotate(pkg, "description.name", mapModel.getDescription().getName());
+		annotate(pkg, "description.version", mapModel.getDescription()
 				.getVersion());
-		annotate(pkg, "delimeters.segment", mappingModel.getDelimiters()
+		annotate(pkg, "delimeters.segment", mapModel.getDelimiters()
 				.getSegment());
-		annotate(pkg, "delimeters.component", mappingModel.getDelimiters()
+		annotate(pkg, "delimeters.component", mapModel.getDelimiters()
 				.getComponent());
-		annotate(pkg, "delimeters.field", mappingModel.getDelimiters()
-				.getField());
-		annotate(pkg, "delimeters.fieldRepeat", mappingModel.getDelimiters()
+		annotate(pkg, "delimeters.field", mapModel.getDelimiters().getField());
+		annotate(pkg, "delimeters.fieldRepeat", mapModel.getDelimiters()
 				.getFieldRepeat());
-		annotate(pkg, "delimeters.escape", mappingModel.getDelimiters()
-				.getEscape());
+		annotate(pkg, "delimeters.escape", mapModel.getDelimiters().getEscape());
 		annotate(pkg, "delimeters.ignoreCLRF",
-				String.valueOf(mappingModel.getDelimiters().ignoreCRLF()));
+				String.valueOf(mapModel.getDelimiters().ignoreCRLF()));
 		return pkg;
 	}
 
@@ -129,7 +126,7 @@ public class ECoreConversionUtils {
 	 */
 	public static EClass segmentGroupToEClass(ISegmentGroup grp) {
 		EClass clazz = EcoreFactory.eINSTANCE.createEClass();
-		clazz.setName(grp.getXmltag());
+		clazz.setName(toJavaName(grp.getXmltag(), true));
 		addMappingInformation(clazz, grp);
 		return clazz;
 	}
@@ -173,7 +170,7 @@ public class ECoreConversionUtils {
 	public static EReference segmentGroupToEReference(SegmentGroup grp,
 			EClass refClass) {
 		EReference reference = EcoreFactory.eINSTANCE.createEReference();
-		reference.setName(grp.getXmltag());
+		reference.setName(toJavaName(grp.getXmltag(), false));
 		reference.setEType(refClass);
 		reference.setLowerBound(grp.getMinOccurs());
 		reference.setUpperBound(grp.getMaxOccurs());
@@ -198,7 +195,7 @@ public class ECoreConversionUtils {
 							+ "EAttribute, use fieldToEReference");
 		}
 		EAttribute attr = EcoreFactory.eINSTANCE.createEAttribute();
-		attr.setName(field.getXmltag());
+		attr.setName(toJavaName(field.getXmltag(), false));
 		attr.setLowerBound(field.isRequired() ? 1 : 0);
 		attr.setUpperBound(1);
 		if (field.getTypeClass() != null) {
@@ -258,7 +255,7 @@ public class ECoreConversionUtils {
 			}
 		}
 		EReference result = EcoreFactory.eINSTANCE.createEReference();
-		result.setName(field.getXmltag());
+		result.setName(toJavaName(field.getXmltag(), false));
 		result.setLowerBound(field.isRequired() ? 1 : 0);
 		result.setUpperBound(1);
 		result.setEType(newClass);
@@ -280,7 +277,7 @@ public class ECoreConversionUtils {
 							+ component.getXmltag());
 		}
 		EAttribute result = EcoreFactory.eINSTANCE.createEAttribute();
-		result.setName(component.getXmltag());
+		result.setName(toJavaName(component.getXmltag(), false));
 		result.setLowerBound(component.isRequired() ? 1 : 0);
 		result.setUpperBound(1);
 		result.setEType(toEType(component.getTypeClass()));
@@ -311,7 +308,8 @@ public class ECoreConversionUtils {
 	 * @return
 	 */
 	private static EClass fieldToEClass(IField field) {
-		String classifierName = field.getNodeTypeRef() + field.getXmltag();
+		String classifierName = toJavaName(field.getXmltag(), true) + "_"
+				+ field.getNodeTypeRef();
 		EClass newClass = EcoreFactory.eINSTANCE.createEClass();
 		newClass.setName(classifierName);
 		addMappingInformation(newClass, field);
@@ -333,4 +331,29 @@ public class ECoreConversionUtils {
 		}
 	}
 
+	/**
+	 * Convert tricky names to JavaNames with CamelCase etc
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static String toJavaName(String name, boolean className) {
+		name = name.replaceAll("__", "_");
+		StringBuilder result = new StringBuilder();
+		boolean cap = className;
+		for (int i = 0; i < name.length(); i++) {
+			char ch = name.charAt(i);
+			if ('_' == ch) {
+				cap = true;
+			} else {
+				if (cap) {
+					result.append(Character.toUpperCase(ch));
+					cap = false;
+				} else {
+					result.append(Character.toLowerCase(ch));
+				}
+			}
+		}
+		return result.toString();
+	}
 }

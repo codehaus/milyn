@@ -29,60 +29,60 @@
 			</messageIdentifier>
 		</UNH>
 		<CUSCAR>
-			<BEGINNING_OF_MESSAGE>
+			<Beginning_of_message>
 				<DOCUMENT_MESSAGE_NAME>
 				</DOCUMENT_MESSAGE_NAME>
 				<DOCUMENT_MESSAGE_IDENTIFICATION>
 					<Document_message_number>MOL-EU2-HFA-012W-XXXX8896514-01</Document_message_number>
 				</DOCUMENT_MESSAGE_IDENTIFICATION>
 				<Message_function__coded>VSA</Message_function__coded>
-			</BEGINNING_OF_MESSAGE>
-			<DATE_TIME_PERIOD>
+			</Beginning_of_message>
+			<Date_time_period>
 				<DATE_TIME_PERIOD>
 					<Date_time_period_qualifier>184</Date_time_period_qualifier>
 					<Date_time_period>20100429</Date_time_period>
 					<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
 				</DATE_TIME_PERIOD>
-			</DATE_TIME_PERIOD>
-			<PLACE_LOCATION_IDENTIFICATION>
+			</Date_time_period>
+			<Place_location_identification>
 				<Place_location_qualifier>9</Place_location_qualifier>
 				<LOCATION_IDENTIFICATION>
 					<Place_location_identification>CNYTN</Place_location_identification>
 				</LOCATION_IDENTIFICATION>
-			</PLACE_LOCATION_IDENTIFICATION>
-			<QUANTITY>
+			</Place_location_identification>
+			<Quantity>
 				<QUANTITY_DETAILS>
 					<Quantity_qualifier>104</Quantity_qualifier>
 					<Quantity>1</Quantity>
 				</QUANTITY_DETAILS>
-			</QUANTITY>
+			</Quantity>
 			<Segment_group_1>
-				<REFERENCE>
+				<Reference>
 					<REFERENCE>
 						<Reference_qualifier>ACE</Reference_qualifier>
 						<Reference_number></Reference_number>
 						<Line_number>OHNE</Line_number>
 					</REFERENCE>
-				</REFERENCE>
+				</Reference>
 			</Segment_group_1>
 			<Segment_group_1>
-				<REFERENCE>
+				<Reference>
 					<REFERENCE>
 						<Reference_qualifier>ABE</Reference_qualifier>
 						<Reference_number>400190754417</Reference_number>
 					</REFERENCE>
-				</REFERENCE>
+				</Reference>
 			</Segment_group_1>
 			<Segment_group_2>
-				<NAME_AND_ADDRESS>
+				<Name_and_address>
 					<Party_qualifier>RL</Party_qualifier>
 					<PARTY_IDENTIFICATION_DETAILS>
 						<Party_identification>5209394</Party_identification>
 					</PARTY_IDENTIFICATION_DETAILS>
-				</NAME_AND_ADDRESS>
+				</Name_and_address>
 			</Segment_group_2>
 			<Segment_group_4>
-				<DETAILS_OF_TRANSPORT>
+				<Details_of_transport>
 					<Transport_stage_qualifier>13</Transport_stage_qualifier>
 					<Conveyance_reference_number></Conveyance_reference_number>
 					<MODE_OF_TRANSPORT>
@@ -100,66 +100,66 @@
 						<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
 						<Id._of_the_means_of_transport>3EPF4</Id._of_the_means_of_transport>
 					</TRANSPORT_IDENTIFICATION>
-				</DETAILS_OF_TRANSPORT>
-				<DATE_TIME_PERIOD>
+				</Details_of_transport>
+				<Date_time_period>
 					<DATE_TIME_PERIOD>
 						<Date_time_period_qualifier>132</Date_time_period_qualifier>
 						<Date_time_period>20100429</Date_time_period>
 						<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
 					</DATE_TIME_PERIOD>
-				</DATE_TIME_PERIOD>
+				</Date_time_period>
 			</Segment_group_4>
-			<GENERAL_INDICATOR>
+			<General_indicator>
 				<PROCESSING_INDICATOR>
 					<Processing_indicator__coded>962</Processing_indicator__coded>
 					<Code_list_qualifier></Code_list_qualifier>
 					<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
 					<Process_type_identification>J</Process_type_identification>
 				</PROCESSING_INDICATOR>
-			</GENERAL_INDICATOR>
+			</General_indicator>
 			<Segment_group_7>
-				<CONSIGNMENT_INFORMATION>
+				<Consignment_information>
 					<Consolidation_item_number>1</Consolidation_item_number>
 					<DOCUMENT_MESSAGE_DETAILS>
 						<Document_message_number></Document_message_number>
 						<Document_message_status__coded>1</Document_message_status__coded>
 					</DOCUMENT_MESSAGE_DETAILS>
-				</CONSIGNMENT_INFORMATION>
+				</Consignment_information>
 				<Segment_group_8>
-					<REFERENCE>
+					<Reference>
 						<REFERENCE>
 							<Reference_qualifier>0</Reference_qualifier>
 						</REFERENCE>
-					</REFERENCE>
-					<PLACE_LOCATION_IDENTIFICATION>
+					</Reference>
+					<Place_location_identification>
 						<Place_location_qualifier>113</Place_location_qualifier>
 						<LOCATION_IDENTIFICATION>
 							<Place_location_identification>CN</Place_location_identification>
 						</LOCATION_IDENTIFICATION>
-					</PLACE_LOCATION_IDENTIFICATION>
-					<PLACE_LOCATION_IDENTIFICATION>
+					</Place_location_identification>
+					<Place_location_identification>
 						<Place_location_qualifier>8</Place_location_qualifier>
 						<LOCATION_IDENTIFICATION>
 							<Place_location_identification>XXXXX</Place_location_identification>
 						</LOCATION_IDENTIFICATION>
-					</PLACE_LOCATION_IDENTIFICATION>
-					<GENERAL_INDICATOR>
+					</Place_location_identification>
+					<General_indicator>
 						<PROCESSING_INDICATOR>
 							<Processing_indicator__coded>902</Processing_indicator__coded>
 							<Code_list_qualifier></Code_list_qualifier>
 							<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
 							<Process_type_identification>N</Process_type_identification>
 						</PROCESSING_INDICATOR>
-					</GENERAL_INDICATOR>
+					</General_indicator>
 					<Segment_group_14>
-						<GOODS_ITEM_DETAILS>
+						<Goods_item_details>
 							<Goods_item_number>0</Goods_item_number>
 							<NUMBER_AND_TYPE_OF_PACKAGES>
 								<Number_of_packages>4375</Number_of_packages>
 								<Type_of_packages_identification>CT</Type_of_packages_identification>
 							</NUMBER_AND_TYPE_OF_PACKAGES>
-						</GOODS_ITEM_DETAILS>
-						<FREE_TEXT>
+						</Goods_item_details>
+						<Free_text>
 							<Text_subject_qualifier>TRA</Text_subject_qualifier>
 							<Text_function__coded></Text_function__coded>
 							<TEXT_REFERENCE>
@@ -167,8 +167,8 @@
 							<TEXT_LITERAL>
 								<Free_text>XXXX8896514</Free_text>
 							</TEXT_LITERAL>
-						</FREE_TEXT>
-						<FREE_TEXT>
+						</Free_text>
+						<Free_text>
 							<Text_subject_qualifier>AAA</Text_subject_qualifier>
 							<Text_function__coded></Text_function__coded>
 							<TEXT_REFERENCE>
@@ -176,8 +176,8 @@
 							<TEXT_LITERAL>
 								<Free_text>HOT AIR BRUSH ORDER  4500185467 MODEL  SC002E QTY  17500 PCS</Free_text>
 							</TEXT_LITERAL>
-						</FREE_TEXT>
-						<MEASUREMENTS>
+						</Free_text>
+						<Measurements>
 							<Measurement_purpose_qualifier>WT</Measurement_purpose_qualifier>
 							<MEASUREMENT_DETAILS>
 								<Property_measured__coded>G</Property_measured__coded>
@@ -186,7 +186,7 @@
 								<Measure_unit_qualifier>KGM</Measure_unit_qualifier>
 								<Measurement_value>10062.5</Measurement_value>
 							</VALUE_RANGE>
-						</MEASUREMENTS>
+						</Measurements>
 					</Segment_group_14>
 				</Segment_group_8>
 			</Segment_group_7>
@@ -208,60 +208,60 @@
 			</messageIdentifier>
 		</UNH>
 		<CUSCAR>
-			<BEGINNING_OF_MESSAGE>
+			<Beginning_of_message>
 				<DOCUMENT_MESSAGE_NAME>
 				</DOCUMENT_MESSAGE_NAME>
 				<DOCUMENT_MESSAGE_IDENTIFICATION>
 					<Document_message_number>MOL-EU2-HFA-012W-XXXX5086746-01</Document_message_number>
 				</DOCUMENT_MESSAGE_IDENTIFICATION>
 				<Message_function__coded>VSA</Message_function__coded>
-			</BEGINNING_OF_MESSAGE>
-			<DATE_TIME_PERIOD>
+			</Beginning_of_message>
+			<Date_time_period>
 				<DATE_TIME_PERIOD>
 					<Date_time_period_qualifier>184</Date_time_period_qualifier>
 					<Date_time_period>20100429</Date_time_period>
 					<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
 				</DATE_TIME_PERIOD>
-			</DATE_TIME_PERIOD>
-			<PLACE_LOCATION_IDENTIFICATION>
+			</Date_time_period>
+			<Place_location_identification>
 				<Place_location_qualifier>9</Place_location_qualifier>
 				<LOCATION_IDENTIFICATION>
 					<Place_location_identification>KRPUS</Place_location_identification>
 				</LOCATION_IDENTIFICATION>
-			</PLACE_LOCATION_IDENTIFICATION>
-			<QUANTITY>
+			</Place_location_identification>
+			<Quantity>
 				<QUANTITY_DETAILS>
 					<Quantity_qualifier>104</Quantity_qualifier>
 					<Quantity>1</Quantity>
 				</QUANTITY_DETAILS>
-			</QUANTITY>
+			</Quantity>
 			<Segment_group_1>
-				<REFERENCE>
+				<Reference>
 					<REFERENCE>
 						<Reference_qualifier>ACE</Reference_qualifier>
 						<Reference_number></Reference_number>
 						<Line_number>OHNE</Line_number>
 					</REFERENCE>
-				</REFERENCE>
+				</Reference>
 			</Segment_group_1>
 			<Segment_group_1>
-				<REFERENCE>
+				<Reference>
 					<REFERENCE>
 						<Reference_qualifier>ABE</Reference_qualifier>
 						<Reference_number>400186967152</Reference_number>
 					</REFERENCE>
-				</REFERENCE>
+				</Reference>
 			</Segment_group_1>
 			<Segment_group_2>
-				<NAME_AND_ADDRESS>
+				<Name_and_address>
 					<Party_qualifier>RL</Party_qualifier>
 					<PARTY_IDENTIFICATION_DETAILS>
 						<Party_identification>5209394</Party_identification>
 					</PARTY_IDENTIFICATION_DETAILS>
-				</NAME_AND_ADDRESS>
+				</Name_and_address>
 			</Segment_group_2>
 			<Segment_group_4>
-				<DETAILS_OF_TRANSPORT>
+				<Details_of_transport>
 					<Transport_stage_qualifier>13</Transport_stage_qualifier>
 					<Conveyance_reference_number></Conveyance_reference_number>
 					<MODE_OF_TRANSPORT>
@@ -279,66 +279,66 @@
 						<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
 						<Id._of_the_means_of_transport>3EPF4</Id._of_the_means_of_transport>
 					</TRANSPORT_IDENTIFICATION>
-				</DETAILS_OF_TRANSPORT>
-				<DATE_TIME_PERIOD>
+				</Details_of_transport>
+				<Date_time_period>
 					<DATE_TIME_PERIOD>
 						<Date_time_period_qualifier>132</Date_time_period_qualifier>
 						<Date_time_period>20100429</Date_time_period>
 						<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
 					</DATE_TIME_PERIOD>
-				</DATE_TIME_PERIOD>
+				</Date_time_period>
 			</Segment_group_4>
-			<GENERAL_INDICATOR>
+			<General_indicator>
 				<PROCESSING_INDICATOR>
 					<Processing_indicator__coded>962</Processing_indicator__coded>
 					<Code_list_qualifier></Code_list_qualifier>
 					<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
 					<Process_type_identification>J</Process_type_identification>
 				</PROCESSING_INDICATOR>
-			</GENERAL_INDICATOR>
+			</General_indicator>
 			<Segment_group_7>
-				<CONSIGNMENT_INFORMATION>
+				<Consignment_information>
 					<Consolidation_item_number>1</Consolidation_item_number>
 					<DOCUMENT_MESSAGE_DETAILS>
 						<Document_message_number></Document_message_number>
 						<Document_message_status__coded>1</Document_message_status__coded>
 					</DOCUMENT_MESSAGE_DETAILS>
-				</CONSIGNMENT_INFORMATION>
+				</Consignment_information>
 				<Segment_group_8>
-					<REFERENCE>
+					<Reference>
 						<REFERENCE>
 							<Reference_qualifier>0</Reference_qualifier>
 						</REFERENCE>
-					</REFERENCE>
-					<PLACE_LOCATION_IDENTIFICATION>
+					</Reference>
+					<Place_location_identification>
 						<Place_location_qualifier>113</Place_location_qualifier>
 						<LOCATION_IDENTIFICATION>
 							<Place_location_identification>TW</Place_location_identification>
 						</LOCATION_IDENTIFICATION>
-					</PLACE_LOCATION_IDENTIFICATION>
-					<PLACE_LOCATION_IDENTIFICATION>
+					</Place_location_identification>
+					<Place_location_identification>
 						<Place_location_qualifier>8</Place_location_qualifier>
 						<LOCATION_IDENTIFICATION>
 							<Place_location_identification>XXXXX</Place_location_identification>
 						</LOCATION_IDENTIFICATION>
-					</PLACE_LOCATION_IDENTIFICATION>
-					<GENERAL_INDICATOR>
+					</Place_location_identification>
+					<General_indicator>
 						<PROCESSING_INDICATOR>
 							<Processing_indicator__coded>902</Processing_indicator__coded>
 							<Code_list_qualifier></Code_list_qualifier>
 							<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
 							<Process_type_identification>N</Process_type_identification>
 						</PROCESSING_INDICATOR>
-					</GENERAL_INDICATOR>
+					</General_indicator>
 					<Segment_group_14>
-						<GOODS_ITEM_DETAILS>
+						<Goods_item_details>
 							<Goods_item_number>0</Goods_item_number>
 							<NUMBER_AND_TYPE_OF_PACKAGES>
 								<Number_of_packages>19</Number_of_packages>
 								<Type_of_packages_identification></Type_of_packages_identification>
 							</NUMBER_AND_TYPE_OF_PACKAGES>
-						</GOODS_ITEM_DETAILS>
-						<FREE_TEXT>
+						</Goods_item_details>
+						<Free_text>
 							<Text_subject_qualifier>TRA</Text_subject_qualifier>
 							<Text_function__coded></Text_function__coded>
 							<TEXT_REFERENCE>
@@ -346,8 +346,8 @@
 							<TEXT_LITERAL>
 								<Free_text>XXXX5086746</Free_text>
 							</TEXT_LITERAL>
-						</FREE_TEXT>
-						<FREE_TEXT>
+						</Free_text>
+						<Free_text>
 							<Text_subject_qualifier>AAA</Text_subject_qualifier>
 							<Text_function__coded></Text_function__coded>
 							<TEXT_REFERENCE>
@@ -355,8 +355,8 @@
 							<TEXT_LITERAL>
 								<Free_text>TISSUE PAPER DOUBLE COATED TAPE B GRADE DS(WHITE/WHITE)</Free_text>
 							</TEXT_LITERAL>
-						</FREE_TEXT>
-						<MEASUREMENTS>
+						</Free_text>
+						<Measurements>
 							<Measurement_purpose_qualifier>WT</Measurement_purpose_qualifier>
 							<MEASUREMENT_DETAILS>
 								<Property_measured__coded>G</Property_measured__coded>
@@ -365,7 +365,7 @@
 								<Measure_unit_qualifier>KGM</Measure_unit_qualifier>
 								<Measurement_value>19950</Measurement_value>
 							</VALUE_RANGE>
-						</MEASUREMENTS>
+						</Measurements>
 					</Segment_group_14>
 				</Segment_group_8>
 			</Segment_group_7>

@@ -66,13 +66,13 @@ public class ParsingTest extends TestCase {
 		EClass root = (EClass) pkg.getEClassifier("CUSCAR");
 		assertNotNull(root);
 		EReference feature = (EReference) root
-				.getEStructuralFeature("Place_location_identification");
+				.getEStructuralFeature("placeLocationIdentification");
 		assertNotNull(feature);
 		EClass clazz = feature.getEReferenceType();
-		String[] expected = new String[] { "Place_location_qualifier",
-				"LOCATION_IDENTIFICATION",
-				"RELATED_LOCATION_ONE_IDENTIFICATION",
-				"RELATED_LOCATION_TWO_IDENTIFICATION", "Relation__coded" };
+		String[] expected = new String[] { "placeLocationQualifier",
+				"locationIdentification",
+				"relatedLocationOneIdentification",
+				"relatedLocationTwoIdentification", "relationCoded" };
 		String[] parsed = new String[clazz.getEStructuralFeatures().size()];
 		for (int i = 0; i < clazz.getEStructuralFeatures().size(); i++) {
 			String name = clazz.getEStructuralFeatures().get(i).getName();
