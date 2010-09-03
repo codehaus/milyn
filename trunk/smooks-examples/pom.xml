@@ -41,6 +41,7 @@
         <module>edi-with-import-to-java</module>
         <module>yaml-to-java</module>
         <module>dynamic-model-builder</module>
+        <module>camel</module>
 
         <!--<module>ejc/ejc-gen</module>-->
         <!--<module>ejc/ejc-use</module>-->
@@ -67,6 +68,7 @@
         <milyn.smooks.validation.version>${milyn.smooks.core.version}</milyn.smooks.validation.version>
         <milyn.smooks.ejc.version>${milyn.smooks.core.version}</milyn.smooks.ejc.version>
         <milyn.smooks.yaml.version>${milyn.smooks.core.version}</milyn.smooks.yaml.version>
+        <milyn.smooks.camel.version>${milyn.smooks.core.version}</milyn.smooks.camel.version>
     </properties>
 
     <dependencies>

@@ -64,6 +64,9 @@
         
 		<milyn.smooks.yaml.version.base>${milyn.smooks.core.version}</milyn.smooks.yaml.version.base>
         <milyn.smooks.yaml.version>${milyn.smooks.yaml.version.base}</milyn.smooks.yaml.version>
+
+        <milyn.smooks.camel.version.base>${milyn.smooks.core.version}</milyn.smooks.camel.version.base>
+        <milyn.smooks.camel.version>${milyn.smooks.camel.version.base}</milyn.smooks.camel.version>
     </properties>
 
     <modules>
@@ -84,6 +87,7 @@
 		<module>validation</module>
 		<module>fixed-length</module>
 		<module>yaml</module>
+		<module>camel</module>
     </modules>
 
     <dependencies>
