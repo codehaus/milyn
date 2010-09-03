@@ -92,7 +92,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statisticalDetails" eType="ecore:EClass commonDefinitions.ecore#//StatisticalDetails_C527">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statisticalDetails" eType="ecore:EClass commonDefinitions.ecore#//StatisticalDetails_C527"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -183,7 +184,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237">
+        eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -258,7 +260,8 @@
       <details key="description" value=" To specify handling and where necessary, notifyhazards."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="handlingInstructions" eType="ecore:EClass commonDefinitions.ecore#//HandlingInstructions_C524">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="handlingInstructions" eType="ecore:EClass commonDefinitions.ecore#//HandlingInstructions_C524"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -271,7 +274,8 @@
         <details key="xmlTag" value="HANDLING_INSTRUCTIONS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardousMaterial" eType="ecore:EClass commonDefinitions.ecore#//HazardousMaterial_C218">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardousMaterial" eType="ecore:EClass commonDefinitions.ecore#//HazardousMaterial_C218"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -374,7 +378,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="productGroup" eType="ecore:EClass commonDefinitions.ecore#//ProductGroup_C288">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="productGroup" eType="ecore:EClass commonDefinitions.ecore#//ProductGroup_C288"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -761,7 +766,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="billLevelIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//BillLevelIdentification_C045">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//BillLevelIdentification_C045"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -877,7 +883,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="personInheritedCharacteristicDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PersonInheritedCharacteristicDetails_C818">
+        eType="ecore:EClass commonDefinitions.ecore#//PersonInheritedCharacteristicDetails_C818"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -915,7 +922,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeType" eType="ecore:EClass commonDefinitions.ecore#//AttributeType_C955">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeType" eType="ecore:EClass commonDefinitions.ecore#//AttributeType_C955"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -928,7 +936,8 @@
         <details key="xmlTag" value="ATTRIBUTE_TYPE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeDetails" eType="ecore:EClass commonDefinitions.ecore#//AttributeDetails_C956">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeDetails" eType="ecore:EClass commonDefinitions.ecore#//AttributeDetails_C956"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1148,7 +1157,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="termsOfDeliveryOrTransport"
-        eType="ecore:EClass commonDefinitions.ecore#//TermsOfDeliveryOrTransport_C100">
+        eType="ecore:EClass commonDefinitions.ecore#//TermsOfDeliveryOrTransport_C100"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1276,7 +1286,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="requirementConditionIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//RequirementConditionIdentification_C550">
+        eType="ecore:EClass commonDefinitions.ecore#//RequirementConditionIdentification_C550"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1315,7 +1326,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="numberOfUnitDetails" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//NumberOfUnitDetails_C523">
+        eType="ecore:EClass commonDefinitions.ecore#//NumberOfUnitDetails_C523" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -1533,7 +1544,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="allowanceChargeInformation"
-        eType="ecore:EClass commonDefinitions.ecore#//AllowanceChargeInformation_C552">
+        eType="ecore:EClass commonDefinitions.ecore#//AllowanceChargeInformation_C552"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1574,7 +1586,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="specialServicesIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//SpecialServicesIdentification_C214">
+        eType="ecore:EClass commonDefinitions.ecore#//SpecialServicesIdentification_C214"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1612,7 +1625,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="paymentTerms" eType="ecore:EClass commonDefinitions.ecore#//PaymentTerms_C110">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="paymentTerms" eType="ecore:EClass commonDefinitions.ecore#//PaymentTerms_C110"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1625,7 +1639,8 @@
         <details key="xmlTag" value="PAYMENT_TERMS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="termsTimeInformation" eType="ecore:EClass commonDefinitions.ecore#//TermsTimeInformation_C112">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="termsTimeInformation" eType="ecore:EClass commonDefinitions.ecore#//TermsTimeInformation_C112"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1781,7 +1796,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dimensions" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Dimensions_C211">
+        eType="ecore:EClass commonDefinitions.ecore#//Dimensions_C211" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -1885,7 +1900,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="contributionType" eType="ecore:EClass commonDefinitions.ecore#//ContributionType_C953">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contributionType" eType="ecore:EClass commonDefinitions.ecore#//ContributionType_C953"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1898,7 +1914,8 @@
         <details key="xmlTag" value="CONTRIBUTION_TYPE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1911,7 +1928,8 @@
         <details key="xmlTag" value="INSTRUCTION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2158,7 +2176,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeType" eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeType_C241">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeType" eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeType_C241"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2172,7 +2191,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeAccountDetail"
-        eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeAccountDetail_C533">
+        eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeAccountDetail_C533"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2199,7 +2219,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeDetail" eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeDetail_C243">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeDetail" eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeDetail_C243"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2357,7 +2378,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="ecore:EClass commonDefinitions.ecore#//FrequencyDetails_C526">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="ecore:EClass commonDefinitions.ecore#//FrequencyDetails_C526"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2398,7 +2420,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sampleLocationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//SampleLocationDetails_C514">
+        eType="ecore:EClass commonDefinitions.ecore#//SampleLocationDetails_C514"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2437,7 +2460,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="locationIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//LocationIdentification_C517">
+        eType="ecore:EClass commonDefinitions.ecore#//LocationIdentification_C517"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2451,7 +2475,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relatedLocationOneIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//RelatedLocationOneIdentification_C519">
+        eType="ecore:EClass commonDefinitions.ecore#//RelatedLocationOneIdentification_C519"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2465,7 +2490,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relatedLocationTwoIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//RelatedLocationTwoIdentification_C553">
+        eType="ecore:EClass commonDefinitions.ecore#//RelatedLocationTwoIdentification_C553"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2683,7 +2709,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="questionDetails" eType="ecore:EClass commonDefinitions.ecore#//QuestionDetails_C811">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="questionDetails" eType="ecore:EClass commonDefinitions.ecore#//QuestionDetails_C811"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2696,7 +2723,8 @@
         <details key="xmlTag" value="QUESTION_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="responseDetails" eType="ecore:EClass commonDefinitions.ecore#//ResponseDetails_C812">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="responseDetails" eType="ecore:EClass commonDefinitions.ecore#//ResponseDetails_C812"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2772,7 +2800,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="applicationErrorDetail"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ApplicationErrorDetail_C901">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ApplicationErrorDetail_C901"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -2872,7 +2901,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contractAndCarriageCondition"
-        eType="ecore:EClass commonDefinitions.ecore#//ContractAndCarriageCondition_C536">
+        eType="ecore:EClass commonDefinitions.ecore#//ContractAndCarriageCondition_C536"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2885,7 +2915,8 @@
         <details key="xmlTag" value="CONTRACT_AND_CARRIAGE_CONDITION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="service" eType="ecore:EClass commonDefinitions.ecore#//Service_C233">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="service" eType="ecore:EClass commonDefinitions.ecore#//Service_C233"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2898,7 +2929,8 @@
         <details key="xmlTag" value="SERVICE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="transportPriority" eType="ecore:EClass commonDefinitions.ecore#//TransportPriority_C537">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="transportPriority" eType="ecore:EClass commonDefinitions.ecore#//TransportPriority_C537"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2911,7 +2943,8 @@
         <details key="xmlTag" value="TRANSPORT_PRIORITY"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="ecore:EClass commonDefinitions.ecore#//NatureOfCargo_C703">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="ecore:EClass commonDefinitions.ecore#//NatureOfCargo_C703"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3206,7 +3239,8 @@
       <details key="description" value=" To indicate the type of cargo as a generalclassification."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="ecore:EClass commonDefinitions.ecore#//NatureOfCargo_C703">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="ecore:EClass commonDefinitions.ecore#//NatureOfCargo_C703"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3231,7 +3265,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="paymentInstructionDetails"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PaymentInstructionDetails_C534">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PaymentInstructionDetails_C534"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -3269,7 +3304,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfDamage" eType="ecore:EClass commonDefinitions.ecore#//TypeOfDamage_C821">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfDamage" eType="ecore:EClass commonDefinitions.ecore#//TypeOfDamage_C821"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3282,7 +3318,8 @@
         <details key="xmlTag" value="TYPE_OF_DAMAGE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="damageArea" eType="ecore:EClass commonDefinitions.ecore#//DamageArea_C822">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="damageArea" eType="ecore:EClass commonDefinitions.ecore#//DamageArea_C822"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3295,7 +3332,8 @@
         <details key="xmlTag" value="DAMAGE_AREA"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="damageSeverity" eType="ecore:EClass commonDefinitions.ecore#//DamageSeverity_C825">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="damageSeverity" eType="ecore:EClass commonDefinitions.ecore#//DamageSeverity_C825"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3308,7 +3346,8 @@
         <details key="xmlTag" value="DAMAGE_SEVERITY"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="ecore:EClass commonDefinitions.ecore#//Action_C826">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="ecore:EClass commonDefinitions.ecore#//Action_C826"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3384,7 +3423,8 @@
       <details key="description" value=" To provide details of the function of a monetaryamount."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="monetaryFunction" eType="ecore:EClass commonDefinitions.ecore#//MonetaryFunction_C549">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="monetaryFunction" eType="ecore:EClass commonDefinitions.ecore#//MonetaryFunction_C549"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3460,7 +3500,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="agreementTypeIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//AgreementTypeIdentification_C543">
+        eType="ecore:EClass commonDefinitions.ecore#//AgreementTypeIdentification_C543"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3953,7 +3994,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="arrayStructureIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ArrayStructureIdentification_C779">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ArrayStructureIdentification_C779"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -3967,7 +4009,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4096,7 +4139,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="languageDetails" eType="ecore:EClass commonDefinitions.ecore#//LanguageDetails_C508">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="languageDetails" eType="ecore:EClass commonDefinitions.ecore#//LanguageDetails_C508"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4120,7 +4164,8 @@
       <details key="description" value=" To indicate the type and function of a message and totransmit the identifying number."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4134,7 +4179,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageIdentification_C106">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageIdentification_C106"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4185,7 +4231,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="valueListIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ValueListIdentification_C780">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ValueListIdentification_C780"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -4199,7 +4246,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4265,7 +4313,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4355,7 +4404,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fileIdentification" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//FileIdentification_C077">
+        eType="ecore:EClass commonDefinitions.ecore#//FileIdentification_C077" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -4368,7 +4417,8 @@
         <details key="xmlTag" value="FILE_IDENTIFICATION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="fileDetails" eType="ecore:EClass commonDefinitions.ecore#//FileDetails_C099">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fileDetails" eType="ecore:EClass commonDefinitions.ecore#//FileDetails_C099"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4538,7 +4588,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="chargeAllowanceAccount"
-        eType="ecore:EClass commonDefinitions.ecore#//ChargeAllowanceAccount_C878">
+        eType="ecore:EClass commonDefinitions.ecore#//ChargeAllowanceAccount_C878"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4627,7 +4678,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attendeeCategory" eType="ecore:EClass commonDefinitions.ecore#//AttendeeCategory_C839">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attendeeCategory" eType="ecore:EClass commonDefinitions.ecore#//AttendeeCategory_C839"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4641,7 +4693,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attendanceAdmissionDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//AttendanceAdmissionDetails_C840">
+        eType="ecore:EClass commonDefinitions.ecore#//AttendanceAdmissionDetails_C840"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4655,7 +4708,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attendanceDischargeDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//AttendanceDischargeDetails_C841">
+        eType="ecore:EClass commonDefinitions.ecore#//AttendanceDischargeDetails_C841"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4680,7 +4734,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="codeSetIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//CodeSetIdentification_C702">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//CodeSetIdentification_C702"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -4849,7 +4904,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dataSetIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//DataSetIdentification_C782">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//DataSetIdentification_C782"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -4863,7 +4919,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4889,7 +4946,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="ecore:EClass commonDefinitions.ecore#//SequenceInformation_C286">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="ecore:EClass commonDefinitions.ecore#//SequenceInformation_C286"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4940,7 +4998,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="ecore:EClass commonDefinitions.ecore#//MeasurementDetails_C502">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="ecore:EClass commonDefinitions.ecore#//MeasurementDetails_C502"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4953,7 +5012,8 @@
         <details key="xmlTag" value="MEASUREMENT_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="valueRange" eType="ecore:EClass commonDefinitions.ecore#//ValueRange_C174">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="valueRange" eType="ecore:EClass commonDefinitions.ecore#//ValueRange_C174"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5423,7 +5483,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="physicalOrLogicalStateInformation"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PhysicalOrLogicalStateInformation_C564">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PhysicalOrLogicalStateInformation_C564"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5590,7 +5651,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="monetaryAmount" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//MonetaryAmount_C516">
+        eType="ecore:EClass commonDefinitions.ecore#//MonetaryAmount_C516" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5667,7 +5728,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="characteristicValue" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//CharacteristicValue_C889">
+        eType="ecore:EClass commonDefinitions.ecore#//CharacteristicValue_C889" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5692,7 +5753,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="statisticalConceptIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//StatisticalConceptIdentification_C785">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//StatisticalConceptIdentification_C785"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5706,7 +5768,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5772,7 +5835,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="clinicalInterventionDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//ClinicalInterventionDetails_C828">
+        eType="ecore:EClass commonDefinitions.ecore#//ClinicalInterventionDetails_C828"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5889,7 +5953,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="ecore:EClass commonDefinitions.ecore#//MeasurementDetails_C502">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="ecore:EClass commonDefinitions.ecore#//MeasurementDetails_C502"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5903,7 +5968,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5969,7 +6035,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="patternDescription" eType="ecore:EClass commonDefinitions.ecore#//PatternDescription_C329">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patternDescription" eType="ecore:EClass commonDefinitions.ecore#//PatternDescription_C329"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6213,7 +6280,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="governmentAction" eType="ecore:EClass commonDefinitions.ecore#//GovernmentAction_C232">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="governmentAction" eType="ecore:EClass commonDefinitions.ecore#//GovernmentAction_C232"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6406,7 +6474,8 @@
       <details key="description" value=" To provide component details of an object (e.g.product, container) such as its type and the materialof which it is composed."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfUnitComponent" eType="ecore:EClass commonDefinitions.ecore#//TypeOfUnitComponent_C823">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfUnitComponent" eType="ecore:EClass commonDefinitions.ecore#//TypeOfUnitComponent_C823"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6419,7 +6488,8 @@
         <details key="xmlTag" value="TYPE_OF_UNIT_COMPONENT"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="componentMaterial" eType="ecore:EClass commonDefinitions.ecore#//ComponentMaterial_C824">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="componentMaterial" eType="ecore:EClass commonDefinitions.ecore#//ComponentMaterial_C824"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6601,7 +6671,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="reference" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Reference_C506">
+        eType="ecore:EClass commonDefinitions.ecore#//Reference_C506" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -6625,7 +6695,8 @@
       <details key="description" value=" To specify charges."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="charge" eType="ecore:EClass commonDefinitions.ecore#//Charge_C200">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="charge" eType="ecore:EClass commonDefinitions.ecore#//Charge_C200"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6638,7 +6709,8 @@
         <details key="xmlTag" value="CHARGE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6651,7 +6723,8 @@
         <details key="xmlTag" value="RATE_TARIFF_CLASS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="commodityRateDetail" eType="ecore:EClass commonDefinitions.ecore#//CommodityRateDetail_C528">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="commodityRateDetail" eType="ecore:EClass commonDefinitions.ecore#//CommodityRateDetail_C528"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6665,7 +6738,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClassDetail"
-        eType="ecore:EClass commonDefinitions.ecore#//RateTariffClassDetail_C554">
+        eType="ecore:EClass commonDefinitions.ecore#//RateTariffClassDetail_C554"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6704,7 +6778,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identityNumberRange" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//IdentityNumberRange_C208">
+        eType="ecore:EClass commonDefinitions.ecore#//IdentityNumberRange_C208" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -6729,7 +6803,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="insuranceCoverType" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//InsuranceCoverType_C330">
+        eType="ecore:EClass commonDefinitions.ecore#//InsuranceCoverType_C330" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -6743,7 +6817,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="insuranceCoverDetails"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//InsuranceCoverDetails_C331">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//InsuranceCoverDetails_C331"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -6767,7 +6842,8 @@
       <details key="description" value=" To provide information related to the processing andpurpose of a financial message."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="businessFunction" eType="ecore:EClass commonDefinitions.ecore#//BusinessFunction_C521">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="businessFunction" eType="ecore:EClass commonDefinitions.ecore#//BusinessFunction_C521"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6808,7 +6884,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="bankOperation" eType="ecore:EClass commonDefinitions.ecore#//BankOperation_C551">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="bankOperation" eType="ecore:EClass commonDefinitions.ecore#//BankOperation_C551"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6846,7 +6923,8 @@
       <details key="description" value=" To identify a type of object at risk."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectType" eType="ecore:EClass commonDefinitions.ecore#//RiskObjectType_C851">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectType" eType="ecore:EClass commonDefinitions.ecore#//RiskObjectType_C851"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6859,7 +6937,8 @@
         <details key="xmlTag" value="RISK_OBJECT_TYPE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectSubType" eType="ecore:EClass commonDefinitions.ecore#//RiskObjectSubType_C852">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectSubType" eType="ecore:EClass commonDefinitions.ecore#//RiskObjectSubType_C852"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7120,7 +7199,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7134,7 +7214,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7173,7 +7254,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nameComponentDetails" eType="ecore:EClass commonDefinitions.ecore#//NameComponentDetails_C816">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nameComponentDetails" eType="ecore:EClass commonDefinitions.ecore#//NameComponentDetails_C816"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7278,7 +7360,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="computerEnvironmentIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ComputerEnvironmentIdentification_C079">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ComputerEnvironmentIdentification_C079"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -7608,7 +7691,8 @@
       <details key="description" value=" To specify currencies used in the transaction andrelevant details for the rate of exchange."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="currencyDetails" eType="ecore:EClass commonDefinitions.ecore#//CurrencyDetails_C504">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="currencyDetails" eType="ecore:EClass commonDefinitions.ecore#//CurrencyDetails_C504"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7817,7 +7901,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.BigDecimalDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="packagingDetails" eType="ecore:EClass commonDefinitions.ecore#//PackagingDetails_C531">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="packagingDetails" eType="ecore:EClass commonDefinitions.ecore#//PackagingDetails_C531"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7830,7 +7915,8 @@
         <details key="xmlTag" value="PACKAGING_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="packageType" eType="ecore:EClass commonDefinitions.ecore#//PackageType_C202">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="packageType" eType="ecore:EClass commonDefinitions.ecore#//PackageType_C202"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7844,7 +7930,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="packageTypeIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//PackageTypeIdentification_C402">
+        eType="ecore:EClass commonDefinitions.ecore#//PackageTypeIdentification_C402"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7858,7 +7945,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="returnablePackageDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//ReturnablePackageDetails_C532">
+        eType="ecore:EClass commonDefinitions.ecore#//ReturnablePackageDetails_C532"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7985,7 +8073,8 @@
       <details key="description" value=" To identify a charge."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="chargeCategory" eType="ecore:EClass commonDefinitions.ecore#//ChargeCategory_C229">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="chargeCategory" eType="ecore:EClass commonDefinitions.ecore#//ChargeCategory_C229"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7998,7 +8087,8 @@
         <details key="xmlTag" value="CHARGE_CATEGORY"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="methodOfPayment" eType="ecore:EClass commonDefinitions.ecore#//MethodOfPayment_C231">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="methodOfPayment" eType="ecore:EClass commonDefinitions.ecore#//MethodOfPayment_C231"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8128,7 +8218,8 @@
       <details key="description" value=" To specify price information."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="priceInformation" eType="ecore:EClass commonDefinitions.ecore#//PriceInformation_C509">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="priceInformation" eType="ecore:EClass commonDefinitions.ecore#//PriceInformation_C509"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8326,7 +8417,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="remunerationTypeIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//RemunerationTypeIdentification_C049">
+        eType="ecore:EClass commonDefinitions.ecore#//RemunerationTypeIdentification_C049"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8414,7 +8506,8 @@
       <details key="description" value=" To specify the status of an object or service,including its category and the reason(s) for thestatus."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statusCategory" eType="ecore:EClass commonDefinitions.ecore#//StatusCategory_C601">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statusCategory" eType="ecore:EClass commonDefinitions.ecore#//StatusCategory_C601"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8427,7 +8520,8 @@
         <details key="xmlTag" value="STATUS_CATEGORY"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="status" eType="ecore:EClass commonDefinitions.ecore#//Status_C555">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="status" eType="ecore:EClass commonDefinitions.ecore#//Status_C555"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8440,7 +8534,8 @@
         <details key="xmlTag" value="STATUS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statusReason" eType="ecore:EClass commonDefinitions.ecore#//StatusReason_C556">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statusReason" eType="ecore:EClass commonDefinitions.ecore#//StatusReason_C556"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8544,7 +8639,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="informationRequest" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//InformationRequest_C333">
+        eType="ecore:EClass commonDefinitions.ecore#//InformationRequest_C333" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -8659,7 +8754,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="processTypeAndDescription"
-        eType="ecore:EClass commonDefinitions.ecore#//ProcessTypeAndDescription_C242">
+        eType="ecore:EClass commonDefinitions.ecore#//ProcessTypeAndDescription_C242"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8673,7 +8769,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="processIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//ProcessIdentificationDetails_C830">
+        eType="ecore:EClass commonDefinitions.ecore#//ProcessIdentificationDetails_C830"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8803,7 +8900,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="qualificationClassification"
-        eType="ecore:EClass commonDefinitions.ecore#//QualificationClassification_C950">
+        eType="ecore:EClass commonDefinitions.ecore#//QualificationClassification_C950"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8893,7 +8991,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237">
+        eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8906,7 +9005,8 @@
         <details key="xmlTag" value="EQUIPMENT_IDENTIFICATION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentSizeAndType" eType="ecore:EClass commonDefinitions.ecore#//EquipmentSizeAndType_C224">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentSizeAndType" eType="ecore:EClass commonDefinitions.ecore#//EquipmentSizeAndType_C224"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8972,7 +9072,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rateDetails" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//RateDetails_C128">
+        eType="ecore:EClass commonDefinitions.ecore#//RateDetails_C128" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -9179,7 +9279,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountingJournalIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//AccountingJournalIdentification_C595">
+        eType="ecore:EClass commonDefinitions.ecore#//AccountingJournalIdentification_C595"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -9193,7 +9294,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountingEntryTypeDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//AccountingEntryTypeDetails_C596">
+        eType="ecore:EClass commonDefinitions.ecore#//AccountingEntryTypeDetails_C596"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -9232,7 +9334,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="salesChannelIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//SalesChannelIdentification_C332">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//SalesChannelIdentification_C332"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -9701,7 +9804,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="organisationClassificationDetail"
-        eType="ecore:EClass commonDefinitions.ecore#//OrganisationClassificationDetail_C844">
+        eType="ecore:EClass commonDefinitions.ecore#//OrganisationClassificationDetail_C844"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -9739,7 +9843,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="priceMultiplierInformation"
-        eType="ecore:EClass commonDefinitions.ecore#//PriceMultiplierInformation_C138">
+        eType="ecore:EClass commonDefinitions.ecore#//PriceMultiplierInformation_C138"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -9842,7 +9947,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="resultDetails" eType="ecore:EClass commonDefinitions.ecore#//ResultDetails_C831">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resultDetails" eType="ecore:EClass commonDefinitions.ecore#//ResultDetails_C831"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -9856,7 +9962,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="measurementUnitDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//MeasurementUnitDetails_C848">
+        eType="ecore:EClass commonDefinitions.ecore#//MeasurementUnitDetails_C848"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10322,7 +10429,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nationalityDetails" eType="ecore:EClass commonDefinitions.ecore#//NationalityDetails_C042">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nationalityDetails" eType="ecore:EClass commonDefinitions.ecore#//NationalityDetails_C042"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10438,7 +10546,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="maritalStatusDetails" eType="ecore:EClass commonDefinitions.ecore#//MaritalStatusDetails_C085">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="maritalStatusDetails" eType="ecore:EClass commonDefinitions.ecore#//MaritalStatusDetails_C085"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10451,7 +10560,8 @@
         <details key="xmlTag" value="MARITAL_STATUS_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="religionDetails" eType="ecore:EClass commonDefinitions.ecore#//ReligionDetails_C101">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="religionDetails" eType="ecore:EClass commonDefinitions.ecore#//ReligionDetails_C101"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10563,7 +10673,8 @@
       <details key="description" value=" To describe the nature of the test performed."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="testMethod" eType="ecore:EClass commonDefinitions.ecore#//TestMethod_C244">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testMethod" eType="ecore:EClass commonDefinitions.ecore#//TestMethod_C244"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10630,7 +10741,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="testReason" eType="ecore:EClass commonDefinitions.ecore#//TestReason_C515">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testReason" eType="ecore:EClass commonDefinitions.ecore#//TestReason_C515"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10720,7 +10832,8 @@
       <details key="description" value=" To specify operational transport movement details fora goods item or equipment (which may differ from thecontractual conditions)."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="movementType" eType="ecore:EClass commonDefinitions.ecore#//MovementType_C219">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="movementType" eType="ecore:EClass commonDefinitions.ecore#//MovementType_C219"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10915,7 +11028,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountHolderIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//AccountHolderIdentification_C078">
+        eType="ecore:EClass commonDefinitions.ecore#//AccountHolderIdentification_C078"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10929,7 +11043,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="institutionIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//InstitutionIdentification_C088">
+        eType="ecore:EClass commonDefinitions.ecore#//InstitutionIdentification_C088"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11108,7 +11223,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="marksLabels" eType="ecore:EClass commonDefinitions.ecore#//MarksLabels_C210">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="marksLabels" eType="ecore:EClass commonDefinitions.ecore#//MarksLabels_C210"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11135,7 +11251,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfMarking" eType="ecore:EClass commonDefinitions.ecore#//TypeOfMarking_C827">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfMarking" eType="ecore:EClass commonDefinitions.ecore#//TypeOfMarking_C827"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11277,7 +11394,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="processingIndicator" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//ProcessingIndicator_C529">
+        eType="ecore:EClass commonDefinitions.ecore#//ProcessingIndicator_C529" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -11366,7 +11483,8 @@
       <details key="description" value=" To define the sampling parameters associated withsummary statistics reported."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="ecore:EClass commonDefinitions.ecore#//FrequencyDetails_C526">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="ecore:EClass commonDefinitions.ecore#//FrequencyDetails_C526"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11392,7 +11510,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.BigDecimalDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sizeDetails" eType="ecore:EClass commonDefinitions.ecore#//SizeDetails_C512">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sizeDetails" eType="ecore:EClass commonDefinitions.ecore#//SizeDetails_C512"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11676,7 +11795,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dosageDetails" eType="ecore:EClass commonDefinitions.ecore#//DosageDetails_C838">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dosageDetails" eType="ecore:EClass commonDefinitions.ecore#//DosageDetails_C838"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11911,7 +12031,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="numberAndTypeOfPackages"
-        eType="ecore:EClass commonDefinitions.ecore#//NumberAndTypeOfPackages_C213">
+        eType="ecore:EClass commonDefinitions.ecore#//NumberAndTypeOfPackages_C213"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11936,7 +12057,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="purposeOfConveyanceCall"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PurposeOfConveyanceCall_C525">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PurposeOfConveyanceCall_C525"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -11973,7 +12095,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.BigDecimalDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="customsIdentityCodes" eType="ecore:EClass commonDefinitions.ecore#//CustomsIdentityCodes_C246">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="customsIdentityCodes" eType="ecore:EClass commonDefinitions.ecore#//CustomsIdentityCodes_C246"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12011,7 +12134,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="itemCharacteristic" eType="ecore:EClass commonDefinitions.ecore#//ItemCharacteristic_C272">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="itemCharacteristic" eType="ecore:EClass commonDefinitions.ecore#//ItemCharacteristic_C272"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12024,7 +12148,8 @@
         <details key="xmlTag" value="ITEM_CHARACTERISTIC"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="itemDescription" eType="ecore:EClass commonDefinitions.ecore#//ItemDescription_C273">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="itemDescription" eType="ecore:EClass commonDefinitions.ecore#//ItemDescription_C273"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12076,7 +12201,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="range" eType="ecore:EClass commonDefinitions.ecore#//Range_C280">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="range" eType="ecore:EClass commonDefinitions.ecore#//Range_C280"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12271,7 +12397,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="formulaComplexity" eType="ecore:EClass commonDefinitions.ecore#//FormulaComplexity_C961">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formulaComplexity" eType="ecore:EClass commonDefinitions.ecore#//FormulaComplexity_C961"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12348,7 +12475,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="temperatureSetting" eType="ecore:EClass commonDefinitions.ecore#//TemperatureSetting_C239">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="temperatureSetting" eType="ecore:EClass commonDefinitions.ecore#//TemperatureSetting_C239"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12424,7 +12552,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="employmentCategory" eType="ecore:EClass commonDefinitions.ecore#//EmploymentCategory_C948">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="employmentCategory" eType="ecore:EClass commonDefinitions.ecore#//EmploymentCategory_C948"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12437,7 +12566,8 @@
         <details key="xmlTag" value="EMPLOYMENT_CATEGORY"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="occupation" eType="ecore:EClass commonDefinitions.ecore#//Occupation_C951">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occupation" eType="ecore:EClass commonDefinitions.ecore#//Occupation_C951"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12451,7 +12581,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="qualificationClassification"
-        eType="ecore:EClass commonDefinitions.ecore#//QualificationClassification_C950">
+        eType="ecore:EClass commonDefinitions.ecore#//QualificationClassification_C950"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12880,7 +13011,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -12931,7 +13063,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="priorityDetails" eType="ecore:EClass commonDefinitions.ecore#//PriorityDetails_C585">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="priorityDetails" eType="ecore:EClass commonDefinitions.ecore#//PriorityDetails_C585"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12956,7 +13089,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="communicationContact" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact_C076">
+        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact_C076" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -12980,7 +13113,8 @@
       <details key="description" value=" A segment to identify the location of an applicationerror within a message."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="errorPointDetails" eType="ecore:EClass commonDefinitions.ecore#//ErrorPointDetails_C701">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="errorPointDetails" eType="ecore:EClass commonDefinitions.ecore#//ErrorPointDetails_C701"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12994,7 +13128,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="errorSegmentPointDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//ErrorSegmentPointDetails_C853">
+        eType="ecore:EClass commonDefinitions.ecore#//ErrorSegmentPointDetails_C853"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13019,7 +13154,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="footnoteSetIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//FootnoteSetIdentification_C783">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//FootnoteSetIdentification_C783"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -13033,7 +13169,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13151,7 +13288,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messageIdentifier" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//MessageIdentifier_C709">
+        eType="ecore:EClass commonDefinitions.ecore#//MessageIdentifier_C709" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -13191,7 +13328,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="ecore:EClass commonDefinitions.ecore#//Relationship_C941">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="ecore:EClass commonDefinitions.ecore#//Relationship_C941"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13385,7 +13523,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -13399,7 +13537,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails_C503">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails_C503"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13465,7 +13604,8 @@
       <details key="description" value=" To specify an address."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="addressUsage" eType="ecore:EClass commonDefinitions.ecore#//AddressUsage_C817">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addressUsage" eType="ecore:EClass commonDefinitions.ecore#//AddressUsage_C817"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13478,7 +13618,8 @@
         <details key="xmlTag" value="ADDRESS_USAGE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="addressDetails" eType="ecore:EClass commonDefinitions.ecore#//AddressDetails_C090">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addressDetails" eType="ecore:EClass commonDefinitions.ecore#//AddressDetails_C090"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13532,7 +13673,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="countrySubEntityDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//CountrySubEntityDetails_C819">
+        eType="ecore:EClass commonDefinitions.ecore#//CountrySubEntityDetails_C819"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13546,7 +13688,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="locationIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//LocationIdentification_C517">
+        eType="ecore:EClass commonDefinitions.ecore#//LocationIdentification_C517"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13585,7 +13728,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206">
+        eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -13690,7 +13833,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13703,7 +13847,8 @@
         <details key="xmlTag" value="PARTY_IDENTIFICATION_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress_C058">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress_C058"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13716,7 +13861,8 @@
         <details key="xmlTag" value="NAME_AND_ADDRESS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="partyName" eType="ecore:EClass commonDefinitions.ecore#//PartyName_C080">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="partyName" eType="ecore:EClass commonDefinitions.ecore#//PartyName_C080"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -13729,7 +13875,8 @@
         <details key="xmlTag" value="PARTY_NAME"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="street" eType="ecore:EClass commonDefinitions.ecore#//Street_C059">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="street" eType="ecore:EClass commonDefinitions.ecore#//Street_C059"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14056,7 +14203,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="transportIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//TransportIdentification_C222">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//TransportIdentification_C222"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -14094,7 +14242,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="safetySection" eType="ecore:EClass commonDefinitions.ecore#//SafetySection_C814">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="safetySection" eType="ecore:EClass commonDefinitions.ecore#//SafetySection_C814"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14108,7 +14257,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="additionalSafetyInformation"
-        eType="ecore:EClass commonDefinitions.ecore#//AdditionalSafetyInformation_C815">
+        eType="ecore:EClass commonDefinitions.ecore#//AdditionalSafetyInformation_C815"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14160,7 +14310,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardCode" eType="ecore:EClass commonDefinitions.ecore#//HazardCode_C205">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardCode" eType="ecore:EClass commonDefinitions.ecore#//HazardCode_C205"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14173,7 +14324,8 @@
         <details key="xmlTag" value="HAZARD_CODE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="undgInformation" eType="ecore:EClass commonDefinitions.ecore#//UndgInformation_C234">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="undgInformation" eType="ecore:EClass commonDefinitions.ecore#//UndgInformation_C234"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14187,7 +14339,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dangerousGoodsShipmentFlashpoint"
-        eType="ecore:EClass commonDefinitions.ecore#//DangerousGoodsShipmentFlashpoint_C223">
+        eType="ecore:EClass commonDefinitions.ecore#//DangerousGoodsShipmentFlashpoint_C223"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14253,7 +14406,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="hazardIdentificationPlacardDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//HazardIdentificationPlacardDetails_C235">
+        eType="ecore:EClass commonDefinitions.ecore#//HazardIdentificationPlacardDetails_C235"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14266,7 +14420,8 @@
         <details key="xmlTag" value="HAZARD_IDENTIFICATION_PLACARD_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dangerousGoodsLabel" eType="ecore:EClass commonDefinitions.ecore#//DangerousGoodsLabel_C236">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dangerousGoodsLabel" eType="ecore:EClass commonDefinitions.ecore#//DangerousGoodsLabel_C236"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14512,7 +14667,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod_C507">
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod_C507" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -14550,7 +14705,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="departmentOrEmployeeDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//DepartmentOrEmployeeDetails_C056">
+        eType="ecore:EClass commonDefinitions.ecore#//DepartmentOrEmployeeDetails_C056"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14589,7 +14745,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="structureComponentIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//StructureComponentIdentification_C786">
+        eType="ecore:EClass commonDefinitions.ecore#//StructureComponentIdentification_C786"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14603,7 +14760,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14643,7 +14801,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="positionIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778">
+        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14657,7 +14816,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14968,7 +15128,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="modeOfTransport" eType="ecore:EClass commonDefinitions.ecore#//ModeOfTransport_C220">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="modeOfTransport" eType="ecore:EClass commonDefinitions.ecore#//ModeOfTransport_C220"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14981,7 +15142,8 @@
         <details key="xmlTag" value="MODE_OF_TRANSPORT"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="transportMeans" eType="ecore:EClass commonDefinitions.ecore#//TransportMeans_C228">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="transportMeans" eType="ecore:EClass commonDefinitions.ecore#//TransportMeans_C228"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14994,7 +15156,8 @@
         <details key="xmlTag" value="TRANSPORT_MEANS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="carrier" eType="ecore:EClass commonDefinitions.ecore#//Carrier_C040">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="carrier" eType="ecore:EClass commonDefinitions.ecore#//Carrier_C040"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15022,7 +15185,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="excessTransportationInformation"
-        eType="ecore:EClass commonDefinitions.ecore#//ExcessTransportationInformation_C401">
+        eType="ecore:EClass commonDefinitions.ecore#//ExcessTransportationInformation_C401"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15036,7 +15200,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="transportIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//TransportIdentification_C222">
+        eType="ecore:EClass commonDefinitions.ecore#//TransportIdentification_C222"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15375,7 +15540,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails_C503">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails_C503"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15414,7 +15580,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="positionIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778">
+        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15553,7 +15720,8 @@
       <details key="description" value=" To identify an event."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="eventType" eType="ecore:EClass commonDefinitions.ecore#//EventType_C030">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="eventType" eType="ecore:EClass commonDefinitions.ecore#//EventType_C030"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15566,7 +15734,8 @@
         <details key="xmlTag" value="EVENT_TYPE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="eventIdentification" eType="ecore:EClass commonDefinitions.ecore#//EventIdentification_C063">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="eventIdentification" eType="ecore:EClass commonDefinitions.ecore#//EventIdentification_C063"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15646,7 +15815,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15723,7 +15893,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="footnoteIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//FootnoteIdentification_C784">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//FootnoteIdentification_C784"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -15737,7 +15908,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15918,7 +16090,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipCategory" eType="ecore:EClass commonDefinitions.ecore#//MembershipCategory_C942">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipCategory" eType="ecore:EClass commonDefinitions.ecore#//MembershipCategory_C942"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15931,7 +16104,8 @@
         <details key="xmlTag" value="MEMBERSHIP_CATEGORY"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipStatus" eType="ecore:EClass commonDefinitions.ecore#//MembershipStatus_C944">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipStatus" eType="ecore:EClass commonDefinitions.ecore#//MembershipStatus_C944"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15944,7 +16118,8 @@
         <details key="xmlTag" value="MEMBERSHIP_STATUS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipLevel" eType="ecore:EClass commonDefinitions.ecore#//MembershipLevel_C945">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipLevel" eType="ecore:EClass commonDefinitions.ecore#//MembershipLevel_C945"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15957,7 +16132,8 @@
         <details key="xmlTag" value="MEMBERSHIP_LEVEL"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16084,7 +16260,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="ecore:EClass commonDefinitions.ecore#//Relationship_C941">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="ecore:EClass commonDefinitions.ecore#//Relationship_C941"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16200,7 +16377,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="textReference" eType="ecore:EClass commonDefinitions.ecore#//TextReference_C107">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="textReference" eType="ecore:EClass commonDefinitions.ecore#//TextReference_C107"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16213,7 +16391,8 @@
         <details key="xmlTag" value="TEXT_REFERENCE"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="textLiteral" eType="ecore:EClass commonDefinitions.ecore#//TextLiteral_C108">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="textLiteral" eType="ecore:EClass commonDefinitions.ecore#//TextLiteral_C108"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16289,7 +16468,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="control" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Control_C270">
+        eType="ecore:EClass commonDefinitions.ecore#//Control_C270" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -16393,7 +16572,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemNumberIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -16417,7 +16597,8 @@
       <details key="description" value=" To specify an index."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="indexIdentification" eType="ecore:EClass commonDefinitions.ecore#//IndexIdentification_C545">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="indexIdentification" eType="ecore:EClass commonDefinitions.ecore#//IndexIdentification_C545"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16430,7 +16611,8 @@
         <details key="xmlTag" value="INDEX_IDENTIFICATION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="indexValue" eType="ecore:EClass commonDefinitions.ecore#//IndexValue_C546">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="indexValue" eType="ecore:EClass commonDefinitions.ecore#//IndexValue_C546"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16781,7 +16963,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemNumberIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212">
+        eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17233,7 +17416,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="percentageDetails" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//PercentageDetails_C501">
+        eType="ecore:EClass commonDefinitions.ecore#//PercentageDetails_C501" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17478,7 +17661,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17492,7 +17676,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="specialServicesIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//SpecialServicesIdentification_C214">
+        eType="ecore:EClass commonDefinitions.ecore#//SpecialServicesIdentification_C214"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17596,7 +17781,7 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="quantityDetails" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//QuantityDetails_C186">
+        eType="ecore:EClass commonDefinitions.ecore#//QuantityDetails_C186" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17880,7 +18065,8 @@
       <details key="description" value=" To specify parties to an instruction, the instruction,or both."/>
       <details key="type" value="segment"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="partiesToInstruction" eType="ecore:EClass commonDefinitions.ecore#//PartiesToInstruction_C849">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="partiesToInstruction" eType="ecore:EClass commonDefinitions.ecore#//PartiesToInstruction_C849"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17893,7 +18079,8 @@
         <details key="xmlTag" value="PARTIES_TO_INSTRUCTION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17906,7 +18093,8 @@
         <details key="xmlTag" value="INSTRUCTION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statusOfInstruction" eType="ecore:EClass commonDefinitions.ecore#//StatusOfInstruction_C850">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statusOfInstruction" eType="ecore:EClass commonDefinitions.ecore#//StatusOfInstruction_C850"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18010,7 +18198,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="quantityDifferenceInformation"
-        eType="ecore:EClass commonDefinitions.ecore#//QuantityDifferenceInformation_C279">
+        eType="ecore:EClass commonDefinitions.ecore#//QuantityDifferenceInformation_C279"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18061,7 +18250,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageIdentification_C106">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageIdentification_C106"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18074,7 +18264,8 @@
         <details key="xmlTag" value="DOCUMENT_MESSAGE_IDENTIFICATION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18204,7 +18395,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountIdentification"
-        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//AccountIdentification_C593">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//AccountIdentification_C593"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -18242,7 +18434,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="ecore:EClass commonDefinitions.ecore#//SequenceInformation_C286">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="ecore:EClass commonDefinitions.ecore#//SequenceInformation_C286"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18499,7 +18692,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206">
+        eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -18513,7 +18706,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18553,7 +18747,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="positionIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778">
+        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18567,7 +18762,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18684,7 +18880,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sealIssuer" eType="ecore:EClass commonDefinitions.ecore#//SealIssuer_C215">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sealIssuer" eType="ecore:EClass commonDefinitions.ecore#//SealIssuer_C215"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18710,7 +18907,8 @@
         <details key="decoder" value="org.milyn.javabean.decoders.StringDecoder"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="identityNumberRange" eType="ecore:EClass commonDefinitions.ecore#//IdentityNumberRange_C208">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identityNumberRange" eType="ecore:EClass commonDefinitions.ecore#//IdentityNumberRange_C208"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18932,7 +19130,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="clinicalInformationDetails"
-        eType="ecore:EClass commonDefinitions.ecore#//ClinicalInformationDetails_C836">
+        eType="ecore:EClass commonDefinitions.ecore#//ClinicalInformationDetails_C836"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18945,7 +19144,8 @@
         <details key="xmlTag" value="CLINICAL_INFORMATION_DETAILS"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="certaintyDetails" eType="ecore:EClass commonDefinitions.ecore#//CertaintyDetails_C837">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="certaintyDetails" eType="ecore:EClass commonDefinitions.ecore#//CertaintyDetails_C837"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19048,7 +19248,8 @@
       <details key="type" value="segment"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="premiumCalculationComponent"
-        eType="ecore:EClass commonDefinitions.ecore#//PremiumCalculationComponent_C820">
+        eType="ecore:EClass commonDefinitions.ecore#//PremiumCalculationComponent_C820"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19178,7 +19379,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemNumberIdentification"
-        eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212">
+        eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19191,7 +19393,8 @@
         <details key="xmlTag" value="ITEM_NUMBER_IDENTIFICATION"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="subLineInformation" eType="ecore:EClass commonDefinitions.ecore#//SubLineInformation_C829">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="subLineInformation" eType="ecore:EClass commonDefinitions.ecore#//SubLineInformation_C829"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>

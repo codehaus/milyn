@@ -170,6 +170,7 @@ public class ECoreConversionUtils {
 	public static EReference segmentGroupToEReference(SegmentGroup grp,
 			EClass refClass) {
 		EReference reference = EcoreFactory.eINSTANCE.createEReference();
+		reference.setContainment(true);
 		reference.setName(toJavaName(grp.getXmltag(), false));
 		reference.setEType(refClass);
 		reference.setLowerBound(grp.getMinOccurs());
@@ -255,6 +256,7 @@ public class ECoreConversionUtils {
 			}
 		}
 		EReference result = EcoreFactory.eINSTANCE.createEReference();
+		result.setContainment(true);
 		result.setName(toJavaName(field.getXmltag(), false));
 		result.setLowerBound(field.isRequired() ? 1 : 0);
 		result.setUpperBound(1);

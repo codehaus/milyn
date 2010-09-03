@@ -9,6 +9,8 @@ import java.util.zip.ZipInputStream;
 import junit.framework.TestCase;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -28,6 +30,18 @@ public class ECoreGenerationTest extends TestCase {
 		Set<EPackage> packages = generator
 				.generatePackages(ediSpecificationReader);
 		save(packages);
+		for (EPackage pkg : packages) {
+			if ("cuscar".equals(pkg.getName())) {
+				checkCUSCAR(pkg);
+			}
+		}
+	}
+
+	private void checkCUSCAR(EPackage pkg) {
+		EClass clazz = (EClass) pkg.getEClassifier("CUSCAR");
+		assertNotNull(clazz);
+		assertEquals(13, clazz.getEStructuralFeatures().size());
+		assertEquals(13, clazz.getEAllContainments().size());
 	}
 
 	private void save(Collection<EPackage> packages) throws IOException {
