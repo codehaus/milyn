@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.milyn.edisax.model.internal.IField;
 import org.milyn.edisax.model.internal.ISegment;
 import org.milyn.edisax.model.internal.ISegmentGroup;
+import org.mylin.ecore.EMFHelper;
 
 /**
  * Adapter that adapts {@link EReference} to {@link ISegment}
@@ -38,11 +39,11 @@ public class SegmentAdapter extends SegmentGroupAdapter implements ISegment {
 	}
 
 	public boolean isTruncatable() {
-		return Boolean.valueOf(getAnnotationValue(clazz, "truncable"));
+		return Boolean.valueOf(EMFHelper.getAnnotationValue(clazz, "truncable"));
 	}
 
 	public boolean isIgnoreUnmappedFields() {
-		return Boolean.valueOf(getAnnotationValue(clazz, "ignoreUnmappedFields"));
+		return Boolean.valueOf(EMFHelper.getAnnotationValue(clazz, "ignoreUnmappedFields"));
 	}
 
 	public String getDescription() {
@@ -59,7 +60,7 @@ public class SegmentAdapter extends SegmentGroupAdapter implements ISegment {
 	 * {@inheritDoc}
 	 */
 	public String getSegcode() {
-		return getAnnotationValue(clazz, "segcode");
+		return EMFHelper.getAnnotationValue(clazz, "segcode");
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class SegmentAdapter extends SegmentGroupAdapter implements ISegment {
 	 */
 	public Pattern getSegcodePattern() {
 		if (pattern == null) {
-			pattern = Pattern.compile(getAnnotationValue(clazz, "segcodePattern"));
+			pattern = Pattern.compile(EMFHelper.getAnnotationValue(clazz, "segcodePattern"));
 		}
 		return pattern;
 	}

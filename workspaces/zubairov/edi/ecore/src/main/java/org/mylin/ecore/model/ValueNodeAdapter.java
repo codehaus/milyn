@@ -8,6 +8,7 @@ import org.milyn.edisax.model.internal.IMappingNode;
 import org.milyn.edisax.model.internal.IValueNode;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
+import org.mylin.ecore.EMFHelper;
 
 /**
  * Adapter that adapt {@link EStructuralFeature} to {@link IValueNode}
@@ -15,7 +16,7 @@ import org.milyn.javabean.DataDecoder;
  * @author zubairov
  *
  */
-public class ValueNodeAdapter extends ModelAdapter implements IValueNode {
+public class ValueNodeAdapter implements IValueNode {
 
 	protected EStructuralFeature feature;
 	
@@ -26,7 +27,7 @@ public class ValueNodeAdapter extends ModelAdapter implements IValueNode {
 	}
 
 	public String getDataType() {
-		return getAnnotationValue(feature, "datatype");
+		return EMFHelper.getAnnotationValue(feature, "datatype");
 	}
 
 	public DataDecoder getDecoder() {
@@ -37,11 +38,11 @@ public class ValueNodeAdapter extends ModelAdapter implements IValueNode {
 	}
 
 	public Integer getMinLength() {
-		return Integer.parseInt(getAnnotationValue(feature, "minLength"));
+		return Integer.parseInt(EMFHelper.getAnnotationValue(feature, "minLength"));
 	}
 
 	public Integer getMaxLength() {
-		return Integer.parseInt(getAnnotationValue(feature, "maxLength"));
+		return Integer.parseInt(EMFHelper.getAnnotationValue(feature, "maxLength"));
 	}
 
 	public void isValidForType(String value) throws DataDecodeException {
@@ -49,15 +50,15 @@ public class ValueNodeAdapter extends ModelAdapter implements IValueNode {
 	}
 
 	public String getXmltag() {
-		return getAnnotationValue(feature, "xmlTag");
+		return EMFHelper.getAnnotationValue(feature, "xmlTag");
 	}
 
 	public String getNodeTypeRef() {
-		return getAnnotationValue(feature, "nodeTypeRef");
+		return EMFHelper.getAnnotationValue(feature, "nodeTypeRef");
 	}
 
 	public String getDocumentation() {
-		return getAnnotationValue(feature, "documentation");
+		return EMFHelper.getAnnotationValue(feature, "documentation");
 	}
 
 	public IMappingNode getParent() {
@@ -69,7 +70,7 @@ public class ValueNodeAdapter extends ModelAdapter implements IValueNode {
 	}
 
 	public boolean isTruncatable() {
-		return Boolean.valueOf(getAnnotationValue(feature, "truncable"));
+		return Boolean.valueOf(EMFHelper.getAnnotationValue(feature, "truncable"));
 	}
 
 	public Class<?> getTypeClass() {

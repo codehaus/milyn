@@ -11,6 +11,7 @@ import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.IEdimap;
 import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.milyn.edisax.model.internal.Import;
+import org.mylin.ecore.EMFHelper;
 
 /**
  * Adapter that adapt {@link EPackage} to {@link IEdimap}
@@ -18,7 +19,7 @@ import org.milyn.edisax.model.internal.Import;
  * @author zubairov
  *
  */
-public class EdimapAdapter extends ModelAdapter implements IEdimap {
+public class EdimapAdapter implements IEdimap {
 
 	private EPackage pkg;
 	
@@ -42,8 +43,8 @@ public class EdimapAdapter extends ModelAdapter implements IEdimap {
 	public Description getDescription() {
 		if (description == null) {
 			description = new Description();
-			description.setName(getAnnotationValue(pkg, "description.name"));
-			description.setVersion(getAnnotationValue(pkg, "description.version"));
+			description.setName(EMFHelper.getAnnotationValue(pkg, "description.name"));
+			description.setVersion(EMFHelper.getAnnotationValue(pkg, "description.version"));
 		}
 		return description;
 	}

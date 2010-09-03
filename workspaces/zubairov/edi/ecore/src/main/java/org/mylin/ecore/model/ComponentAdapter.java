@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.milyn.edisax.model.internal.IComponent;
 import org.milyn.edisax.model.internal.SubComponent;
+import org.mylin.ecore.EMFHelper;
 
 /**
  * Adapts {@link EStructuralFeature} to {@link IComponent}
@@ -30,7 +31,7 @@ public class ComponentAdapter extends ValueNodeAdapter implements IComponent {
 	}
 
 	public boolean isRequired() {
-		return Boolean.valueOf(getAnnotationValue(attribute, "required"));
+		return Boolean.valueOf(EMFHelper.getAnnotationValue(attribute, "required"));
 	}
 
 	public boolean isTruncatable() {

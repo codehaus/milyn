@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.milyn.edisax.model.internal.IMappingNode;
 import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.mylin.ecore.ECoreConversionUtils;
+import org.mylin.ecore.EMFHelper;
 
 /**
  * Adapter class that adapts {@link EClass} to {@link ISegmentGroup}
@@ -18,7 +19,7 @@ import org.mylin.ecore.ECoreConversionUtils;
  * @author zubairov
  * 
  */
-public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
+public class SegmentGroupAdapter implements ISegmentGroup {
 
 	protected final EClass clazz;
 	protected final EReference ref;
@@ -39,7 +40,13 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 	 * {@inheritDoc}
 	 */
 	public String getXmltag() {
-		return getAnnotationValue(clazz, "xmlTag");
+		// We need to prefer xmlTag from reference to the xmlTag from class definition
+		// because in both common definitions xml and in mapping xml
+		// we have XML tags, but reference should be winning
+		if (ref != null) {
+			return EMFHelper.getAnnotationValue(ref, "xmlTag");
+		}
+		return EMFHelper.getAnnotationValue(clazz, "xmlTag");
 	}
 
 	/**
@@ -79,7 +86,7 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 			EList<EStructuralFeature> features = clazz.getEStructuralFeatures();
 			for (EStructuralFeature feature : features) {
 				if (feature instanceof EReference) {
-					String type = getAnnotationValue(feature, "type");
+					String type = EMFHelper.getAnnotationValue(feature, "type");
 					if (ECoreConversionUtils.SEGMENT_TYPE.equals(type)) {
 						segments.add(new SegmentAdapter((EReference)feature));
 					} else if (ECoreConversionUtils.SEGMENT_GROUP_TYPE.equals(type)) {
@@ -117,7 +124,7 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 		if (ref == null) {
 			throw new NullPointerException("Reference value missing");
 		}
-		return Integer.parseInt(getAnnotationValue(ref, "minOccurs"));
+		return Integer.parseInt(EMFHelper.getAnnotationValue(ref, "minOccurs"));
 	}
 
 	/**
@@ -127,7 +134,7 @@ public class SegmentGroupAdapter extends ModelAdapter implements ISegmentGroup {
 		if (ref == null) {
 			throw new NullPointerException("Reference value missing");
 		}
-		return Integer.parseInt(getAnnotationValue(ref, "maxOccurs"));
+		return Integer.parseInt(EMFHelper.getAnnotationValue(ref, "maxOccurs"));
 	}
 
 	/**

@@ -57,26 +57,6 @@ public class ParsingTest extends TestCase {
 	}
 
 	/**
-	 * Loading CUSCAR ecore model
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private EPackage loadCUSCARModel() throws IOException {
-		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry()
-				.getExtensionToFactoryMap()
-				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
-						new EcoreResourceFactoryImpl());
-		Resource resource = rs.createResource(URI
-				.createFileURI("cuscar.ecore"));
-		resource.load(null);
-		EPackage pkg = (EPackage) resource.getAllContents().next();
-		assertNotNull(pkg);
-		return pkg;
-	}
-
-	/**
 	 * We need to test that component definitions are in the right order
 	 * 
 	 * @throws Exception
@@ -102,5 +82,25 @@ public class ParsingTest extends TestCase {
 		for (int i = 0; i < parsed.length; i++) {
 			assertEquals(expected[i], parsed[i]);
 		}
+	}
+	
+	/**
+	 * Loading CUSCAR ecore model
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	private EPackage loadCUSCARModel() throws IOException {
+		ResourceSet rs = new ResourceSetImpl();
+		rs.getResourceFactoryRegistry()
+				.getExtensionToFactoryMap()
+				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
+						new EcoreResourceFactoryImpl());
+		Resource resource = rs.createResource(URI
+				.createFileURI("cuscar.ecore"));
+		resource.load(null);
+		EPackage pkg = (EPackage) resource.getAllContents().next();
+		assertNotNull(pkg);
+		return pkg;
 	}
 }

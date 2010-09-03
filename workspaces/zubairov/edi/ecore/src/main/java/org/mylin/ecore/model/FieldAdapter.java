@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.milyn.edisax.model.internal.IComponent;
 import org.milyn.edisax.model.internal.IField;
+import org.mylin.ecore.EMFHelper;
 
 /**
  * Adapt {@link EReference} or {@link EAttribute} to {@link IField}
@@ -47,7 +48,7 @@ public class FieldAdapter extends ValueNodeAdapter implements IField {
 	 * {@inheritDoc}
 	 */
 	public boolean isRequired() {
-		return Boolean.valueOf(getAnnotationValue(feature, "required"));
+		return Boolean.valueOf(EMFHelper.getAnnotationValue(feature, "required"));
 	}
 
 }
