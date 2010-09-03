@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<bean id="smooks" class="org.milyn.smooks.camel.dataformat.SmooksDataFormat">
+	  	<constructor-arg><value>smooks-config.xml</value></constructor-arg>
+	  	<constructor-arg><value>org.milyn.payload.StringResult</value></constructor-arg>
+	</bean>
+	
+	<bean id="exampleRouteBuilder" class="example.ExampleRouteBuilder"/>
+	
+	<camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
+		<routeBuilder ref="exampleRouteBuilder" />    
+		
+		<!-- At the moment the below configuration will not work. It needs an update that is 
+			 in camel trunk. See https://issues.apache.org/activemq/browse/CAMEL-3063 for more
+			 information.	
+		 -->
+		<!--
+		<route>
+			<from uri="file:.?fileName=input-message.edi&amp;noop=true"/>
+			<log message="Before unmarshal  ${body}"/>
+			<unmarshal ref="smooks"/>
+			<log message="After unmarshal  ${body}"/>
+		</route>
+		-->
+	</camelContext>
+
+</beans>
