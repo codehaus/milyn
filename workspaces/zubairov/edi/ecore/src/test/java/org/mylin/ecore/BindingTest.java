@@ -2,7 +2,9 @@ package org.mylin.ecore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -14,7 +16,9 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
@@ -34,13 +38,13 @@ import org.xml.sax.SAXException;
 public class BindingTest extends TestCase implements MessageHanlder {
 
 	List<EObject> testContent = new ArrayList<EObject>();
-	
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		testContent.clear();
 	}
-	
+
 	/**
 	 * Parsing CUSCAR 99A CUSCAR message with validation
 	 * 
@@ -50,6 +54,20 @@ public class BindingTest extends TestCase implements MessageHanlder {
 	 */
 	public void testParser() throws IOException, SAXException,
 			EDIConfigurationException {
+		parseEDI();
+		EObject one = testContent.get(0);
+		EObject two = testContent.get(1);
+		EObject bgm1 = (EObject) get(one, "beginningOfMessage");
+		EObject bgm2 = (EObject) get(two, "beginningOfMessage");
+		EObject docid1 = (EObject) get(bgm1, "documentMessageIdentification");
+		EObject docid2 = (EObject) get(bgm2, "documentMessageIdentification");
+		assertEquals("MOL-EU2-HFA-012W-XXXX8896514-01",
+				get(docid1, "documentMessageNumber"));
+		assertEquals("MOL-EU2-HFA-012W-XXXX5086746-01",
+				get(docid2, "documentMessageNumber"));
+	}
+
+	private void parseEDI() throws IOException, SAXException {
 		EPackage pkg = loadCUSCARModel();
 		IEdimap edimap = new EdimapAdapter(pkg);
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
@@ -65,14 +83,6 @@ public class BindingTest extends TestCase implements MessageHanlder {
 		parser.parse(new InputSource(getClass().getResourceAsStream(
 				"/99a_cuscar.edi")));
 		assertEquals(2, testContent.size());
-		EObject one = testContent.get(0);
-		EObject two = testContent.get(1);
-		EObject bgm1 = (EObject) get(one, "beginningOfMessage");
-		EObject bgm2 = (EObject) get(two, "beginningOfMessage");
-		EObject docid1 = (EObject) get(bgm1, "documentMessageIdentification");
-		EObject docid2 = (EObject) get(bgm2, "documentMessageIdentification");
-		assertEquals("MOL-EU2-HFA-012W-XXXX8896514-01", get(docid1, "documentMessageNumber"));
-		assertEquals("MOL-EU2-HFA-012W-XXXX5086746-01", get(docid2, "documentMessageNumber"));
 	}
 
 	private Object get(EObject one, String string) {
@@ -96,8 +106,8 @@ public class BindingTest extends TestCase implements MessageHanlder {
 				.getExtensionToFactoryMap()
 				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
 						new EcoreResourceFactoryImpl());
-		Resource resource = rs.createResource(URI
-				.createFileURI("cuscar.ecore"));
+		Resource resource = rs
+				.createResource(URI.createFileURI("cuscar.ecore"));
 		resource.load(null);
 		EPackage pkg = (EPackage) resource.getAllContents().next();
 		assertNotNull(pkg);
@@ -107,6 +117,39 @@ public class BindingTest extends TestCase implements MessageHanlder {
 	public void messageElement(EObject message) {
 		testContent.add(message);
 	}
+
 	
-	
+	public void testModelOutput() throws Exception {
+		parseEDI();
+
+		ResourceSet resourceSet = new ResourceSetImpl();
+		/*
+		 * Register XML Factory implementation using DEFAULT_EXTENSION
+		 */
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap()
+				.put("*", new XMLResourceFactoryImpl());
+
+		/*
+		 * Create empty resource with the given URI
+		 */
+		Resource resource = resourceSet.createResource(URI
+				.createURI("./bookStore.xml"));
+
+		/*
+		 * Add bookStoreObject to contents list of the resource
+		 */
+		resource.getContents().addAll(testContent);
+
+		try {
+			/*
+			 * Save the resource
+			 */
+			Map<String, Boolean> map = new HashMap<String, Boolean>();
+			map.put(XMLResource.OPTION_EXTENDED_META_DATA, true);
+			resource.save(System.out, map);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

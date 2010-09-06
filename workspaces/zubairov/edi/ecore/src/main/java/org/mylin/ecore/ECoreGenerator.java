@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
@@ -98,6 +99,7 @@ public class ECoreGenerator {
 		// the same as name of the package
 		rootClass.setName(rootClass.getName().toUpperCase());
 		result.add(rootClass);
+		ExtendedMetaData.INSTANCE.setDocumentRoot(rootClass);
 		processSegments(root.getSegments(), commonClasses, result, rootClass);
 		return result;
 	}

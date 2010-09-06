@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
@@ -34,6 +35,8 @@ import org.milyn.edisax.model.internal.SegmentGroup;
  */
 public class ECoreConversionUtils {
 
+	private static final String XML_TAG_ANNOTATION_KEY = "xmlTag";
+
 	/**
 	 * Supported data types for conversion
 	 * 
@@ -52,6 +55,8 @@ public class ECoreConversionUtils {
 
 	private static final String COMPONENT_TYPE = "component";
 
+	private static ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
+	
 	/**
 	 * Converting {@link Segment} to {@link EClass}
 	 * 
@@ -137,7 +142,14 @@ public class ECoreConversionUtils {
 			annotate(element, "documentation", node.getDocumentation());
 		}
 		if (node.getXmltag() != null) {
-			annotate(element, "xmlTag", node.getXmltag());
+			annotate(element, XML_TAG_ANNOTATION_KEY, node.getXmltag());
+		}
+		if (element instanceof EClassifier) {
+			metadata.setName((EClassifier) element, node.getXmltag());
+			metadata.setContentKind((EClass) element, ExtendedMetaData.ELEMENT_ONLY_CONTENT);
+		} else if (element instanceof EStructuralFeature) {
+			metadata.setName((EStructuralFeature) element, node.getXmltag());
+			metadata.setFeatureKind((EStructuralFeature) element, ExtendedMetaData.ELEMENT_FEATURE);
 		}
 	}
 
