@@ -10,13 +10,11 @@ import junit.framework.TestCase;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 
 public class ECoreGenerationTest extends TestCase {
@@ -25,7 +23,7 @@ public class ECoreGenerationTest extends TestCase {
 		InputStream inputStream = getClass().getResourceAsStream("/D99A.zip");
 		ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
-		EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(
+		UnEdifactSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(
 				zipInputStream, false);
 		ECoreGenerator generator = new ECoreGenerator();
 		Set<EPackage> packages = generator

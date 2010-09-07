@@ -256,18 +256,12 @@ public class ECoreConversionUtils {
 		if (!classes.containsKey(newClass.getName())) {
 			classes.put(newClass.getName(), newClass);
 		} else {
-			System.err.println("WARN: Class for field " + newClass.getName()
-					+ " is duplicated");
 			newClass = classes.get(newClass.getName());
 		}
 		for (IComponent component : field.getComponents()) {
 			EStructuralFeature attribute = componentToEAttribute(component);
 			if (newClass.getEStructuralFeature(attribute.getName()) == null) {
 				newClass.getEStructuralFeatures().add(attribute);
-			} else {
-				System.err.println("WARN: Field " + newClass.getName()
-						+ " contains duplicate attribute "
-						+ attribute.getName());
 			}
 		}
 		EReference result = EcoreFactory.eINSTANCE.createEReference();
@@ -375,7 +369,7 @@ public class ECoreConversionUtils {
 	}
 
 	/**
-	 * Creates a document root class
+	 * Creates a fment root class
 	 * 
 	 * @param rootClass
 	 * @return

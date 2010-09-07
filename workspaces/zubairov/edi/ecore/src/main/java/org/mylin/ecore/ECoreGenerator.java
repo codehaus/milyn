@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.milyn.ect.EdiSpecificationReader;
+import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.IEdimap;
@@ -34,8 +35,6 @@ import org.milyn.edisax.model.internal.SegmentGroup;
  */
 public class ECoreGenerator {
 
-	private static final String COMMON_MAPPING_MODEL_NAME = "__modelset_definitions";
-
 	private static final String COMMON_PACKAGE_NAME = "commonDefinitions";
 
 	/**
@@ -49,13 +48,13 @@ public class ECoreGenerator {
 	 * @return
 	 * @throws IOException
 	 */
-	public Set<EPackage> generatePackages(EdiSpecificationReader reader)
+	public Set<EPackage> generatePackages(UnEdifactSpecificationReader reader)
 			throws IOException {
 		Set<EPackage> result = new HashSet<EPackage>();
 
 		// Creating common package
 		Map<String, EClass> commonClasses = new HashMap<String, EClass>();
-		IEdimap commonModel = reader.getMappingModel(COMMON_MAPPING_MODEL_NAME);
+		IEdimap commonModel = reader.getDefinitionModel();
 		EPackage commonPackage = EcoreFactory.eINSTANCE.createEPackage();
 		commonPackage.setName(COMMON_PACKAGE_NAME);
 		commonPackage.setNsPrefix("common");
@@ -70,7 +69,7 @@ public class ECoreGenerator {
 		// Processing individual packages
 		Set<String> messageNames = reader.getMessageNames();
 		for (String messageName : messageNames) {
-			if (!COMMON_MAPPING_MODEL_NAME.equals(messageName)) {
+			if (!commonModel.getDescription().getName().equals(messageName)) {
 				IEdimap mappingModel = reader.getMappingModel(messageName);
 				EPackage pkg = ECoreConversionUtils
 						.mappingModelToEPackage(mappingModel);
@@ -126,11 +125,7 @@ public class ECoreGenerator {
 						.segmentToEReference(segment, refClass);
 				if (parent.getEStructuralFeature(segmentRef.getName()) == null) {
 					parent.getEStructuralFeatures().add(segmentRef);
-				} else {
-					System.err.println("WARN: Class " + refClass.getName()
-							+ " already contains a refernce "
-							+ segmentRef.getName());
-				}
+				} 
 			} else if (arg0 instanceof SegmentGroup) {
 				SegmentGroup grp = (SegmentGroup) arg0;
 				EClass refClass = ECoreConversionUtils
@@ -139,11 +134,7 @@ public class ECoreGenerator {
 						.segmentGroupToEReference(grp, refClass);
 				if (parent.getEStructuralFeature(reference.getName()) == null) {
 					parent.getEStructuralFeatures().add(reference);
-				} else {
-					System.err.println("WARN: Class " + refClass.getName()
-							+ " already contains a refernce "
-							+ reference.getName());
-				}
+				} 
 				if (!result.add(refClass)) {
 					throw new RuntimeException("Reference class "
 							+ refClass.getName() + " is duplicated in package");
@@ -203,10 +194,7 @@ public class ECoreGenerator {
 				if (!names.contains(attribute.getName())) {
 					result.add(attribute);
 					names.add(attribute.getName());
-				} else {
-					System.err.println("WARN: Duplicate attribute "
-							+ attribute.getName());
-				}
+				} 
 			} else {
 				// We have a complex field --> need to define a new
 				// class
@@ -215,10 +203,7 @@ public class ECoreGenerator {
 				if (!names.contains(reference.getName())) {
 					result.add(reference);
 					names.add(reference.getName());
-				} else {
-					System.err.println("WARN: Duplicate reference "
-							+ reference.getName());
-				}
+				} 
 			}
 		}
 		return result;
