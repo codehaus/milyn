@@ -17,6 +17,7 @@
 package org.milyn.smooks.camel.processor;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,14 +26,11 @@ import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-import javax.management.Query;
-import javax.management.QueryExp;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.management.mbean.ManagedProcessor;
 import org.apache.camel.spi.ManagementAgent;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -133,13 +131,19 @@ public class SmooksProcessorTest extends CamelTestSupport
         invokeVoidNoArgsMethod(objectName, "start");
     }
 
-    private ObjectInstance getSmooksProcessorObjectInstance()
+    private ObjectInstance getSmooksProcessorObjectInstance() throws Exception
     {
-        QueryExp instanceOf = Query.isInstanceOf(Query.value(ManagedProcessor.class.getName()));
-        QueryExp query = Query.and(instanceOf, instanceOf);
-        Set<ObjectInstance> queryMBeans = mbeanServer.queryMBeans(null, query);
-        assertEquals(1, queryMBeans.size());
-        ObjectInstance mbean = queryMBeans.iterator().next();
+        ObjectInstance mbean = null;
+        @SuppressWarnings("unchecked")
+        Set<ObjectInstance> queryMBeans = mbeanServer.queryMBeans(new ObjectName("*:*,type=processors"), null);
+        for (ObjectInstance objectInstance : queryMBeans)
+        {
+            if (objectInstance.getObjectName().toString().contains(SmooksProcessor.class.getSimpleName()))
+            {
+	            mbean = objectInstance;
+            }
+        }
+        assertNotNull(mbean);
         return mbean;
     }
 
