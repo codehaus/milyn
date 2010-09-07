@@ -25,7 +25,7 @@ public class InterexchangeModelTest extends TestCase {
 		EStructuralFeature msgFeature = imType.getEStructuralFeature("any");
 		EClass cdr = (EClass) cPkg.getEClassifier("DocumentRoot");
 		assertNotNull("DocumentRoot is not found in CUSCAR package", cdr);
-		EStructuralFeature csf = cdr.getEStructuralFeature("content");
+		EStructuralFeature csf = cdr.getEStructuralFeature("CUSCAR");
 		assertNotNull(csf);
 		
 		

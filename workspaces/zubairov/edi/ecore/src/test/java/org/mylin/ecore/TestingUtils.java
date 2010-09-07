@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -68,6 +70,7 @@ public class TestingUtils {
 			resource.save(out, map);
 		} catch (IOException e) {
 			e.printStackTrace();
+			Assert.fail("Unexpected IO Exception " + e.getMessage());
 		}
 	}
 }

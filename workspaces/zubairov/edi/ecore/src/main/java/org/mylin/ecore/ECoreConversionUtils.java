@@ -89,7 +89,7 @@ public class ECoreConversionUtils {
 		pkg.setName(desc.getName().toLowerCase());
 		pkg.setNsPrefix(desc.getName().toLowerCase());
 		pkg.setNsURI("http://smooks.org/UNEDI/"
-				+ desc.getVersion().replace(':', '_') + "/" + desc.getName());
+				+ desc.getVersion().replaceAll(":", "") + "/" + desc.getName());
 		if (mapModel.getSrc() != null) {
 			annotate(pkg, "src", mapModel.getSrc().toASCIIString());
 		}
@@ -152,9 +152,7 @@ public class ECoreConversionUtils {
 			metadata.setName((EStructuralFeature) element, node.getXmltag());
 			metadata.setFeatureKind((EStructuralFeature) element,
 					ExtendedMetaData.ELEMENT_FEATURE);
-			if (element instanceof EReference) {
-				setTargetNamespace((EReference) element);
-			}
+			setTargetNamespace((EStructuralFeature) element);
 		}
 	}
 
@@ -393,10 +391,11 @@ public class ECoreConversionUtils {
 		metadata.setName(clazz, metadata.getName(reference));
 		metadata.setFeatureKind(reference, ExtendedMetaData.ELEMENT_FEATURE);
 		setTargetNamespace(reference);
+		reference.setContainment(true);
 		return clazz;
 	}
 
-	private static void setTargetNamespace(EReference element) {
+	private static void setTargetNamespace(EStructuralFeature element) {
 		EAnnotation eAnnotation = element.getEAnnotation(ExtendedMetaData.ANNOTATION_URI);
 		eAnnotation.getDetails().put("namespace", "##targetNamespace");
 	}

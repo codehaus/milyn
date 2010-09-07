@@ -59,7 +59,9 @@ public class ECoreGenerator {
 		EPackage commonPackage = EcoreFactory.eINSTANCE.createEPackage();
 		commonPackage.setName(COMMON_PACKAGE_NAME);
 		commonPackage.setNsPrefix("common");
-		commonPackage.setNsURI("http://www.smooks.org/CommonPackage");
+		commonPackage.setNsURI("http://smooks.org/UNEDI/"
+				+ commonModel.getDescription().getVersion().replaceAll(":", "")
+				+ "/modelsetDefinitions");
 		Collection<EClass> clzz = createCommonClasses(commonModel,
 				commonClasses);
 		commonPackage.getEClassifiers().addAll(clzz);
@@ -95,7 +97,7 @@ public class ECoreGenerator {
 			Map<String, EClass> commonClasses) {
 		Set<EClass> result = new HashSet<EClass>();
 		EClass rootClass = ECoreConversionUtils.segmentGroupToEClass(root);
-		// We need to change the name of the Root class so it is not 
+		// We need to change the name of the Root class so it is not
 		// the same as name of the package
 		rootClass.setName(rootClass.getName().toUpperCase());
 		result.add(rootClass);
@@ -104,7 +106,6 @@ public class ECoreGenerator {
 		processSegments(root.getSegments(), commonClasses, result, rootClass);
 		return result;
 	}
-
 
 	/**
 	 * Process segments
@@ -197,23 +198,26 @@ public class ECoreGenerator {
 		for (IField field : fields) {
 			if (field.getComponents().isEmpty()) {
 				// We have a simple field without components
-				EAttribute attribute = ECoreConversionUtils.fieldToEAttribute(field);
+				EAttribute attribute = ECoreConversionUtils
+						.fieldToEAttribute(field);
 				if (!names.contains(attribute.getName())) {
 					result.add(attribute);
 					names.add(attribute.getName());
 				} else {
-					System.err.println("WARN: Duplicate attribute " + attribute.getName());
+					System.err.println("WARN: Duplicate attribute "
+							+ attribute.getName());
 				}
 			} else {
 				// We have a complex field --> need to define a new
 				// class
-				EReference reference = ECoreConversionUtils.fieldToEReference(field,
-						classes);
+				EReference reference = ECoreConversionUtils.fieldToEReference(
+						field, classes);
 				if (!names.contains(reference.getName())) {
 					result.add(reference);
 					names.add(reference.getName());
 				} else {
-					System.err.println("WARN: Duplicate reference " + reference.getName());
+					System.err.println("WARN: Duplicate reference "
+							+ reference.getName());
 				}
 			}
 		}
