@@ -45,7 +45,6 @@ public class SmooksDataFormat implements DataFormat
 
     public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
     private String resultBeanId;
-    private String resultType;
     private SmooksProcessor processor;
 
     public SmooksDataFormat(String smooksConfig, String resultType) throws Exception
@@ -55,24 +54,19 @@ public class SmooksDataFormat implements DataFormat
 
     public SmooksDataFormat(String smooksConfig, String resultType, String resultBeanId) throws Exception
     {
-        this.resultType = resultType;
         this.resultBeanId = resultBeanId;
-        createAndStartSmooksProcessor(smooksConfig);
+        createAndStartSmooksProcessor(smooksConfig, resultType);
     }
 
-    private void createAndStartSmooksProcessor(String smooksConfig) throws Exception
+    private void createAndStartSmooksProcessor(String smooksConfig, String resultType) throws Exception
     {
         processor = new SmooksProcessor(smooksConfig);
+        processor.setResultType(resultType);
         processor.start();
     }
 
     public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception
     {
-        synchronized (processor)
-        {
-            setResultTypeOnProcessor(resultType, "org.milyn.payload.StringResult");
-        }
-
         processor.process(exchange);
 
         ExecutionContext executionContext = exchange.getOut().getHeader(SmooksProcessor.SMOOKS_EXECUTION_CONTEXT,
@@ -82,20 +76,10 @@ public class SmooksDataFormat implements DataFormat
 
     public Object unmarshal(Exchange exchange, InputStream stream) throws Exception
     {
-        synchronized (processor)
-        {
-            setResultTypeOnProcessor(resultType, "org.milyn.payload.JavaResult");
-        }
-
         processor.process(exchange);
+
         exchange.setProperty(SMOOKS_DATA_FORMAT_RESULT_KEY, resultBeanId);
         return exchange.getOut().getBody();
-    }
-
-    private void setResultTypeOnProcessor(String resultType, String defaultResultType)
-    {
-        String type = resultType != null ? resultType : defaultResultType;
-        processor.setResultType(type);
     }
 
     public String getResultBeanId()
