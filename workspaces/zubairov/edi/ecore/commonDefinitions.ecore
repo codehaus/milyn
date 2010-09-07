@@ -120,7 +120,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statisticalDetails" eType="#//StatisticalDetails_C527"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statisticalDetails" eType="ecore:EClass commonDefinitions.ecore#//StatisticalDetails_C527"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -136,6 +136,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STATISTICAL_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -240,7 +241,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentIdentification"
-        eType="#//EquipmentIdentification_C237" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -255,6 +257,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EQUIPMENT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -339,7 +342,7 @@
       <details key="name" value="HANDLING_INSTRUCTIONS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="handlingInstructions" eType="#//HandlingInstructions_C524"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="handlingInstructions" eType="ecore:EClass commonDefinitions.ecore#//HandlingInstructions_C524"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -355,9 +358,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="HANDLING_INSTRUCTIONS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardousMaterial" eType="#//HazardousMaterial_C218"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardousMaterial" eType="ecore:EClass commonDefinitions.ecore#//HazardousMaterial_C218"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -373,6 +377,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="HAZARDOUS_MATERIAL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -493,7 +498,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="productGroup" eType="#//ProductGroup_C288"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="productGroup" eType="ecore:EClass commonDefinitions.ecore#//ProductGroup_C288"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -509,6 +514,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRODUCT_GROUP"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -1001,7 +1007,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="billLevelIdentification"
-        lowerBound="1" eType="#//BillLevelIdentification_C045" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//BillLevelIdentification_C045"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -1016,6 +1023,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="BILL_LEVEL_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="itemNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -1153,7 +1161,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="personInheritedCharacteristicDetails"
-        eType="#//PersonInheritedCharacteristicDetails_C818" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PersonInheritedCharacteristicDetails_C818"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1168,6 +1177,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PERSON_INHERITED_CHARACTERISTIC_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -1203,7 +1213,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeType" eType="#//AttributeType_C955"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeType" eType="ecore:EClass commonDefinitions.ecore#//AttributeType_C955"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -1219,9 +1229,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ATTRIBUTE_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeDetails" eType="#//AttributeDetails_C956"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeDetails" eType="ecore:EClass commonDefinitions.ecore#//AttributeDetails_C956"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -1237,6 +1248,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ATTRIBUTE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -1510,7 +1522,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="termsOfDeliveryOrTransport"
-        eType="#//TermsOfDeliveryOrTransport_C100" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//TermsOfDeliveryOrTransport_C100"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1525,6 +1538,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TERMS_OF_DELIVERY_OR_TRANSPORT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -1678,7 +1692,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="requirementConditionIdentification"
-        eType="#//RequirementConditionIdentification_C550" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//RequirementConditionIdentification_C550"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -1693,6 +1708,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="REQUIREMENT_CONDITION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="actionRequestNotificationCoded"
@@ -1729,7 +1745,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="numberOfUnitDetails" lowerBound="1"
-        eType="#//NumberOfUnitDetails_C523" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//NumberOfUnitDetails_C523" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -1744,6 +1760,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NUMBER_OF_UNIT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -2015,7 +2032,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="allowanceChargeInformation"
-        eType="#//AllowanceChargeInformation_C552" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AllowanceChargeInformation_C552"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2030,6 +2048,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ALLOWANCE_CHARGE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="settlementCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -2068,7 +2087,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="specialServicesIdentification"
-        eType="#//SpecialServicesIdentification_C214" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//SpecialServicesIdentification_C214"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2083,6 +2103,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SPECIAL_SERVICES_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -2118,7 +2139,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="paymentTerms" eType="#//PaymentTerms_C110"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="paymentTerms" eType="ecore:EClass commonDefinitions.ecore#//PaymentTerms_C110"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2134,9 +2155,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PAYMENT_TERMS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="termsTimeInformation" eType="#//TermsTimeInformation_C112"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="termsTimeInformation" eType="ecore:EClass commonDefinitions.ecore#//TermsTimeInformation_C112"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2152,6 +2174,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TERMS_TIME_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -2341,7 +2364,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dimensions" lowerBound="1"
-        eType="#//Dimensions_C211" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//Dimensions_C211" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -2356,6 +2379,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DIMENSIONS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -2477,7 +2501,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="contributionType" eType="#//ContributionType_C953"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contributionType" eType="ecore:EClass commonDefinitions.ecore#//ContributionType_C953"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2493,9 +2517,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CONTRIBUTION_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="#//Instruction_C522"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2511,9 +2536,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSTRUCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="#//RateTariffClass_C203"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2529,6 +2555,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RATE_TARIFF_CLASS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="reasonForChange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -2837,7 +2864,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeType" eType="#//DutyTaxFeeType_C241"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeType" eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeType_C241"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2853,10 +2880,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DUTY_TAX_FEE_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeAccountDetail"
-        eType="#//DutyTaxFeeAccountDetail_C533" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeAccountDetail_C533"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -2871,6 +2900,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DUTY_TAX_FEE_ACCOUNT_DETAIL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dutyTaxFeeAssessmentBasis"
@@ -2891,7 +2921,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeDetail" eType="#//DutyTaxFeeDetail_C243"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dutyTaxFeeDetail" eType="ecore:EClass commonDefinitions.ecore#//DutyTaxFeeDetail_C243"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -2907,6 +2937,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DUTY_TAX_FEE_DETAIL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dutyTaxFeeCategoryCoded"
@@ -3098,7 +3129,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="#//FrequencyDetails_C526"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="ecore:EClass commonDefinitions.ecore#//FrequencyDetails_C526"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -3114,6 +3145,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FREQUENCY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sampleDescriptionCoded"
@@ -3152,7 +3184,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sampleLocationDetails"
-        eType="#//SampleLocationDetails_C514" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//SampleLocationDetails_C514"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3167,6 +3200,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SAMPLE_LOCATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -3203,7 +3237,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="locationIdentification"
-        eType="#//LocationIdentification_C517" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//LocationIdentification_C517"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3218,10 +3253,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="LOCATION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relatedLocationOneIdentification"
-        eType="#//RelatedLocationOneIdentification_C519" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//RelatedLocationOneIdentification_C519"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3236,10 +3273,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RELATED_LOCATION_ONE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relatedLocationTwoIdentification"
-        eType="#//RelatedLocationTwoIdentification_C553" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//RelatedLocationTwoIdentification_C553"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3254,6 +3293,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RELATED_LOCATION_TWO_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="relationCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -3525,7 +3565,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="questionDetails" eType="#//QuestionDetails_C811"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="questionDetails" eType="ecore:EClass commonDefinitions.ecore#//QuestionDetails_C811"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -3541,9 +3581,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="QUESTION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="responseDetails" eType="#//ResponseDetails_C812"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="responseDetails" eType="ecore:EClass commonDefinitions.ecore#//ResponseDetails_C812"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -3559,6 +3600,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RESPONSE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -3644,7 +3686,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="applicationErrorDetail"
-        lowerBound="1" eType="#//ApplicationErrorDetail_C901" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ApplicationErrorDetail_C901"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -3659,6 +3702,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="APPLICATION_ERROR_DETAIL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -3776,7 +3820,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contractAndCarriageCondition"
-        eType="#//ContractAndCarriageCondition_C536" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ContractAndCarriageCondition_C536"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -3791,9 +3836,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CONTRACT_AND_CARRIAGE_CONDITION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="service" eType="#//Service_C233"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="service" eType="ecore:EClass commonDefinitions.ecore#//Service_C233"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -3809,9 +3855,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SERVICE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="transportPriority" eType="#//TransportPriority_C537"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="transportPriority" eType="ecore:EClass commonDefinitions.ecore#//TransportPriority_C537"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -3827,9 +3874,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TRANSPORT_PRIORITY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="#//NatureOfCargo_C703"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="ecore:EClass commonDefinitions.ecore#//NatureOfCargo_C703"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -3845,6 +3893,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NATURE_OF_CARGO"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -4217,7 +4266,7 @@
       <details key="name" value="NATURE_OF_CARGO"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="#//NatureOfCargo_C703"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="natureOfCargo" eType="ecore:EClass commonDefinitions.ecore#//NatureOfCargo_C703"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -4233,6 +4282,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NATURE_OF_CARGO"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -4251,7 +4301,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="paymentInstructionDetails"
-        lowerBound="1" eType="#//PaymentInstructionDetails_C534" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PaymentInstructionDetails_C534"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -4266,6 +4317,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PAYMENT_INSTRUCTION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -4301,7 +4353,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfDamage" eType="#//TypeOfDamage_C821"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfDamage" eType="ecore:EClass commonDefinitions.ecore#//TypeOfDamage_C821"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -4317,9 +4369,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TYPE_OF_DAMAGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="damageArea" eType="#//DamageArea_C822"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="damageArea" eType="ecore:EClass commonDefinitions.ecore#//DamageArea_C822"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -4335,9 +4388,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DAMAGE_AREA"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="damageSeverity" eType="#//DamageSeverity_C825"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="damageSeverity" eType="ecore:EClass commonDefinitions.ecore#//DamageSeverity_C825"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -4353,9 +4407,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DAMAGE_SEVERITY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action_C826"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="ecore:EClass commonDefinitions.ecore#//Action_C826"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -4371,6 +4426,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ACTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -4456,7 +4512,7 @@
       <details key="name" value="AMOUNTS_RELATIONSHIP_DETAILS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="monetaryFunction" eType="#//MonetaryFunction_C549"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="monetaryFunction" eType="ecore:EClass commonDefinitions.ecore#//MonetaryFunction_C549"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -4472,6 +4528,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MONETARY_FUNCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -4557,7 +4614,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="agreementTypeIdentification"
-        eType="#//AgreementTypeIdentification_C543" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AgreementTypeIdentification_C543"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -4572,6 +4630,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="AGREEMENT_TYPE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="serviceLayerCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -5202,7 +5261,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="arrayStructureIdentification"
-        lowerBound="1" eType="#//ArrayStructureIdentification_C779" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ArrayStructureIdentification_C779"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5217,10 +5277,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ARRAY_STRUCTURE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5235,6 +5297,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -5389,7 +5452,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="languageDetails" eType="#//LanguageDetails_C508"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="languageDetails" eType="ecore:EClass commonDefinitions.ecore#//LanguageDetails_C508"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -5405,6 +5468,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="LANGUAGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -5422,7 +5486,7 @@
       <details key="name" value="BEGINNING_OF_MESSAGE"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="#//DocumentMessageName_C002"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -5438,10 +5502,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_NAME"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageIdentification"
-        eType="#//DocumentMessageIdentification_C106" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageIdentification_C106"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5456,6 +5522,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="messageFunctionCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -5508,7 +5575,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="valueListIdentification"
-        lowerBound="1" eType="#//ValueListIdentification_C780" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ValueListIdentification_C780"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5523,10 +5591,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="VALUE_LIST_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5541,6 +5611,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -5612,7 +5683,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="#//ProductCharacteristic_C240" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5627,6 +5699,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRODUCT_CHARACTERISTIC"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="maintenanceOperationCoded"
@@ -5730,7 +5803,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fileIdentification" lowerBound="1"
-        eType="#//FileIdentification_C077" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//FileIdentification_C077" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -5745,9 +5818,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FILE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="fileDetails" eType="#//FileDetails_C099"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fileDetails" eType="ecore:EClass commonDefinitions.ecore#//FileDetails_C099"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -5763,6 +5837,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FILE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sequenceNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -5970,7 +6045,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="chargeAllowanceAccount"
-        eType="#//ChargeAllowanceAccount_C878" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ChargeAllowanceAccount_C878"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -5985,6 +6061,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CHARGE_ALLOWANCE_ACCOUNT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -6087,7 +6164,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attendeeCategory" eType="#//AttendeeCategory_C839"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attendeeCategory" eType="ecore:EClass commonDefinitions.ecore#//AttendeeCategory_C839"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -6103,10 +6180,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ATTENDEE_CATEGORY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attendanceAdmissionDetails"
-        eType="#//AttendanceAdmissionDetails_C840" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AttendanceAdmissionDetails_C840"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6121,10 +6200,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ATTENDANCE_ADMISSION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attendanceDischargeDetails"
-        eType="#//AttendanceDischargeDetails_C841" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AttendanceDischargeDetails_C841"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6139,6 +6220,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ATTENDANCE_DISCHARGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -6157,7 +6239,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="codeSetIdentification"
-        lowerBound="1" eType="#//CodeSetIdentification_C702" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//CodeSetIdentification_C702"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -6172,6 +6255,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CODE_SET_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="classDesignatorCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -6378,7 +6462,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dataSetIdentification"
-        lowerBound="1" eType="#//DataSetIdentification_C782" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//DataSetIdentification_C782"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -6393,10 +6478,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DATA_SET_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -6411,6 +6498,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -6430,7 +6518,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="#//SequenceInformation_C286"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="ecore:EClass commonDefinitions.ecore#//SequenceInformation_C286"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -6446,6 +6534,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SEQUENCE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="revisionNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -6498,7 +6587,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="#//MeasurementDetails_C502"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="ecore:EClass commonDefinitions.ecore#//MeasurementDetails_C502"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -6514,9 +6603,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MEASUREMENT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="valueRange" eType="#//ValueRange_C174"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="valueRange" eType="ecore:EClass commonDefinitions.ecore#//ValueRange_C174"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -6532,6 +6622,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="VALUE_RANGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="surfaceLayerIndicatorCoded"
@@ -7131,7 +7222,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="physicalOrLogicalStateInformation"
-        lowerBound="1" eType="#//PhysicalOrLogicalStateInformation_C564" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PhysicalOrLogicalStateInformation_C564"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -7146,6 +7238,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PHYSICAL_OR_LOGICAL_STATE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -7350,7 +7443,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="monetaryAmount" lowerBound="1"
-        eType="#//MonetaryAmount_C516" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//MonetaryAmount_C516" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -7365,6 +7458,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MONETARY_AMOUNT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -7451,7 +7545,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="characteristicValue" lowerBound="1"
-        eType="#//CharacteristicValue_C889" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//CharacteristicValue_C889" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -7466,6 +7560,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CHARACTERISTIC_VALUE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -7484,7 +7579,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="statisticalConceptIdentification"
-        lowerBound="1" eType="#//StatisticalConceptIdentification_C785" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//StatisticalConceptIdentification_C785"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -7499,10 +7595,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STATISTICAL_CONCEPT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7517,6 +7615,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -7588,7 +7687,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="clinicalInterventionDetails"
-        eType="#//ClinicalInterventionDetails_C828" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ClinicalInterventionDetails_C828"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7603,6 +7703,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CLINICAL_INTERVENTION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -7741,7 +7842,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="#//MeasurementDetails_C502"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="measurementDetails" eType="ecore:EClass commonDefinitions.ecore#//MeasurementDetails_C502"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -7757,10 +7858,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MEASUREMENT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="#//ProductCharacteristic_C240" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -7775,6 +7878,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRODUCT_CHARACTERISTIC"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="characteristicRelevanceCoded"
@@ -7846,7 +7950,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="patternDescription" eType="#//PatternDescription_C329"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patternDescription" eType="ecore:EClass commonDefinitions.ecore#//PatternDescription_C329"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -7862,6 +7966,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PATTERN_DESCRIPTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8167,7 +8272,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="governmentAction" eType="#//GovernmentAction_C232"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="governmentAction" eType="ecore:EClass commonDefinitions.ecore#//GovernmentAction_C232"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8183,6 +8288,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="GOVERNMENT_ACTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8421,7 +8527,7 @@
       <details key="name" value="COMPONENT_DETAILS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfUnitComponent" eType="#//TypeOfUnitComponent_C823"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfUnitComponent" eType="ecore:EClass commonDefinitions.ecore#//TypeOfUnitComponent_C823"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8437,9 +8543,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TYPE_OF_UNIT_COMPONENT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="componentMaterial" eType="#//ComponentMaterial_C824"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="componentMaterial" eType="ecore:EClass commonDefinitions.ecore#//ComponentMaterial_C824"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8455,6 +8562,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="COMPONENT_MATERIAL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8678,7 +8786,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="reference" lowerBound="1"
-        eType="#//Reference_C506" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//Reference_C506" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -8693,6 +8801,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="REFERENCE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8710,7 +8819,7 @@
       <details key="name" value="TRANSPORT_CHARGE_RATE_CALCULATIONS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="charge" eType="#//Charge_C200"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="charge" eType="ecore:EClass commonDefinitions.ecore#//Charge_C200"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8726,9 +8835,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CHARGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="#//RateTariffClass_C203"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8744,9 +8854,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RATE_TARIFF_CLASS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="commodityRateDetail" eType="#//CommodityRateDetail_C528"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="commodityRateDetail" eType="ecore:EClass commonDefinitions.ecore#//CommodityRateDetail_C528"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8762,10 +8873,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="COMMODITY_RATE_DETAIL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClassDetail"
-        eType="#//RateTariffClassDetail_C554" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//RateTariffClassDetail_C554"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -8780,6 +8893,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RATE_TARIFF_CLASS_DETAIL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8816,7 +8930,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identityNumberRange" lowerBound="1"
-        eType="#//IdentityNumberRange_C208" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//IdentityNumberRange_C208" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -8831,6 +8945,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="IDENTITY_NUMBER_RANGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8849,7 +8964,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="insuranceCoverType" lowerBound="1"
-        eType="#//InsuranceCoverType_C330" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//InsuranceCoverType_C330" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -8864,10 +8979,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSURANCE_COVER_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="insuranceCoverDetails"
-        lowerBound="1" eType="#//InsuranceCoverDetails_C331" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//InsuranceCoverDetails_C331"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -8882,6 +8999,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSURANCE_COVER_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -8899,7 +9017,7 @@
       <details key="name" value="BUSINESS_FUNCTION"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="businessFunction" eType="#//BusinessFunction_C521"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="businessFunction" eType="ecore:EClass commonDefinitions.ecore#//BusinessFunction_C521"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8915,6 +9033,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="BUSINESS_FUNCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="geographicEnvironmentCoded"
@@ -8953,7 +9072,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="bankOperation" eType="#//BankOperation_C551"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="bankOperation" eType="ecore:EClass commonDefinitions.ecore#//BankOperation_C551"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -8969,6 +9088,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="BANK_OPERATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="intraCompanyPaymentCoded"
@@ -9004,7 +9124,7 @@
       <details key="name" value="RISK_OBJECT_TYPE"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectType" eType="#//RiskObjectType_C851"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectType" eType="ecore:EClass commonDefinitions.ecore#//RiskObjectType_C851"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -9020,9 +9140,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RISK_OBJECT_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectSubType" eType="#//RiskObjectSubType_C852"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="riskObjectSubType" eType="ecore:EClass commonDefinitions.ecore#//RiskObjectSubType_C852"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -9038,6 +9159,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RISK_OBJECT_SUB_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -9364,7 +9486,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" eType="#//IdentificationNumber_C206"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -9380,10 +9502,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="IDENTIFICATION_NUMBER"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -9398,6 +9522,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="nameTypeCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -9434,7 +9559,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nameComponentDetails" eType="#//NameComponentDetails_C816"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nameComponentDetails" eType="ecore:EClass commonDefinitions.ecore#//NameComponentDetails_C816"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -9450,6 +9575,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NAME_COMPONENT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="actionRequestNotificationCoded"
@@ -9572,7 +9698,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="computerEnvironmentIdentification"
-        lowerBound="1" eType="#//ComputerEnvironmentIdentification_C079" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ComputerEnvironmentIdentification_C079"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -9587,6 +9714,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="COMPUTER_ENVIRONMENT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileGeneratingCommand"
@@ -10002,7 +10130,7 @@
       <details key="name" value="CURRENCIES"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="currencyDetails" eType="#//CurrencyDetails_C504"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="currencyDetails" eType="ecore:EClass commonDefinitions.ecore#//CurrencyDetails_C504"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -10018,6 +10146,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CURRENCY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="rateOfExchange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
@@ -10276,7 +10405,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="packagingDetails" eType="#//PackagingDetails_C531"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="packagingDetails" eType="ecore:EClass commonDefinitions.ecore#//PackagingDetails_C531"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -10292,9 +10421,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PACKAGING_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="packageType" eType="#//PackageType_C202"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="packageType" eType="ecore:EClass commonDefinitions.ecore#//PackageType_C202"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -10310,10 +10440,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PACKAGE_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="packageTypeIdentification"
-        eType="#//PackageTypeIdentification_C402" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PackageTypeIdentification_C402"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10328,10 +10460,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PACKAGE_TYPE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="returnablePackageDetails"
-        eType="#//ReturnablePackageDetails_C532" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ReturnablePackageDetails_C532"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10346,6 +10480,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RETURNABLE_PACKAGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -10498,7 +10633,7 @@
       <details key="name" value="CHARGE_PAYMENT_INSTRUCTIONS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="chargeCategory" eType="#//ChargeCategory_C229"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="chargeCategory" eType="ecore:EClass commonDefinitions.ecore#//ChargeCategory_C229"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -10514,9 +10649,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CHARGE_CATEGORY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="methodOfPayment" eType="#//MethodOfPayment_C231"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="methodOfPayment" eType="ecore:EClass commonDefinitions.ecore#//MethodOfPayment_C231"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -10532,6 +10668,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="METHOD_OF_PAYMENT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="prepaidCollectIndicatorCoded"
@@ -10687,7 +10824,7 @@
       <details key="name" value="PRICE_DETAILS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="priceInformation" eType="#//PriceInformation_C509"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="priceInformation" eType="ecore:EClass commonDefinitions.ecore#//PriceInformation_C509"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -10703,6 +10840,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRICE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="subLinePriceChangeCoded"
@@ -10946,7 +11084,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="remunerationTypeIdentification"
-        eType="#//RemunerationTypeIdentification_C049" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//RemunerationTypeIdentification_C049"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -10961,6 +11100,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="REMUNERATION_TYPE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -11062,7 +11202,7 @@
       <details key="name" value="STATUS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statusCategory" eType="#//StatusCategory_C601"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statusCategory" eType="ecore:EClass commonDefinitions.ecore#//StatusCategory_C601"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -11078,9 +11218,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STATUS_CATEGORY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="status" eType="#//Status_C555"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="status" eType="ecore:EClass commonDefinitions.ecore#//Status_C555"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -11096,9 +11237,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STATUS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statusReason" eType="#//StatusReason_C556"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statusReason" eType="ecore:EClass commonDefinitions.ecore#//StatusReason_C556"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -11114,6 +11256,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STATUS_REASON"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -11235,7 +11378,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="informationRequest" lowerBound="1"
-        eType="#//InformationRequest_C333" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//InformationRequest_C333" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -11250,6 +11393,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INFORMATION_REQUEST"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -11386,7 +11530,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="processTypeAndDescription"
-        eType="#//ProcessTypeAndDescription_C242" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProcessTypeAndDescription_C242"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11401,10 +11546,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PROCESS_TYPE_AND_DESCRIPTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="processIdentificationDetails"
-        eType="#//ProcessIdentificationDetails_C830" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProcessIdentificationDetails_C830"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11419,6 +11566,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PROCESS_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -11574,7 +11722,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="qualificationClassification"
-        eType="#//QualificationClassification_C950" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//QualificationClassification_C950"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11589,6 +11738,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="QUALIFICATION_CLASSIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -11692,7 +11842,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentIdentification"
-        eType="#//EquipmentIdentification_C237" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -11707,9 +11858,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EQUIPMENT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentSizeAndType" eType="#//EquipmentSizeAndType_C224"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentSizeAndType" eType="ecore:EClass commonDefinitions.ecore#//EquipmentSizeAndType_C224"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -11725,6 +11877,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EQUIPMENT_SIZE_AND_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="equipmentSupplierCoded"
@@ -11796,7 +11949,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rateDetails" lowerBound="1"
-        eType="#//RateDetails_C128" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//RateDetails_C128" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -11811,6 +11964,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RATE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -12067,7 +12221,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountingJournalIdentification"
-        eType="#//AccountingJournalIdentification_C595" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AccountingJournalIdentification_C595"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12082,10 +12237,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ACCOUNTING_JOURNAL_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountingEntryTypeDetails"
-        eType="#//AccountingEntryTypeDetails_C596" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AccountingEntryTypeDetails_C596"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12100,6 +12257,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ACCOUNTING_ENTRY_TYPE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -12136,7 +12294,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="salesChannelIdentification"
-        lowerBound="1" eType="#//SalesChannelIdentification_C332" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//SalesChannelIdentification_C332"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -12151,6 +12310,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SALES_CHANNEL_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="actionRequestNotificationCoded"
@@ -12749,7 +12909,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="organisationClassificationDetail"
-        eType="#//OrganisationClassificationDetail_C844" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//OrganisationClassificationDetail_C844"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12764,6 +12925,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ORGANISATION_CLASSIFICATION_DETAIL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -12799,7 +12961,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="priceMultiplierInformation"
-        eType="#//PriceMultiplierInformation_C138" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PriceMultiplierInformation_C138"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12814,6 +12977,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRICE_MULTIPLIER_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="reasonForChange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -12934,7 +13098,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="resultDetails" eType="#//ResultDetails_C831"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resultDetails" eType="ecore:EClass commonDefinitions.ecore#//ResultDetails_C831"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -12950,10 +13114,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RESULT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="measurementUnitDetails"
-        eType="#//MeasurementUnitDetails_C848" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//MeasurementUnitDetails_C848"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -12968,6 +13134,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MEASUREMENT_UNIT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="resultNormalcyIndicatorCoded"
@@ -13563,7 +13730,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nationalityDetails" eType="#//NationalityDetails_C042"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nationalityDetails" eType="ecore:EClass commonDefinitions.ecore#//NationalityDetails_C042"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -13579,6 +13746,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NATIONALITY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -13716,7 +13884,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="maritalStatusDetails" eType="#//MaritalStatusDetails_C085"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="maritalStatusDetails" eType="ecore:EClass commonDefinitions.ecore#//MaritalStatusDetails_C085"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -13732,9 +13900,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MARITAL_STATUS_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="religionDetails" eType="#//ReligionDetails_C101"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="religionDetails" eType="ecore:EClass commonDefinitions.ecore#//ReligionDetails_C101"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -13750,6 +13919,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RELIGION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -13883,7 +14053,7 @@
       <details key="name" value="TEST_METHOD"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="testMethod" eType="#//TestMethod_C244"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testMethod" eType="ecore:EClass commonDefinitions.ecore#//TestMethod_C244"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -13899,6 +14069,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TEST_METHOD"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="testRouteOfAdministeringCoded"
@@ -13971,7 +14142,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="testReason" eType="#//TestReason_C515"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testReason" eType="ecore:EClass commonDefinitions.ecore#//TestReason_C515"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -13987,6 +14158,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TEST_REASON"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -14090,7 +14262,7 @@
       <details key="name" value="TRANSPORT_MOVEMENT_DETAILS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="movementType" eType="#//MovementType_C219"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="movementType" eType="ecore:EClass commonDefinitions.ecore#//MovementType_C219"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -14106,6 +14278,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MOVEMENT_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="equipmentPlan" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -14346,7 +14519,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountHolderIdentification"
-        eType="#//AccountHolderIdentification_C078" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AccountHolderIdentification_C078"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14361,10 +14535,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ACCOUNT_HOLDER_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="institutionIdentification"
-        eType="#//InstitutionIdentification_C088" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//InstitutionIdentification_C088"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -14379,6 +14555,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSTITUTION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="countryCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -14599,7 +14776,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="marksLabels" eType="#//MarksLabels_C210"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="marksLabels" eType="ecore:EClass commonDefinitions.ecore#//MarksLabels_C210"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -14615,6 +14792,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MARKS___LABELS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="containerOrPackageStateCoded"
@@ -14635,7 +14813,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfMarking" eType="#//TypeOfMarking_C827"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeOfMarking" eType="ecore:EClass commonDefinitions.ecore#//TypeOfMarking_C827"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -14651,6 +14829,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TYPE_OF_MARKING"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -14822,7 +15001,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="processingIndicator" lowerBound="1"
-        eType="#//ProcessingIndicator_C529" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProcessingIndicator_C529" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -14837,6 +15016,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PROCESSING_INDICATOR"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -14939,7 +15119,7 @@
       <details key="name" value="SAMPLING_PARAMETERS_FOR_SUMMARY_STATISTICS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="#//FrequencyDetails_C526"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="frequencyDetails" eType="ecore:EClass commonDefinitions.ecore#//FrequencyDetails_C526"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -14955,6 +15135,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FREQUENCY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="confidenceLimit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
@@ -14974,7 +15155,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sizeDetails" eType="#//SizeDetails_C512"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sizeDetails" eType="ecore:EClass commonDefinitions.ecore#//SizeDetails_C512"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -14990,6 +15171,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SIZE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -15347,7 +15529,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dosageDetails" eType="#//DosageDetails_C838"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dosageDetails" eType="ecore:EClass commonDefinitions.ecore#//DosageDetails_C838"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -15363,6 +15545,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOSAGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -15655,7 +15838,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="numberAndTypeOfPackages"
-        eType="#//NumberAndTypeOfPackages_C213" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//NumberAndTypeOfPackages_C213"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -15670,6 +15854,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NUMBER_AND_TYPE_OF_PACKAGES"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -15688,7 +15873,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="purposeOfConveyanceCall"
-        lowerBound="1" eType="#//PurposeOfConveyanceCall_C525" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//PurposeOfConveyanceCall_C525"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -15703,6 +15889,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PURPOSE_OF_CONVEYANCE_CALL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -15737,7 +15924,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="customsIdentityCodes" eType="#//CustomsIdentityCodes_C246"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="customsIdentityCodes" eType="ecore:EClass commonDefinitions.ecore#//CustomsIdentityCodes_C246"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -15753,6 +15940,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CUSTOMS_IDENTITY_CODES"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -15788,7 +15976,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="itemCharacteristic" eType="#//ItemCharacteristic_C272"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="itemCharacteristic" eType="ecore:EClass commonDefinitions.ecore#//ItemCharacteristic_C272"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -15804,9 +15992,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ITEM_CHARACTERISTIC"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="itemDescription" eType="#//ItemDescription_C273"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="itemDescription" eType="ecore:EClass commonDefinitions.ecore#//ItemDescription_C273"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -15822,6 +16011,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ITEM_DESCRIPTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="surfaceLayerIndicatorCoded"
@@ -15875,7 +16065,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="range" eType="#//Range_C280"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="range" eType="ecore:EClass commonDefinitions.ecore#//Range_C280"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -15891,6 +16081,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RANGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -16131,7 +16322,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="formulaComplexity" eType="#//FormulaComplexity_C961"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formulaComplexity" eType="ecore:EClass commonDefinitions.ecore#//FormulaComplexity_C961"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -16147,6 +16338,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FORMULA_COMPLEXITY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -16233,7 +16425,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="temperatureSetting" eType="#//TemperatureSetting_C239"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="temperatureSetting" eType="ecore:EClass commonDefinitions.ecore#//TemperatureSetting_C239"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -16249,6 +16441,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TEMPERATURE_SETTING"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -16334,7 +16527,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="employmentCategory" eType="#//EmploymentCategory_C948"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="employmentCategory" eType="ecore:EClass commonDefinitions.ecore#//EmploymentCategory_C948"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -16350,9 +16543,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EMPLOYMENT_CATEGORY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="occupation" eType="#//Occupation_C951"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occupation" eType="ecore:EClass commonDefinitions.ecore#//Occupation_C951"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -16368,10 +16562,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="OCCUPATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="qualificationClassification"
-        eType="#//QualificationClassification_C950" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//QualificationClassification_C950"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -16386,6 +16582,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="QUALIFICATION_CLASSIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="jobTitle" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -16932,7 +17129,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="equipmentIdentification"
-        lowerBound="1" eType="#//EquipmentIdentification_C237" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//EquipmentIdentification_C237"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -16947,6 +17145,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EQUIPMENT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="numberOfPackages" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
@@ -16999,7 +17198,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="priorityDetails" eType="#//PriorityDetails_C585"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="priorityDetails" eType="ecore:EClass commonDefinitions.ecore#//PriorityDetails_C585"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -17015,6 +17214,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRIORITY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -17033,7 +17233,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="communicationContact" lowerBound="1"
-        eType="#//CommunicationContact_C076" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact_C076" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17048,6 +17248,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="COMMUNICATION_CONTACT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -17065,7 +17266,7 @@
       <details key="name" value="ERROR_POINT_DETAILS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="errorPointDetails" eType="#//ErrorPointDetails_C701"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="errorPointDetails" eType="ecore:EClass commonDefinitions.ecore#//ErrorPointDetails_C701"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -17081,10 +17282,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ERROR_POINT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="errorSegmentPointDetails"
-        eType="#//ErrorSegmentPointDetails_C853" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ErrorSegmentPointDetails_C853"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17099,6 +17302,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ERROR_SEGMENT_POINT_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -17117,7 +17321,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="footnoteSetIdentification"
-        lowerBound="1" eType="#//FootnoteSetIdentification_C783" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//FootnoteSetIdentification_C783"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17132,10 +17337,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FOOTNOTE_SET_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17150,6 +17357,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -17289,7 +17497,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messageIdentifier" lowerBound="1"
-        eType="#//MessageIdentifier_C709" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//MessageIdentifier_C709" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17304,6 +17512,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MESSAGE_IDENTIFIER"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="classDesignatorCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -17341,7 +17550,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="#//Relationship_C941"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="ecore:EClass commonDefinitions.ecore#//Relationship_C941"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -17357,6 +17566,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RELATIONSHIP"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -17596,7 +17806,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" lowerBound="1"
-        eType="#//DocumentMessageName_C002" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17611,10 +17821,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_NAME"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageDetails"
-        eType="#//DocumentMessageDetails_C503" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails_C503"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17629,6 +17841,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="communicationChannelIdentifierCoded"
@@ -17700,7 +17913,7 @@
       <details key="name" value="ADDRESS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="addressUsage" eType="#//AddressUsage_C817"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addressUsage" eType="ecore:EClass commonDefinitions.ecore#//AddressUsage_C817"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -17716,9 +17929,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ADDRESS_USAGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="addressDetails" eType="#//AddressDetails_C090"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addressDetails" eType="ecore:EClass commonDefinitions.ecore#//AddressDetails_C090"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -17734,6 +17948,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ADDRESS_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="cityName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -17789,7 +18004,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="countrySubEntityDetails"
-        eType="#//CountrySubEntityDetails_C819" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//CountrySubEntityDetails_C819"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17804,10 +18020,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="COUNTRY_SUB_ENTITY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="locationIdentification"
-        eType="#//LocationIdentification_C517" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//LocationIdentification_C517"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -17822,6 +18040,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="LOCATION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -17858,7 +18077,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" lowerBound="1"
-        eType="#//IdentificationNumber_C206" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -17873,6 +18092,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="IDENTIFICATION_NUMBER"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -17995,7 +18215,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18010,9 +18231,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" eType="#//NameAndAddress_C058"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress_C058"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18028,9 +18250,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="NAME_AND_ADDRESS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="partyName" eType="#//PartyName_C080"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="partyName" eType="ecore:EClass commonDefinitions.ecore#//PartyName_C080"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18046,9 +18269,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_NAME"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="street" eType="#//Street_C059"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="street" eType="ecore:EClass commonDefinitions.ecore#//Street_C059"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18064,6 +18288,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STREET"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="cityName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -18476,7 +18701,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="transportIdentification"
-        lowerBound="1" eType="#//TransportIdentification_C222" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//TransportIdentification_C222"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -18491,6 +18717,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TRANSPORT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -18526,7 +18753,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="safetySection" eType="#//SafetySection_C814"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="safetySection" eType="ecore:EClass commonDefinitions.ecore#//SafetySection_C814"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18542,10 +18769,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SAFETY_SECTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="additionalSafetyInformation"
-        eType="#//AdditionalSafetyInformation_C815" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//AdditionalSafetyInformation_C815"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18560,6 +18789,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ADDITIONAL_SAFETY_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="maintenanceOperationCoded"
@@ -18613,7 +18843,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardCode" eType="#//HazardCode_C205"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hazardCode" eType="ecore:EClass commonDefinitions.ecore#//HazardCode_C205"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18629,9 +18859,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="HAZARD_CODE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="undgInformation" eType="#//UndgInformation_C234"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="undgInformation" eType="ecore:EClass commonDefinitions.ecore#//UndgInformation_C234"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18647,10 +18878,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="UNDG_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dangerousGoodsShipmentFlashpoint"
-        eType="#//DangerousGoodsShipmentFlashpoint_C223" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DangerousGoodsShipmentFlashpoint_C223"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18665,6 +18898,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DANGEROUS_GOODS_SHIPMENT_FLASHPOINT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="packingGroupCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -18736,7 +18970,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="hazardIdentificationPlacardDetails"
-        eType="#//HazardIdentificationPlacardDetails_C235" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//HazardIdentificationPlacardDetails_C235"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -18751,9 +18986,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="HAZARD_IDENTIFICATION_PLACARD_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dangerousGoodsLabel" eType="#//DangerousGoodsLabel_C236"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dangerousGoodsLabel" eType="ecore:EClass commonDefinitions.ecore#//DangerousGoodsLabel_C236"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -18769,6 +19005,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DANGEROUS_GOODS_LABEL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="packingInstructionCoded"
@@ -19076,7 +19313,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" lowerBound="1"
-        eType="#//DateTimePeriod_C507" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod_C507" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -19091,6 +19328,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DATE_TIME_PERIOD"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -19126,7 +19364,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="departmentOrEmployeeDetails"
-        eType="#//DepartmentOrEmployeeDetails_C056" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DepartmentOrEmployeeDetails_C056"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19141,6 +19380,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DEPARTMENT_OR_EMPLOYEE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -19177,7 +19417,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="structureComponentIdentification"
-        eType="#//StructureComponentIdentification_C786" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//StructureComponentIdentification_C786"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19192,10 +19433,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STRUCTURE_COMPONENT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19210,6 +19453,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -19247,7 +19491,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="positionIdentification"
-        eType="#//PositionIdentification_C778" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19262,10 +19507,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="POSITION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="#//ProductCharacteristic_C240" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19280,6 +19527,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRODUCT_CHARACTERISTIC"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -19672,7 +19920,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="modeOfTransport" eType="#//ModeOfTransport_C220"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="modeOfTransport" eType="ecore:EClass commonDefinitions.ecore#//ModeOfTransport_C220"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -19688,9 +19936,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MODE_OF_TRANSPORT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="transportMeans" eType="#//TransportMeans_C228"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="transportMeans" eType="ecore:EClass commonDefinitions.ecore#//TransportMeans_C228"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -19706,9 +19955,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TRANSPORT_MEANS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="carrier" eType="#//Carrier_C040"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="carrier" eType="ecore:EClass commonDefinitions.ecore#//Carrier_C040"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -19724,6 +19974,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CARRIER"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="transitDirectionCoded"
@@ -19745,7 +19996,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="excessTransportationInformation"
-        eType="#//ExcessTransportationInformation_C401" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ExcessTransportationInformation_C401"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19760,10 +20012,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EXCESS_TRANSPORTATION_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="transportIdentification"
-        eType="#//TransportIdentification_C222" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//TransportIdentification_C222"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -19778,6 +20032,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TRANSPORT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="transportOwnershipCoded"
@@ -20206,7 +20461,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageDetails"
-        eType="#//DocumentMessageDetails_C503" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails_C503"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -20221,6 +20477,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="consignmentLoadSequenceNumber"
@@ -20257,7 +20514,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="positionIdentification"
-        eType="#//PositionIdentification_C778" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -20272,6 +20530,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="POSITION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="arrayCellDetails" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -20440,7 +20699,7 @@
       <details key="name" value="EVENT"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="eventType" eType="#//EventType_C030"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="eventType" eType="ecore:EClass commonDefinitions.ecore#//EventType_C030"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20456,9 +20715,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EVENT_TYPE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="eventIdentification" eType="#//EventIdentification_C063"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="eventIdentification" eType="ecore:EClass commonDefinitions.ecore#//EventIdentification_C063"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20474,6 +20734,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="EVENT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -20563,7 +20824,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="#//Instruction_C522"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20579,6 +20840,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSTRUCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -20665,7 +20927,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="footnoteIdentification"
-        lowerBound="1" eType="#//FootnoteIdentification_C784" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//FootnoteIdentification_C784"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -20680,10 +20943,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="FOOTNOTE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -20698,6 +20963,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -20920,7 +21186,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipCategory" eType="#//MembershipCategory_C942"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipCategory" eType="ecore:EClass commonDefinitions.ecore#//MembershipCategory_C942"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20936,9 +21202,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MEMBERSHIP_CATEGORY"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipStatus" eType="#//MembershipStatus_C944"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipStatus" eType="ecore:EClass commonDefinitions.ecore#//MembershipStatus_C944"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20954,9 +21221,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MEMBERSHIP_STATUS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipLevel" eType="#//MembershipLevel_C945"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="membershipLevel" eType="ecore:EClass commonDefinitions.ecore#//MembershipLevel_C945"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20972,9 +21240,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="MEMBERSHIP_LEVEL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="#//RateTariffClass_C203"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateTariffClass" eType="ecore:EClass commonDefinitions.ecore#//RateTariffClass_C203"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -20990,6 +21259,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RATE_TARIFF_CLASS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="reasonForChange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -21142,7 +21412,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="#//Relationship_C941"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relationship" eType="ecore:EClass commonDefinitions.ecore#//Relationship_C941"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -21158,6 +21428,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="RELATIONSHIP"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -21295,7 +21566,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="textReference" eType="#//TextReference_C107"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="textReference" eType="ecore:EClass commonDefinitions.ecore#//TextReference_C107"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -21311,9 +21582,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TEXT_REFERENCE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="textLiteral" eType="#//TextLiteral_C108"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="textLiteral" eType="ecore:EClass commonDefinitions.ecore#//TextLiteral_C108"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -21329,6 +21601,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="TEXT_LITERAL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="languageCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -21414,7 +21687,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="control" lowerBound="1"
-        eType="#//Control_C270" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//Control_C270" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -21429,6 +21702,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CONTROL"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -21550,7 +21824,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemNumberIdentification"
-        lowerBound="1" eType="#//ItemNumberIdentification_C212" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -21565,6 +21840,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ITEM_NUMBER_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -21582,7 +21858,7 @@
       <details key="name" value="INDEX_DETAILS"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="indexIdentification" eType="#//IndexIdentification_C545"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="indexIdentification" eType="ecore:EClass commonDefinitions.ecore#//IndexIdentification_C545"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -21598,9 +21874,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INDEX_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="indexValue" eType="#//IndexValue_C546"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="indexValue" eType="ecore:EClass commonDefinitions.ecore#//IndexValue_C546"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -21616,6 +21893,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INDEX_VALUE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -22060,7 +22338,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemNumberIdentification"
-        eType="#//ItemNumberIdentification_C212" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -22075,6 +22354,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ITEM_NUMBER_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="hierarchicalParentId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -22652,7 +22932,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="percentageDetails" lowerBound="1"
-        eType="#//PercentageDetails_C501" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PercentageDetails_C501" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -22667,6 +22947,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PERCENTAGE_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -22973,7 +23254,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="#//Instruction_C522"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -22989,10 +23270,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSTRUCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="specialServicesIdentification"
-        eType="#//SpecialServicesIdentification_C214" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//SpecialServicesIdentification_C214"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -23007,6 +23290,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SPECIAL_SERVICES_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="productServiceSubstitutionCoded"
@@ -23128,7 +23412,7 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="quantityDetails" lowerBound="1"
-        eType="#//QuantityDetails_C186" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//QuantityDetails_C186" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -23143,6 +23427,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="QUANTITY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -23500,7 +23785,7 @@
       <details key="name" value="PARTIES_AND_INSTRUCTION"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="partiesToInstruction" eType="#//PartiesToInstruction_C849"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="partiesToInstruction" eType="ecore:EClass commonDefinitions.ecore#//PartiesToInstruction_C849"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -23516,9 +23801,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTIES_TO_INSTRUCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="#//Instruction_C522"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instruction" eType="ecore:EClass commonDefinitions.ecore#//Instruction_C522"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -23534,9 +23820,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="INSTRUCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="statusOfInstruction" eType="#//StatusOfInstruction_C850"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="statusOfInstruction" eType="ecore:EClass commonDefinitions.ecore#//StatusOfInstruction_C850"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -23552,6 +23839,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="STATUS_OF_INSTRUCTION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="actionRequestNotificationCoded"
@@ -23673,7 +23961,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="quantityDifferenceInformation"
-        eType="#//QuantityDifferenceInformation_C279" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//QuantityDifferenceInformation_C279"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -23688,6 +23977,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="QUANTITY_DIFFERENCE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="discrepancyCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -23740,7 +24030,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageIdentification"
-        eType="#//DocumentMessageIdentification_C106" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageIdentification_C106"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -23755,9 +24046,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="#//DocumentMessageName_C002"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageName" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageName_C002"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -23773,6 +24065,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="DOCUMENT_MESSAGE_NAME"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalNumberOfItems" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
@@ -23928,7 +24221,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="accountIdentification"
-        lowerBound="1" eType="#//AccountIdentification_C593" containment="true">
+        lowerBound="1" eType="ecore:EClass commonDefinitions.ecore#//AccountIdentification_C593"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -23943,6 +24237,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ACCOUNT_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -23978,7 +24273,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="#//SequenceInformation_C286"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceInformation" eType="ecore:EClass commonDefinitions.ecore#//SequenceInformation_C286"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -23994,6 +24289,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SEQUENCE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -24316,7 +24612,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identificationNumber" lowerBound="1"
-        eType="#//IdentificationNumber_C206" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//IdentificationNumber_C206" containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="true"/>
@@ -24331,10 +24627,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="IDENTIFICATION_NUMBER"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="partyIdentificationDetails"
-        eType="#//PartyIdentificationDetails_C082" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PartyIdentificationDetails_C082"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -24349,6 +24647,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PARTY_IDENTIFICATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="statusCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -24386,7 +24685,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="positionIdentification"
-        eType="#//PositionIdentification_C778" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PositionIdentification_C778"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -24401,10 +24701,12 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="POSITION_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="productCharacteristic"
-        eType="#//ProductCharacteristic_C240" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ProductCharacteristic_C240"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -24419,6 +24721,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PRODUCT_CHARACTERISTIC"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -24557,7 +24860,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sealIssuer" eType="#//SealIssuer_C215"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sealIssuer" eType="ecore:EClass commonDefinitions.ecore#//SealIssuer_C215"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -24573,6 +24876,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SEAL_ISSUER"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sealConditionCoded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
@@ -24592,7 +24896,7 @@
         <details key="kind" value="element"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="identityNumberRange" eType="#//IdentityNumberRange_C208"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identityNumberRange" eType="ecore:EClass commonDefinitions.ecore#//IdentityNumberRange_C208"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -24608,6 +24912,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="IDENTITY_NUMBER_RANGE"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -24883,7 +25188,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="clinicalInformationDetails"
-        eType="#//ClinicalInformationDetails_C836" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ClinicalInformationDetails_C836"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -24898,9 +25204,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CLINICAL_INFORMATION_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="certaintyDetails" eType="#//CertaintyDetails_C837"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="certaintyDetails" eType="ecore:EClass commonDefinitions.ecore#//CertaintyDetails_C837"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -24916,6 +25223,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="CERTAINTY_DETAILS"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
@@ -25036,7 +25344,8 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="premiumCalculationComponent"
-        eType="#//PremiumCalculationComponent_C820" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//PremiumCalculationComponent_C820"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -25051,6 +25360,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="PREMIUM_CALCULATION_COMPONENT"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="premiumCalculationComponentValueCategory"
@@ -25206,7 +25516,8 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemNumberIdentification"
-        eType="#//ItemNumberIdentification_C212" containment="true">
+        eType="ecore:EClass commonDefinitions.ecore#//ItemNumberIdentification_C212"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
         <details key="required" value="false"/>
@@ -25221,9 +25532,10 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="ITEM_NUMBER_IDENTIFICATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="subLineInformation" eType="#//SubLineInformation_C829"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="subLineInformation" eType="ecore:EClass commonDefinitions.ecore#//SubLineInformation_C829"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
         <details key="truncable" value="true"/>
@@ -25239,6 +25551,7 @@
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="SUB_LINE_INFORMATION"/>
         <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationLevel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">

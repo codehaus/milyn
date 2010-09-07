@@ -99,10 +99,12 @@ public class ECoreGenerator {
 		// the same as name of the package
 		rootClass.setName(rootClass.getName().toUpperCase());
 		result.add(rootClass);
-		ExtendedMetaData.INSTANCE.setDocumentRoot(rootClass);
+		ExtendedMetaData.INSTANCE.setName(rootClass, rootClass.getName());
+		result.add(ECoreConversionUtils.createDocumentRoot(rootClass));
 		processSegments(root.getSegments(), commonClasses, result, rootClass);
 		return result;
 	}
+
 
 	/**
 	 * Process segments

@@ -4,14 +4,9 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
@@ -38,7 +33,7 @@ public class ParsingTest extends TestCase {
 	 */
 	public void testParser() throws IOException, SAXException,
 			EDIConfigurationException {
-		EPackage pkg = loadCUSCARModel();
+		EPackage pkg = TestingUtils.loadModel("cuscar.ecore");
 		IEdimap edimap = new EdimapAdapter(pkg);
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
 		parser.setFeature(EDIParser.FEATURE_VALIDATE, true);
@@ -61,7 +56,7 @@ public class ParsingTest extends TestCase {
 	 * @throws Exception
 	 */
 	public void testComponentOrder() throws Exception {
-		EPackage pkg = loadCUSCARModel();
+		EPackage pkg = TestingUtils.loadModel("cuscar.ecore");
 		EClass root = (EClass) pkg.getEClassifier("CUSCAR");
 		assertNotNull(root);
 		EReference feature = (EReference) root
@@ -83,23 +78,4 @@ public class ParsingTest extends TestCase {
 		}
 	}
 	
-	/**
-	 * Loading CUSCAR ecore model
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private EPackage loadCUSCARModel() throws IOException {
-		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry()
-				.getExtensionToFactoryMap()
-				.put(Resource.Factory.Registry.DEFAULT_EXTENSION,
-						new EcoreResourceFactoryImpl());
-		Resource resource = rs.createResource(URI
-				.createFileURI("cuscar.ecore"));
-		resource.load(null);
-		EPackage pkg = (EPackage) resource.getAllContents().next();
-		assertNotNull(pkg);
-		return pkg;
-	}
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://smooks.org/UNEDI/Envelope"
+	xmlns:tns="http://smooks.org/UNEDI/Envelope" elementFormDefault="qualified">
+
+	<element name="unEdifact" type="tns:unEdifactType"></element>
+
+	<complexType name="unEdifactType">
+		<sequence>
+			<element name="UNB" type="tns:UNBType" minOccurs="1"
+				maxOccurs="1"></element>
+			<element name="interchangeMessage" type="tns:interchangeMessageType"
+				maxOccurs="unbounded"></element>
+			<element name="UNZ" type="tns:UNZType" minOccurs="1"
+				maxOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="UNBType"></complexType>
+
+	<complexType name="UNZType"></complexType>
+
+	<complexType name="interchangeMessageType">
+		<sequence>
+			<element name="UNH" type="tns:UNHType" minOccurs="1"
+				maxOccurs="1">
+			</element>
+			<any maxOccurs="1" minOccurs="1" namespace="##any"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="UNHType"></complexType>
+	
+</schema>

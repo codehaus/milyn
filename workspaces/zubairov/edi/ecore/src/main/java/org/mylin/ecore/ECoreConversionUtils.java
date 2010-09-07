@@ -56,7 +56,7 @@ public class ECoreConversionUtils {
 	private static final String COMPONENT_TYPE = "component";
 
 	private static ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
-	
+
 	/**
 	 * Converting {@link Segment} to {@link EClass}
 	 * 
@@ -146,10 +146,15 @@ public class ECoreConversionUtils {
 		}
 		if (element instanceof EClassifier) {
 			metadata.setName((EClassifier) element, node.getXmltag());
-			metadata.setContentKind((EClass) element, ExtendedMetaData.ELEMENT_ONLY_CONTENT);
+			metadata.setContentKind((EClass) element,
+					ExtendedMetaData.ELEMENT_ONLY_CONTENT);
 		} else if (element instanceof EStructuralFeature) {
 			metadata.setName((EStructuralFeature) element, node.getXmltag());
-			metadata.setFeatureKind((EStructuralFeature) element, ExtendedMetaData.ELEMENT_FEATURE);
+			metadata.setFeatureKind((EStructuralFeature) element,
+					ExtendedMetaData.ELEMENT_FEATURE);
+			if (element instanceof EReference) {
+				setTargetNamespace((EReference) element);
+			}
 		}
 	}
 
@@ -369,5 +374,30 @@ public class ECoreConversionUtils {
 			}
 		}
 		return result.toString();
+	}
+
+	/**
+	 * Creates a document root class
+	 * 
+	 * @param rootClass
+	 * @return
+	 */
+	public static EClass createDocumentRoot(EClass rootClass) {
+		EClass clazz = EcoreFactory.eINSTANCE.createEClass();
+		clazz.setName("DocumentRoot");
+		metadata.setDocumentRoot(clazz);
+		EReference reference = EcoreFactory.eINSTANCE.createEReference();
+		clazz.getEStructuralFeatures().add(reference);
+		reference.setEType(rootClass);
+		reference.setName(metadata.getName(rootClass));
+		metadata.setName(clazz, metadata.getName(reference));
+		metadata.setFeatureKind(reference, ExtendedMetaData.ELEMENT_FEATURE);
+		setTargetNamespace(reference);
+		return clazz;
+	}
+
+	private static void setTargetNamespace(EReference element) {
+		EAnnotation eAnnotation = element.getEAnnotation(ExtendedMetaData.ANNOTATION_URI);
+		eAnnotation.getDetails().put("namespace", "##targetNamespace");
 	}
 }

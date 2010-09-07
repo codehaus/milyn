@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
@@ -42,6 +43,7 @@ public class ECoreGenerationTest extends TestCase {
 		assertNotNull(clazz);
 		assertEquals(13, clazz.getEStructuralFeatures().size());
 		assertEquals(13, clazz.getEAllContainments().size());
+		assertEquals("CUSCAR", ExtendedMetaData.INSTANCE.getName(clazz));
 	}
 
 	private void save(Collection<EPackage> packages) throws IOException {

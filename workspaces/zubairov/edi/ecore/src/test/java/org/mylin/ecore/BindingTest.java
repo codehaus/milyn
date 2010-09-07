@@ -2,9 +2,7 @@ package org.mylin.ecore;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -16,9 +14,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
@@ -118,38 +114,9 @@ public class BindingTest extends TestCase implements MessageHanlder {
 		testContent.add(message);
 	}
 
-	
 	public void testModelOutput() throws Exception {
 		parseEDI();
-
-		ResourceSet resourceSet = new ResourceSetImpl();
-		/*
-		 * Register XML Factory implementation using DEFAULT_EXTENSION
-		 */
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap()
-				.put("*", new XMLResourceFactoryImpl());
-
-		/*
-		 * Create empty resource with the given URI
-		 */
-		Resource resource = resourceSet.createResource(URI
-				.createURI("./bookStore.xml"));
-
-		/*
-		 * Add bookStoreObject to contents list of the resource
-		 */
-		resource.getContents().addAll(testContent);
-
-		try {
-			/*
-			 * Save the resource
-			 */
-			Map<String, Boolean> map = new HashMap<String, Boolean>();
-			map.put(XMLResource.OPTION_EXTENDED_META_DATA, true);
-			resource.save(System.out, map);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		TestingUtils.serializeAsXML(testContent.iterator().next(), System.out);
 	}
 
 }
