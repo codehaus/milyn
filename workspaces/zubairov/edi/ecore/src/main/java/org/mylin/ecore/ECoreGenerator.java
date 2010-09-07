@@ -232,7 +232,8 @@ public class ECoreGenerator {
 	 */
 	private String getLocalPart(Segment segment) {
 		// TODO Fix this hack
-		return segment.getNodeTypeRef().substring(3);
+		String ref = segment.getNodeTypeRef();
+		return ref.substring(ref.indexOf(":") + 1);
 	}
 
 }

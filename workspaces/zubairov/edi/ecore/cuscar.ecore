@@ -13,26 +13,26 @@
     <details key="delimeters.escape" value="?"/>
     <details key="delimeters.ignoreCLRF" value="true"/>
   </eAnnotations>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup1">
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup17">
     <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
-      <details key="xmlTag" value="Segment_group_1"/>
+      <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
+      <details key="xmlTag" value="Segment_group_17"/>
     </eAnnotations>
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_1"/>
+      <details key="name" value="Segment_group_17"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Reference" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="authenticationResult" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//AuthenticationResult" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RFF, Reference&#xA;          A segment to provide the unique reference number for the&#xA;          message, e.g. manifest number."/>
-        <details key="xmlTag" value="Reference"/>
+        <details key="documentation" value="AUT, Authentication result&#xA;          A segment to specify the results of the application of an&#xA;          authentication procedure, including the authenticity of&#xA;          sender to ensure integrity of data."/>
+        <details key="xmlTag" value="Authentication_result"/>
         <details key="minOccurs" value="1"/>
         <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Reference"/>
+        <details key="name" value="Authentication_result"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -40,7 +40,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
         eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to indicate the date/time of the reference number&#xA;          for the message."/>
+        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify the date/time/period when a message is&#xA;          authenticated."/>
         <details key="xmlTag" value="Date_time_period"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
@@ -48,6 +48,21 @@
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="Date_time_period"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//Reference" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="RFF, Reference&#xA;          A segment to indicate any references to the authentication&#xA;          process."/>
+        <details key="xmlTag" value="Reference"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Reference"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -230,141 +245,66 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup3">
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup6">
     <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
-      <details key="xmlTag" value="Segment_group_3"/>
+      <details key="documentation" value="Segment group 6:  TMP-RNG&#xA;          A group of segments to indicate temperature information."/>
+      <details key="xmlTag" value="Segment_group_6"/>
     </eAnnotations>
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_3"/>
+      <details key="name" value="Segment_group_6"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="contactInformation" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//ContactInformation" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="temperature" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//Temperature" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CTA, Contact information&#xA;             A segment to identify a person or department within a&#xA;             party."/>
-        <details key="xmlTag" value="Contact_information"/>
+        <details key="documentation" value="TMP, Temperature&#xA;             A segment to specify temperature settings and indicator&#xA;             that refrigeration is in use."/>
+        <details key="xmlTag" value="Temperature"/>
         <details key="minOccurs" value="1"/>
         <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Contact_information"/>
+        <details key="name" value="Temperature"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="communicationContact" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rangeDetails" eType="ecore:EClass commonDefinitions.ecore#//RangeDetails"
+        containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="COM, Communication contact&#xA;             A segment to identify the communication numbers of&#xA;             persons or department to whom communication should be&#xA;             directed."/>
-        <details key="xmlTag" value="Communication_contact"/>
+        <details key="documentation" value="RNG, Range details&#xA;             A segment to specify a range of temperatures to be&#xA;             maintained on refrigeration equipment."/>
+        <details key="xmlTag" value="Range_details"/>
         <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
+        <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Communication_contact"/>
+        <details key="name" value="Range_details"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="CUSCAR">
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup13">
     <eAnnotations source="smooks-mapping-data">
-      <details key="xmlTag" value="CUSCAR"/>
+      <details key="documentation" value="Segment group 13: QTY-FTX&#xA;             A group of segments to specify, at the consignment level,&#xA;             the quantity manifested, quantity landed and reason for&#xA;             change."/>
+      <details key="xmlTag" value="Segment_group_13"/>
     </eAnnotations>
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="CUSCAR"/>
+      <details key="name" value="Segment_group_13"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="beginningOfMessage" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//BeginningOfMessage" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quantity" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//Quantity" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="BGM, Beginning of message&#xA;       A segment to indicate the message name, type, number and&#xA;       functionality."/>
-        <details key="xmlTag" value="Beginning_of_message"/>
+        <details key="documentation" value="QTY, Quantity&#xA;                A segment identifying quantity manifested and quantity&#xA;                landed."/>
+        <details key="xmlTag" value="Quantity"/>
         <details key="minOccurs" value="1"/>
         <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Beginning_of_message"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;       A segment to indicate the date/time of message creation and the&#xA;       date and time of cargo report to Customs."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Date_time_period"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="placeLocationIdentification"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PlaceLocationIdentification"
-        containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="LOC, Place/location identification&#xA;       A segment to indicate the place and/or port where report is&#xA;       made."/>
-        <details key="xmlTag" value="Place_location_identification"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Place_location_identification"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="quantity" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//Quantity" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="QTY, Quantity&#xA;       A segment to indicate the number of persons onboard."/>
-        <details key="xmlTag" value="Quantity"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="Quantity"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup1" upperBound="99"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup1" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
-        <details key="xmlTag" value="Segment_group_1"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_1"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup2" upperBound="99"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup2" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
-        <details key="xmlTag" value="Segment_group_2"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_2"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -372,7 +312,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="freeText" upperBound="9"
         eType="ecore:EClass commonDefinitions.ecore#//FreeText" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="FTX, Free text&#xA;       A segment to provide reason for change in report."/>
+        <details key="documentation" value="FTX, Free text&#xA;                A segment to indicate the reason for change e.g.&#xA;                part/short/overshipped cargo."/>
         <details key="xmlTag" value="Free_text"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
@@ -384,228 +324,15 @@
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup4" upperBound="9"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup4" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
-        <details key="xmlTag" value="Segment_group_4"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_4"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="generalIndicator" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//GeneralIndicator" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="GIS, General indicator&#xA;       A segment to specify the various customs processing indicators&#xA;       for the whole message."/>
-        <details key="xmlTag" value="General_indicator"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="General_indicator"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup5" upperBound="9999"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup5" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 5:  EQD-TSR-MEA-DIM-SEL-NAD-GIS-SG6&#xA;       A group of segments to specify details of the equipment&#xA;       including information related to measurement, dimensions,&#xA;       seals, empty container responsible party, container quarantine&#xA;       indicator, as well as temperature/range and use indicator."/>
-        <details key="xmlTag" value="Segment_group_5"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9999"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_5"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="controlTotal" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//ControlTotal" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CNT, Control total&#xA;       A segment to specify the total number of masters bills in the&#xA;       message."/>
-        <details key="xmlTag" value="Control_total"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Control_total"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup7" upperBound="9999"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup7" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 7:  CNI-CNT-SG8&#xA;       A group of segments to provide details of the consignment(s)."/>
-        <details key="xmlTag" value="Segment_group_7"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9999"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_7"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup17" eType="ecore:EClass cuscar.ecore#//SegmentGroup17"
-        containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
-        <details key="xmlTag" value="Segment_group_17"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_17"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup16">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 16: QTY-FTX&#xA;                A group of segments to specify, at goods item level,&#xA;                the quantity manifested, quantity landed and reason&#xA;                for change."/>
-      <details key="xmlTag" value="Segment_group_16"/>
-    </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="DocumentRoot">
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_16"/>
-      <details key="kind" value="elementOnly"/>
+      <details key="name" value="CUSCAR"/>
+      <details key="kind" value="mixed"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="quantity" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Quantity" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="QTY, Quantity&#xA;                   A segment identifying quantity manifested and&#xA;                   quantity landed."/>
-        <details key="xmlTag" value="Quantity"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Quantity"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="freeText" eType="ecore:EClass commonDefinitions.ecore#//FreeText"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="CUSCAR" eType="ecore:EClass cuscar.ecore#//CUSCAR"
         containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="FTX, Free text&#xA;                   A segment to indicate the reason for change e.g.&#xA;                   part/short/overshipped cargo."/>
-        <details key="xmlTag" value="Free_text"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Free_text"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup4">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
-      <details key="xmlTag" value="Segment_group_4"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_4"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="detailsOfTransport" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//DetailsOfTransport" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TDT, Details of transport&#xA;          A segment to identify the primary identity of the conveyance&#xA;          e.g. voyage/flight number, vehicle number, railway car&#xA;          initials and numbers and name of vessel reference number."/>
-        <details key="xmlTag" value="Details_of_transport"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Details_of_transport"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="placeLocationIdentification"
-        upperBound="99" eType="ecore:EClass commonDefinitions.ecore#//PlaceLocationIdentification"
-        containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="LOC, Place/location identification&#xA;          A segment to indicate locations relevant to the details of&#xA;          transport, such as port/place of loading, port/place of&#xA;          discharge and port/place of initial arrival."/>
-        <details key="xmlTag" value="Place_location_identification"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Place_location_identification"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="99"
-        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify dates/times related to details of&#xA;          transport."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="99"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Date_time_period"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup2">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
-      <details key="xmlTag" value="Segment_group_2"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_2"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="NAD, Name and address&#xA;          A segment to identify the person or party reporting the&#xA;          cargo."/>
-        <details key="xmlTag" value="Name_and_address"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Name_and_address"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup3" upperBound="9"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup3" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
-        <details key="xmlTag" value="Segment_group_3"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_3"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -647,105 +374,6 @@
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="name" value="Transport_service_requirements"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DocumentRoot">
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="CUSCAR"/>
-      <details key="kind" value="mixed"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="CUSCAR" eType="ecore:EClass cuscar.ecore#//CUSCAR"
-        containment="true">
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup15">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 15: GIS-DTM-DOC-PAC-MEA&#xA;                A group of segments specifying general indicators,&#xA;                associated date/time/details, documentary requirements&#xA;                and the weight and number of packages transported to&#xA;                another place in the port."/>
-      <details key="xmlTag" value="Segment_group_15"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_15"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="generalIndicator" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//GeneralIndicator" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="GIS, General indicator&#xA;                   A segment to indicate other government requirements&#xA;                   (e.g. government quarantine indicator) to be met&#xA;                   prior to onward movement and status of the goods."/>
-        <details key="xmlTag" value="General_indicator"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="General_indicator"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;                   A segment to specify a date/time related to the&#xA;                   whole group."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Date_time_period"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageDetails"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails"
-        containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DOC, Document/message details&#xA;                   A segment to indicate other government agency&#xA;                   documentary requirements which must be met prior to&#xA;                   onward movement."/>
-        <details key="xmlTag" value="Document_message_details"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Document_message_details"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="package" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//Package" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="PAC, Package&#xA;                   A segment to indicate the number of packages&#xA;                   transported to another place within the port."/>
-        <details key="xmlTag" value="Package"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Package"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="measurements" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//Measurements" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="MEA, Measurements&#xA;                   A segment to indicate the gross weight of the&#xA;                   packages transported to another place within the&#xA;                   port."/>
-        <details key="xmlTag" value="Measurements"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Measurements"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -974,26 +602,66 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup17">
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup3">
     <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
-      <details key="xmlTag" value="Segment_group_17"/>
+      <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
+      <details key="xmlTag" value="Segment_group_3"/>
     </eAnnotations>
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_17"/>
+      <details key="name" value="Segment_group_3"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="authenticationResult" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//AuthenticationResult" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contactInformation" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//ContactInformation" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="AUT, Authentication result&#xA;          A segment to specify the results of the application of an&#xA;          authentication procedure, including the authenticity of&#xA;          sender to ensure integrity of data."/>
-        <details key="xmlTag" value="Authentication_result"/>
+        <details key="documentation" value="CTA, Contact information&#xA;             A segment to identify a person or department within a&#xA;             party."/>
+        <details key="xmlTag" value="Contact_information"/>
         <details key="minOccurs" value="1"/>
         <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Authentication_result"/>
+        <details key="name" value="Contact_information"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="communicationContact" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="COM, Communication contact&#xA;             A segment to identify the communication numbers of&#xA;             persons or department to whom communication should be&#xA;             directed."/>
+        <details key="xmlTag" value="Communication_contact"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Communication_contact"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup1">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
+      <details key="xmlTag" value="Segment_group_1"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_1"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//Reference" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="RFF, Reference&#xA;          A segment to provide the unique reference number for the&#xA;          message, e.g. manifest number."/>
+        <details key="xmlTag" value="Reference"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Reference"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -1001,7 +669,560 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
         eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify the date/time/period when a message is&#xA;          authenticated."/>
+        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to indicate the date/time of the reference number&#xA;          for the message."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Date_time_period"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CUSCAR">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="xmlTag" value="CUSCAR"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="CUSCAR"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="beginningOfMessage" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//BeginningOfMessage" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="BGM, Beginning of message&#xA;       A segment to indicate the message name, type, number and&#xA;       functionality."/>
+        <details key="xmlTag" value="Beginning_of_message"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Beginning_of_message"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;       A segment to indicate the date/time of message creation and the&#xA;       date and time of cargo report to Customs."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Date_time_period"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="placeLocationIdentification"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PlaceLocationIdentification"
+        containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="LOC, Place/location identification&#xA;       A segment to indicate the place and/or port where report is&#xA;       made."/>
+        <details key="xmlTag" value="Place_location_identification"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Place_location_identification"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quantity" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//Quantity" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="QTY, Quantity&#xA;       A segment to indicate the number of persons onboard."/>
+        <details key="xmlTag" value="Quantity"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Quantity"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup1" upperBound="99"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup1" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 1:  RFF-DTM&#xA;       A group of segments to identify the unique reference number and&#xA;       date time details for the whole message."/>
+        <details key="xmlTag" value="Segment_group_1"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_1"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup2" upperBound="99"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup2" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
+        <details key="xmlTag" value="Segment_group_2"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_2"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="freeText" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//FreeText" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="FTX, Free text&#xA;       A segment to provide reason for change in report."/>
+        <details key="xmlTag" value="Free_text"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Free_text"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup4" upperBound="9"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup4" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
+        <details key="xmlTag" value="Segment_group_4"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_4"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="generalIndicator" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//GeneralIndicator" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="GIS, General indicator&#xA;       A segment to specify the various customs processing indicators&#xA;       for the whole message."/>
+        <details key="xmlTag" value="General_indicator"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="General_indicator"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup5" upperBound="9999"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup5" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 5:  EQD-TSR-MEA-DIM-SEL-NAD-GIS-SG6&#xA;       A group of segments to specify details of the equipment&#xA;       including information related to measurement, dimensions,&#xA;       seals, empty container responsible party, container quarantine&#xA;       indicator, as well as temperature/range and use indicator."/>
+        <details key="xmlTag" value="Segment_group_5"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9999"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_5"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="controlTotal" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//ControlTotal" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="CNT, Control total&#xA;       A segment to specify the total number of masters bills in the&#xA;       message."/>
+        <details key="xmlTag" value="Control_total"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Control_total"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup7" upperBound="9999"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup7" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 7:  CNI-CNT-SG8&#xA;       A group of segments to provide details of the consignment(s)."/>
+        <details key="xmlTag" value="Segment_group_7"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9999"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_7"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup17" eType="ecore:EClass cuscar.ecore#//SegmentGroup17"
+        containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 17: AUT-DTM-RFF&#xA;       A group of segments to specify the authentication of the&#xA;       message."/>
+        <details key="xmlTag" value="Segment_group_17"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_17"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup2">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 2:  NAD-SG3&#xA;       A group of segments to identify contact and communication&#xA;       contact information related to the person responsible for the&#xA;       cargo reporting."/>
+      <details key="xmlTag" value="Segment_group_2"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_2"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="NAD, Name and address&#xA;          A segment to identify the person or party reporting the&#xA;          cargo."/>
+        <details key="xmlTag" value="Name_and_address"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Name_and_address"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup3" upperBound="9"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup3" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 3:  CTA-COM&#xA;          A group of segments to identify a contact and its&#xA;          communication related party."/>
+        <details key="xmlTag" value="Segment_group_3"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_3"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup9">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 9:  TDT-LOC-DTM-MEA-SG10&#xA;             A group of segments to identify details of onward&#xA;             carriage for each consignment."/>
+      <details key="xmlTag" value="Segment_group_9"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_9"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="detailsOfTransport" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//DetailsOfTransport" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="TDT, Details of transport&#xA;                A segment to specify the identity of the onward&#xA;                conveyance."/>
+        <details key="xmlTag" value="Details_of_transport"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Details_of_transport"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="placeLocationIdentification"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PlaceLocationIdentification"
+        containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="LOC, Place/location identification&#xA;                A segment to indicate locations relevant to the onward&#xA;                transport of the goods."/>
+        <details key="xmlTag" value="Place_location_identification"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Place_location_identification"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;                A segment to specify dates/times related to details of&#xA;                onward transport."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Date_time_period"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="measurements" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//Measurements" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="MEA, Measurements&#xA;                A segment to specify physical measurements, including&#xA;                dimension tolerances, weights and counts (e.g. vehicle&#xA;                weight details)."/>
+        <details key="xmlTag" value="Measurements"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Measurements"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup10" upperBound="9"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup10" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="Segment group 10: RFF-TSR&#xA;                A group of segments to provide booking details&#xA;                (reference and type)."/>
+        <details key="xmlTag" value="Segment_group_10"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="group"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Segment_group_10"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup12">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 12: CTA-COM&#xA;                A group of segments identifying a contact and its&#xA;                communication related to the party."/>
+      <details key="xmlTag" value="Segment_group_12"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_12"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contactInformation" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//ContactInformation" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="CTA, Contact information&#xA;                   A segment to identify a person or department within&#xA;                   a party."/>
+        <details key="xmlTag" value="Contact_information"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Contact_information"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="communicationContact" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="COM, Communication contact&#xA;                   A segment to identify the communication numbers of&#xA;                   persons or department to whom communication should&#xA;                   be directed."/>
+        <details key="xmlTag" value="Communication_contact"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Communication_contact"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup4">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 4:  TDT-LOC-DTM&#xA;       A group of segments to identify details of transport, locations&#xA;       and associated dates/times."/>
+      <details key="xmlTag" value="Segment_group_4"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_4"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="detailsOfTransport" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//DetailsOfTransport" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="TDT, Details of transport&#xA;          A segment to identify the primary identity of the conveyance&#xA;          e.g. voyage/flight number, vehicle number, railway car&#xA;          initials and numbers and name of vessel reference number."/>
+        <details key="xmlTag" value="Details_of_transport"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Details_of_transport"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="placeLocationIdentification"
+        upperBound="99" eType="ecore:EClass commonDefinitions.ecore#//PlaceLocationIdentification"
+        containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="LOC, Place/location identification&#xA;          A segment to indicate locations relevant to the details of&#xA;          transport, such as port/place of loading, port/place of&#xA;          discharge and port/place of initial arrival."/>
+        <details key="xmlTag" value="Place_location_identification"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Place_location_identification"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="99"
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;          A segment to specify dates/times related to details of&#xA;          transport."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="99"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Date_time_period"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup15">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 15: GIS-DTM-DOC-PAC-MEA&#xA;                A group of segments specifying general indicators,&#xA;                associated date/time/details, documentary requirements&#xA;                and the weight and number of packages transported to&#xA;                another place in the port."/>
+      <details key="xmlTag" value="Segment_group_15"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_15"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="generalIndicator" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//GeneralIndicator" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="GIS, General indicator&#xA;                   A segment to indicate other government requirements&#xA;                   (e.g. government quarantine indicator) to be met&#xA;                   prior to onward movement and status of the goods."/>
+        <details key="xmlTag" value="General_indicator"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="General_indicator"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;                   A segment to specify a date/time related to the&#xA;                   whole group."/>
+        <details key="xmlTag" value="Date_time_period"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Date_time_period"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documentMessageDetails"
+        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//DocumentMessageDetails"
+        containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DOC, Document/message details&#xA;                   A segment to indicate other government agency&#xA;                   documentary requirements which must be met prior to&#xA;                   onward movement."/>
+        <details key="xmlTag" value="Document_message_details"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Document_message_details"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="package" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//Package" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="PAC, Package&#xA;                   A segment to indicate the number of packages&#xA;                   transported to another place within the port."/>
+        <details key="xmlTag" value="Package"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Package"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="measurements" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//Measurements" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="MEA, Measurements&#xA;                   A segment to indicate the gross weight of the&#xA;                   packages transported to another place within the&#xA;                   port."/>
+        <details key="xmlTag" value="Measurements"/>
+        <details key="minOccurs" value="0"/>
+        <details key="maxOccurs" value="9"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Measurements"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup11">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="documentation" value="Segment group 11: NAD-DTM-RFF-SG12&#xA;             A group of segments to identify the parties, contacts and&#xA;             related references and dates."/>
+      <details key="xmlTag" value="Segment_group_11"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Segment_group_11"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="NAD, Name and address&#xA;                A segment specifying the name and address of the&#xA;                consignor, shipper, notifier, consignee, empty&#xA;                container responsible party, nominated reporting&#xA;                agent, railway issuing waybill, and reporting party."/>
+        <details key="xmlTag" value="Name_and_address"/>
+        <details key="minOccurs" value="1"/>
+        <details key="maxOccurs" value="1"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="name" value="Name_and_address"/>
+        <details key="kind" value="element"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
+        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="documentation" value="DTM, Date/time/period&#xA;                A segment to specify date and/or time or period&#xA;                related to the party(s) identified in the NAD segment&#xA;                (e.g. date of birth)."/>
         <details key="xmlTag" value="Date_time_period"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
@@ -1016,7 +1237,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="reference" upperBound="9"
         eType="ecore:EClass commonDefinitions.ecore#//Reference" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RFF, Reference&#xA;          A segment to indicate any references to the authentication&#xA;          process."/>
+        <details key="documentation" value="RFF, Reference&#xA;                A segment to identify a reference used by a party e.g.&#xA;                reporting party's reference number."/>
         <details key="xmlTag" value="Reference"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
@@ -1028,42 +1249,17 @@
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup13">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 13: QTY-FTX&#xA;             A group of segments to specify, at the consignment level,&#xA;             the quantity manifested, quantity landed and reason for&#xA;             change."/>
-      <details key="xmlTag" value="Segment_group_13"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_13"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="quantity" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Quantity" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup12" upperBound="9"
+        eType="ecore:EClass cuscar.ecore#//SegmentGroup12" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="QTY, Quantity&#xA;                A segment identifying quantity manifested and quantity&#xA;                landed."/>
-        <details key="xmlTag" value="Quantity"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Quantity"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="freeText" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//FreeText" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="FTX, Free text&#xA;                A segment to indicate the reason for change e.g.&#xA;                part/short/overshipped cargo."/>
-        <details key="xmlTag" value="Free_text"/>
+        <details key="documentation" value="Segment group 12: CTA-COM&#xA;                A group of segments identifying a contact and its&#xA;                communication related to the party."/>
+        <details key="xmlTag" value="Segment_group_12"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
+        <details key="type" value="group"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Free_text"/>
+        <details key="name" value="Segment_group_12"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
@@ -1256,237 +1452,41 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup11">
+  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup16">
     <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 11: NAD-DTM-RFF-SG12&#xA;             A group of segments to identify the parties, contacts and&#xA;             related references and dates."/>
-      <details key="xmlTag" value="Segment_group_11"/>
+      <details key="documentation" value="Segment group 16: QTY-FTX&#xA;                A group of segments to specify, at goods item level,&#xA;                the quantity manifested, quantity landed and reason&#xA;                for change."/>
+      <details key="xmlTag" value="Segment_group_16"/>
     </eAnnotations>
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_11"/>
+      <details key="name" value="Segment_group_16"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nameAndAddress" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//NameAndAddress" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quantity" lowerBound="1"
+        eType="ecore:EClass commonDefinitions.ecore#//Quantity" containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="NAD, Name and address&#xA;                A segment specifying the name and address of the&#xA;                consignor, shipper, notifier, consignee, empty&#xA;                container responsible party, nominated reporting&#xA;                agent, railway issuing waybill, and reporting party."/>
-        <details key="xmlTag" value="Name_and_address"/>
+        <details key="documentation" value="QTY, Quantity&#xA;                   A segment identifying quantity manifested and&#xA;                   quantity landed."/>
+        <details key="xmlTag" value="Quantity"/>
         <details key="minOccurs" value="1"/>
         <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Name_and_address"/>
+        <details key="name" value="Quantity"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;                A segment to specify date and/or time or period&#xA;                related to the party(s) identified in the NAD segment&#xA;                (e.g. date of birth)."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Date_time_period"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//Reference" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RFF, Reference&#xA;                A segment to identify a reference used by a party e.g.&#xA;                reporting party's reference number."/>
-        <details key="xmlTag" value="Reference"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Reference"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup12" upperBound="9"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup12" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 12: CTA-COM&#xA;                A group of segments identifying a contact and its&#xA;                communication related to the party."/>
-        <details key="xmlTag" value="Segment_group_12"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_12"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup6">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 6:  TMP-RNG&#xA;          A group of segments to indicate temperature information."/>
-      <details key="xmlTag" value="Segment_group_6"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_6"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="temperature" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//Temperature" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TMP, Temperature&#xA;             A segment to specify temperature settings and indicator&#xA;             that refrigeration is in use."/>
-        <details key="xmlTag" value="Temperature"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Temperature"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rangeDetails" eType="ecore:EClass commonDefinitions.ecore#//RangeDetails"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="freeText" eType="ecore:EClass commonDefinitions.ecore#//FreeText"
         containment="true">
       <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="RNG, Range details&#xA;             A segment to specify a range of temperatures to be&#xA;             maintained on refrigeration equipment."/>
-        <details key="xmlTag" value="Range_details"/>
+        <details key="documentation" value="FTX, Free text&#xA;                   A segment to indicate the reason for change e.g.&#xA;                   part/short/overshipped cargo."/>
+        <details key="xmlTag" value="Free_text"/>
         <details key="minOccurs" value="0"/>
         <details key="maxOccurs" value="1"/>
         <details key="type" value="segment"/>
       </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Range_details"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup9">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 9:  TDT-LOC-DTM-MEA-SG10&#xA;             A group of segments to identify details of onward&#xA;             carriage for each consignment."/>
-      <details key="xmlTag" value="Segment_group_9"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_9"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="detailsOfTransport" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//DetailsOfTransport" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="TDT, Details of transport&#xA;                A segment to specify the identity of the onward&#xA;                conveyance."/>
-        <details key="xmlTag" value="Details_of_transport"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Details_of_transport"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="placeLocationIdentification"
-        upperBound="9" eType="ecore:EClass commonDefinitions.ecore#//PlaceLocationIdentification"
-        containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="LOC, Place/location identification&#xA;                A segment to indicate locations relevant to the onward&#xA;                transport of the goods."/>
-        <details key="xmlTag" value="Place_location_identification"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Place_location_identification"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dateTimePeriod" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//DateTimePeriod" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="DTM, Date/time/period&#xA;                A segment to specify dates/times related to details of&#xA;                onward transport."/>
-        <details key="xmlTag" value="Date_time_period"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Date_time_period"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="measurements" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//Measurements" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="MEA, Measurements&#xA;                A segment to specify physical measurements, including&#xA;                dimension tolerances, weights and counts (e.g. vehicle&#xA;                weight details)."/>
-        <details key="xmlTag" value="Measurements"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Measurements"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="segmentGroup10" upperBound="9"
-        eType="ecore:EClass cuscar.ecore#//SegmentGroup10" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="Segment group 10: RFF-TSR&#xA;                A group of segments to provide booking details&#xA;                (reference and type)."/>
-        <details key="xmlTag" value="Segment_group_10"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="group"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Segment_group_10"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SegmentGroup12">
-    <eAnnotations source="smooks-mapping-data">
-      <details key="documentation" value="Segment group 12: CTA-COM&#xA;                A group of segments identifying a contact and its&#xA;                communication related to the party."/>
-      <details key="xmlTag" value="Segment_group_12"/>
-    </eAnnotations>
-    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-      <details key="name" value="Segment_group_12"/>
-      <details key="kind" value="elementOnly"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="contactInformation" lowerBound="1"
-        eType="ecore:EClass commonDefinitions.ecore#//ContactInformation" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="CTA, Contact information&#xA;                   A segment to identify a person or department within&#xA;                   a party."/>
-        <details key="xmlTag" value="Contact_information"/>
-        <details key="minOccurs" value="1"/>
-        <details key="maxOccurs" value="1"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Contact_information"/>
-        <details key="kind" value="element"/>
-        <details key="namespace" value="##targetNamespace"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="communicationContact" upperBound="9"
-        eType="ecore:EClass commonDefinitions.ecore#//CommunicationContact" containment="true">
-      <eAnnotations source="smooks-mapping-data">
-        <details key="documentation" value="COM, Communication contact&#xA;                   A segment to identify the communication numbers of&#xA;                   persons or department to whom communication should&#xA;                   be directed."/>
-        <details key="xmlTag" value="Communication_contact"/>
-        <details key="minOccurs" value="0"/>
-        <details key="maxOccurs" value="9"/>
-        <details key="type" value="segment"/>
-      </eAnnotations>
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="name" value="Communication_contact"/>
+        <details key="name" value="Free_text"/>
         <details key="kind" value="element"/>
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
