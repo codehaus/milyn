@@ -11,10 +11,10 @@
 
     <modules>
         <module>edisax</module>
-        <module>ejc</module>
-        <module>ejc/maven-ejc-plugin</module>
         <module>ect</module>
         <module>ect/maven-ect-plugin</module>
+        <module>ejc</module>
+        <module>ejc/maven-ejc-plugin</module>
         <module>gen</module>
     </modules>
 
