@@ -258,7 +258,7 @@ public class UnEdifactMessage {
         }
 
         line = reader.readLine();
-        while (!line.matches(MESSAGE_DEFINITION_START) || line.isEmpty()) {
+        while (!line.matches(MESSAGE_DEFINITION_START) || line.length() == 0) {
             line = reader.readLine();
         }
 
