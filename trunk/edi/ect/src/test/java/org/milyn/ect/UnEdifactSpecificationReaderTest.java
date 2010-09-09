@@ -99,8 +99,8 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
         testPackage("d96a-invoic-1", mappingModel);
     }
 
-    public void xxx_testRealLifeInputFilesD93A() throws IOException, InstantiationException, IllegalAccessException, EDIConfigurationException, SAXException {
-        InputStream inputStream = ClassUtil.getResourceAsStream("D93A.zip", this.getClass());
+    public void testRealLifeInputFilesD93A() throws IOException, InstantiationException, IllegalAccessException, EDIConfigurationException, SAXException {
+        InputStream inputStream = ClassUtil.getResourceAsStream("d93a.zip", this.getClass());
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
         EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(zipInputStream, false);
