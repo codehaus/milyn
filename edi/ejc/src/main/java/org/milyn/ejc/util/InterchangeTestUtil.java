@@ -78,7 +78,7 @@ public class InterchangeTestUtil {
         String messageV1 = writer.toString();
 
         // reconstruct from the serialized form...
-        interchange41 = (UNEdifactInterchange41) factory.fromUNEdifact(new InputSource(new ByteArrayInputStream(messageV1.getBytes(Charset.forName("UTF-8")))));
+        interchange41 = (UNEdifactInterchange41) factory.fromUNEdifact(new InputSource(new ByteArrayInputStream(messageV1.getBytes("UTF-8"))));
 
         // serialize again...
         writer.getBuffer().setLength(0);
