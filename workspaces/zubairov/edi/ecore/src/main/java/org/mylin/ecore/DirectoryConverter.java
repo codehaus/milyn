@@ -3,7 +3,8 @@ package org.mylin.ecore;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 
@@ -34,6 +35,8 @@ public class DirectoryConverter {
     public static final String PLUGIN_XML_ENTRY = "plugin.xml";
 
 	private static final String MANIFEST = "META-INF/MANIFEST.MF";
+	
+	private static final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmm");
 
 
 	protected DirectoryConverter() {
@@ -47,6 +50,7 @@ public class DirectoryConverter {
 	 */
 	public Archive createArchive(InputStream directoryStream, String pluginID)
 			throws IOException {
+		String qualifier = format.format(Calendar.getInstance().getTime());
 		ZipInputStream zipInputStream = new ZipInputStream(directoryStream);
 		UnEdifactSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(
 				zipInputStream, false);
@@ -56,12 +60,12 @@ public class DirectoryConverter {
 		ResourceSet rs = prepareResourceSet();
 
 		// TODO Add qualifier
-		Archive archive = new Archive(pluginID + "_1.0.0" + ".jar");
+		Archive archive = new Archive(pluginID + "_1.0.0.v" + qualifier + ".jar");
 		StringBuilder pluginXMLBuilder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<?eclipse version=\"3.0\"?>\n" +
 				"<plugin>\n" +
 				"\t<extension point=\"org.eclipse.emf.ecore.dynamic_package\">\n");
-		String pathPrefix = pluginID.replace(".", "_").replace(":", "/");
+		String pathPrefix = pluginID.replace(".", "/");
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -88,18 +92,18 @@ public class DirectoryConverter {
 		// Add the model set URN to the archive...
 		archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, pluginID);
 		
-		archive.addEntry(MANIFEST, generateManifest(pluginID));
+		archive.addEntry(MANIFEST, generateManifest(pluginID, qualifier));
 		
 		return archive;
 	}
 
-	private String generateManifest(String pluginID) {
+	private String generateManifest(String pluginID, String qualfier) {
 		StringBuilder result = new StringBuilder();
 		result.append("Manifest-Version: 1.0\n");
 		result.append("Bundle-ManifestVersion: 2\n");
 		result.append("Bundle-Name: " + pluginID + "\n");
 		result.append("Bundle-SymbolicName: " + pluginID + ";singleton:=true\n");
-		result.append("Bundle-Version: 1.0.0\n");
+		result.append("Bundle-Version: 1.0.0.v" + qualfier + "\n");
 		result.append("Bundle-ClassPath: .\n");
 		result.append("Bundle-ActivationPolicy: lazy\n");
 		return result.toString();
@@ -112,7 +116,7 @@ public class DirectoryConverter {
 		String ecoreEntryPath = pathPrefix + "/" + message + ".ecore";
 
 		out.reset();
-		Resource resource = rs.createResource(URI.createURI(pkg.getNsURI()));
+		Resource resource = rs.createResource(URI.createFileURI(message + ".ecore"));
 		resource.getContents().add(pkg);
 		resource.save(out, null);
 
