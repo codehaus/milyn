@@ -29,13 +29,15 @@ public class Field extends ValueNode implements IField {
     }
 
 	public Field(String xmltag, Boolean required) {
-		super(xmltag);
-		this.required = required;
-		this.truncatable = true;
+		this(xmltag, null, required, true);
 	}
 
-	public Field(String xmltag, Boolean required, Boolean truncatable) {
-		super(xmltag);
+	public Field(String xmltag, String namespace, Boolean required) {
+		this(xmltag, namespace, required, true);
+	}
+
+	public Field(String xmltag, String namespace, Boolean required, Boolean truncatable) {
+		super(xmltag, namespace);
 		this.required = required;
 		this.truncatable = truncatable;
 	}

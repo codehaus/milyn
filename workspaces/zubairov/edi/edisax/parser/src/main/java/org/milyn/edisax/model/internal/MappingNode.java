@@ -29,8 +29,9 @@ public class MappingNode implements IMappingNode {
 	public MappingNode() {
 	}
     
-	public MappingNode(String xmltag) {
+	public MappingNode(String xmltag, String namespace) {
 		this.xmltag = xmltag;
+		this.namespace = namespace;
 	}
 
 	/* (non-Javadoc)

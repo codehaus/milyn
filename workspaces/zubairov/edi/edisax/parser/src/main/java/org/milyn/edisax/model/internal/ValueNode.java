@@ -44,7 +44,11 @@ public class ValueNode extends MappingNode implements IValueNode {
 	}
     
 	public ValueNode(String xmltag) {
-		super(xmltag);
+		this(xmltag, null);
+	}
+	
+	public ValueNode(String xmltag, String namespace) {
+		super(xmltag, namespace);
 		minLength = 0;
 		maxLength = 1;
 	}
