@@ -96,13 +96,13 @@ public class SmooksCSVDataFormatTest extends CamelTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() throws Exception {
-                SmooksDataFormat csvUnmarshal = new SmooksDataFormat("csv-smooks-unmarshal-config.xml", "org.milyn.payload.JavaResult", "result");
+                SmooksDataFormat csvUnmarshal = new SmooksDataFormat("csv-smooks-unmarshal-config.xml", "result");
 
                 from("direct:unmarshal")
                 .unmarshal(csvUnmarshal).convertBodyTo(List.class)
                 .to("mock:result");
                 
-                SmooksDataFormat csvMarshal = new SmooksDataFormat("csv-smooks-marshal-config.xml", "org.milyn.payload.StringResult");
+                SmooksDataFormat csvMarshal = new SmooksDataFormat("csv-smooks-marshal-config.xml");
                 from("direct:marshal").convertBodyTo(JavaSourceWithoutEventStream.class)
                 .marshal(csvMarshal)
                 .to("mock:result");

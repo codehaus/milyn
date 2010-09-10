@@ -22,30 +22,30 @@ import org.junit.Test;
 
 public class ExampleRouteBuilderTest extends CamelTestSupport
 {
-	
-	@Override
-	public RouteBuilder createRouteBuilder()
-	{
-		return new ExampleRouteBuilder();
-	}
-	
-	@Test
-	public void route() throws Exception
-	{
-		MockEndpoint irelandMockQueue = getMockEndpoint("jms:queue:ireland");
-		irelandMockQueue.setExpectedMessageCount(1);
-		
-		Thread.sleep(1000);
-		
-		irelandMockQueue.assertIsSatisfied(1000);
-	}
-	
-	@Override 
-	protected CamelContext createCamelContext() throws Exception 
-	{
-		CamelContext context = super.createCamelContext();
-		context.addComponent("jms", context.getComponent("mock")); 
-		return context;
-	}
-	
+
+    @Override
+    public RouteBuilder createRouteBuilder()
+    {
+        return new ExampleRouteBuilder();
+    }
+
+    @Test
+    public void route() throws Exception
+    {
+        MockEndpoint irelandMockQueue = getMockEndpoint("jms:queue:ireland");
+        irelandMockQueue.setExpectedMessageCount(1);
+
+        Thread.sleep(1000);
+
+        irelandMockQueue.assertIsSatisfied(1000);
+    }
+
+    @Override
+    protected CamelContext createCamelContext() throws Exception
+    {
+        CamelContext context = super.createCamelContext();
+        context.addComponent("jms", context.getComponent("mock"));
+        return context;
+    }
+
 }

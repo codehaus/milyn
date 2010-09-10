@@ -20,6 +20,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+import org.milyn.Exports;
 import org.milyn.Smooks;
 import org.milyn.javabean.Bean;
 import org.milyn.javabean.Value;
@@ -46,8 +47,9 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:a").
-                process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.JavaResult").addVisitor(new Value("x", "/coord/@x", Integer.class)));
+                from("direct:a")
+                .process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class)))
+                .addVisitor(new Value("x", "/coord/@x", Integer.class)));
 			}
 			
 		});
@@ -67,7 +69,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:b").process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.JavaResult").
+                from("direct:b").process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class))).
                 		addVisitor(new Value("x", "/coord/@x", Integer.class)).
                 		addVisitor(new Value("y", "/coord/@y", Double.class)));
 			}
@@ -91,10 +93,10 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:c").process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.JavaResult").
-                		addVisitor(new Bean(Coordinate.class, "coordinate").
-        				bindTo("x", "/coord/@x").
-        				bindTo("y", "/coord/@y")));
+                from("direct:c").process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class))).
+            		addVisitor(new Bean(Coordinate.class, "coordinate").
+    				bindTo("x", "/coord/@x").
+    				bindTo("y", "/coord/@y")));
 			}
 		});
 		context.start();

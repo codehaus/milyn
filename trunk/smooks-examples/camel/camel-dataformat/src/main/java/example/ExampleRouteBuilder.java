@@ -22,34 +22,32 @@ import org.milyn.smooks.camel.dataformat.SmooksDataFormat;
 /**
  * 
  * @author Daniel Bevenius
- *
+ * 
  */
 public class ExampleRouteBuilder extends RouteBuilder
 {
-	public ExampleRouteBuilder()
-	{
-	}
-	
-	@Override
-	public void configure() throws Exception
-	{
-		//Starting with Camel 2.5 the path can be specified as file:. 
-		//See https://issues.apache.org/activemq/browse/CAMEL-3063 for more information.
-		from("file://" + getWorkingDir() + "?fileName=input-message.edi&noop=true")
-		.log("Before unmarshal with SmooksDataFormat:")
-		.log("${body}")
-		.unmarshal(new SmooksDataFormat("smooks-config.xml", "org.milyn.payload.StringResult"))
-		.log("After unmarshal with SmooksDataFormat:")
-		.log("${body}")
-		.to("mock:result");
-		
-	}
-	
-	private File getWorkingDir()
-	{
-		String userDir = System.getProperty("user.dir");
-		File workingDir = new File(userDir);
-		return workingDir;
-	}
+    public ExampleRouteBuilder()
+    {
+    }
+
+    @Override
+    public void configure() throws Exception
+    {
+        // Starting with Camel 2.5 the path can be specified as file:.
+        // See https://issues.apache.org/activemq/browse/CAMEL-3063 for more
+        // information.
+        from("file://" + getWorkingDir() + "?fileName=input-message.edi&noop=true")
+        .log("Before unmarshal with SmooksDataFormat:").log("${body}")
+        .unmarshal(new SmooksDataFormat("smooks-config.xml"))
+        .log("After unmarshal with SmooksDataFormat baja:").log("${body}").to("mock:result");
+
+    }
+
+    private File getWorkingDir()
+    {
+        String userDir = System.getProperty("user.dir");
+        File workingDir = new File(userDir);
+        return workingDir;
+    }
 
 }

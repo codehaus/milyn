@@ -16,6 +16,8 @@
 package org.milyn.payload;
 
 import com.thoughtworks.xstream.XStream;
+
+import org.milyn.Export;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.javabean.context.StandaloneBeanContext;
 import org.milyn.payload.FilterResult;
@@ -36,7 +38,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class JavaResult extends FilterResult {
+public class JavaResult extends FilterResult implements ResultExtractor<JavaResult> {
     
     private Map<String, Object> resultMap;
 
@@ -128,5 +130,14 @@ public class JavaResult extends FilterResult {
         }
 
         return stringBuilder.toString();
+    }
+
+    public Object extractFromResult(JavaResult result, Export export)
+    {
+        String extract = export.getExtract();
+        if (extract == null)
+            return result;
+        
+        return result.getBean(export.getExtract());
     }
 }

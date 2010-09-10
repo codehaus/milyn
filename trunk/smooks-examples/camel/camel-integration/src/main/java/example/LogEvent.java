@@ -16,54 +16,55 @@ package example;
 
 public class LogEvent
 {
-	private String transactionId;
-	private String customerId;
-	private String nationality;
+    private String transactionId;
+    private String customerId;
+    private String nationality;
 
-	public LogEvent()
-	{
-	}
-	
-	public LogEvent(String transactionId, String customerId, String nationality)
-	{
-		this.transactionId = transactionId;
-		this.customerId = customerId;
-		this.nationality = nationality;
-	}
+    public LogEvent()
+    {
+    }
 
-	public String getTransactionId()
-	{
-		return transactionId;
-	}
+    public LogEvent(String transactionId, String customerId, String nationality)
+    {
+        this.transactionId = transactionId;
+        this.customerId = customerId;
+        this.nationality = nationality;
+    }
 
-	public void setTransactionId(String transactionId)
-	{
-		this.transactionId = transactionId;
-	}
+    public String getTransactionId()
+    {
+        return transactionId;
+    }
 
-	public String getCustomerId()
-	{
-		return customerId;
-	}
+    public void setTransactionId(String transactionId)
+    {
+        this.transactionId = transactionId;
+    }
 
-	public void setCustomerId(String customerId)
-	{
-		this.customerId = customerId;
-	}
+    public String getCustomerId()
+    {
+        return customerId;
+    }
 
-	public String getNationality()
-	{
-		return nationality;
-	}
+    public void setCustomerId(String customerId)
+    {
+        this.customerId = customerId;
+    }
 
-	public void setNationality(String nationality)
-	{
-		this.nationality = nationality;
-	}
-	
-	public String toString()
-	{
-		return "LogEvent [CustomerId=" + customerId + ", nationality=" + nationality + ", transactionId=" + transactionId + "]";
-	}
+    public String getNationality()
+    {
+        return nationality;
+    }
+
+    public void setNationality(String nationality)
+    {
+        this.nationality = nationality;
+    }
+
+    public String toString()
+    {
+        return "LogEvent [CustomerId=" + customerId + ", nationality=" + nationality + ", transactionId="
+                + transactionId + "]";
+    }
 
 }

@@ -49,7 +49,6 @@ import org.w3c.dom.Node;
  */
 public class SmooksProcessorTest extends CamelTestSupport
 {
-
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
     private MBeanServer mbeanServer;
@@ -134,7 +133,6 @@ public class SmooksProcessorTest extends CamelTestSupport
     private ObjectInstance getSmooksProcessorObjectInstance() throws Exception
     {
         ObjectInstance mbean = null;
-        @SuppressWarnings("unchecked")
         Set<ObjectInstance> queryMBeans = mbeanServer.queryMBeans(new ObjectName("*:*,type=processors"), null);
         for (ObjectInstance objectInstance : queryMBeans)
         {
@@ -154,7 +152,6 @@ public class SmooksProcessorTest extends CamelTestSupport
             public void configure() throws Exception
             {
                 SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
-                processor.setResultType("javax.xml.transform.dom.DOMResult");
                 processor.setReportPath("target/smooks-report.html");
 
                 from("file://src/test/data?noop=true").process(processor).convertBodyTo(Node.class).to("mock:result");

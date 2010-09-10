@@ -27,7 +27,7 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
  * Example usage:
  * 
  * <pre>
- * from(&quot;direct:a&quot;).to(&quot;smooks://edi-to-xml-smooks-config.xml?resultType=javax.xml.transform.dom.DOMResult&quot;)
+ * from(&quot;direct:a&quot;).to(&quot;smooks://edi-to-xml-smooks-config.xml&quot;)
  * </pre>
  * 
  * @author Christian Mueller
