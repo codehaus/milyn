@@ -804,7 +804,7 @@ public class EDIParser implements XMLReader {
         if(indent) {
             indent();
         }
-        String alias = getNamespaceAlias(namespace);
+        String alias = getNamespaceAlias(namespace, contentHandler);
         contentHandler.startElement(namespace, elementName, alias + ":" + elementName, EMPTY_ATTRIBS);
         indentDepth.value++;
     }
@@ -818,8 +818,9 @@ public class EDIParser implements XMLReader {
      * 
      * @param namespace
      * @return
+     * @throws SAXException 
      */
-    public static String getNamespaceAlias(String namespace) {
+    public static String getNamespaceAlias(String namespace, ContentHandler handler) throws SAXException {
     	if (StringUtils.isEmpty(namespace) || StringUtils.isBlank(namespace)) {
     		return "";
     	}
@@ -830,6 +831,7 @@ public class EDIParser implements XMLReader {
     		} else {
     			result = "ns" + aliasesMap.size();
     		}
+    		handler.startPrefixMapping(result, namespace);
     		aliasesMap.put(namespace, result);
     	}
     	return result;
@@ -852,7 +854,7 @@ public class EDIParser implements XMLReader {
         if(indent) {
             indent();
         }
-        String alias = getNamespaceAlias(namespace);
+        String alias = getNamespaceAlias(namespace, contentHandler);
         contentHandler.endElement(namespace, elementName, alias + ":" + elementName);
     }
 

@@ -21,20 +21,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.xml.XMLConstants;
-
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
-import org.milyn.edisax.interchange.ControlBlockHandlerFactory;
-import org.milyn.edisax.unedifact.handlers.r41.UNEdifact41ControlBlockHandlerFactory;
-import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
+import org.milyn.edisax.interchange.ControlBlockHandlerFactory;
 import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.edisax.unedifact.handlers.r41.UNEdifact41ControlBlockHandlerFactory;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.xml.hierarchy.HierarchyChangeListener;
 import org.milyn.xml.hierarchy.HierarchyChangeReader;
 import org.xml.sax.ContentHandler;
@@ -132,7 +130,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	        segmentReader.setIgnoreNewLines(getFeature(EDIParser.FEATURE_IGNORE_NEWLINES));
 	        
 	        contentHandler.startDocument();
-	        String alias = EDIParser.getNamespaceAlias(ControlBlockHandler.NAMESPACE);
+	        String alias = EDIParser.getNamespaceAlias(ControlBlockHandler.NAMESPACE, contentHandler);
 	        contentHandler.startElement(ControlBlockHandler.NAMESPACE, "unEdifact", alias +":unEdifact", new AttributesImpl());
 	
 	        while(true) {
