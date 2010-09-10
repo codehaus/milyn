@@ -19,14 +19,14 @@
   </env:UNB>
   <env:interchangeMessage>
     <env:UNH>
-      <messageRefNum>163477</messageRefNum>
-      <messageIdentifier>
-        <id>CUSCAR</id>
-        <versionNum>D</versionNum>
-        <releaseNum>99A</releaseNum>
-        <controllingAgencyCode>UN</controllingAgencyCode>
-        <associationAssignedCode>SCPRBL</associationAssignedCode>
-      </messageIdentifier>
+      <env:messageRefNum>163477</env:messageRefNum>
+      <env:messageIdentifier>
+        <env:id>CUSCAR</env:id>
+        <env:versionNum>D</env:versionNum>
+        <env:releaseNum>99A</env:releaseNum>
+        <env:controllingAgencyCode>UN</env:controllingAgencyCode>
+        <env:associationAssignedCode>SCPRBL</env:associationAssignedCode>
+      </env:messageIdentifier>
     </env:UNH>
     <ns1:CUSCAR xmlns:ns1="http://smooks.org/UNEDI/D99AUN/CUSCAR">
       <ns1:Beginning_of_message>
@@ -185,20 +185,20 @@
       </ns1:Segment_group_7>
     </ns1:CUSCAR>
     <env:UNT>
-      <segmentCount>21</segmentCount>
-      <messageRefNum>163477</messageRefNum>
+      <env:segmentCount>21</env:segmentCount>
+      <env:messageRefNum>163477</env:messageRefNum>
     </env:UNT>
   </env:interchangeMessage>
   <env:interchangeMessage>
     <env:UNH>
-      <messageRefNum>163478</messageRefNum>
-      <messageIdentifier>
-        <id>CUSCAR</id>
-        <versionNum>D</versionNum>
-        <releaseNum>99A</releaseNum>
-        <controllingAgencyCode>UN</controllingAgencyCode>
-        <associationAssignedCode>SCPRBL</associationAssignedCode>
-      </messageIdentifier>
+      <env:messageRefNum>163478</env:messageRefNum>
+      <env:messageIdentifier>
+        <env:id>CUSCAR</env:id>
+        <env:versionNum>D</env:versionNum>
+        <env:releaseNum>99A</env:releaseNum>
+        <env:controllingAgencyCode>UN</env:controllingAgencyCode>
+        <env:associationAssignedCode>SCPRBL</env:associationAssignedCode>
+      </env:messageIdentifier>
     </env:UNH>
     <ns1:CUSCAR xmlns:ns1="http://smooks.org/UNEDI/D99AUN/CUSCAR">
       <ns1:Beginning_of_message>
@@ -357,8 +357,8 @@
       </ns1:Segment_group_7>
     </ns1:CUSCAR>
     <env:UNT>
-      <segmentCount>21</segmentCount>
-      <messageRefNum>163478</messageRefNum>
+      <env:segmentCount>21</env:segmentCount>
+      <env:messageRefNum>163478</env:messageRefNum>
     </env:UNT>
   </env:interchangeMessage>
   <env:UNZ>
@@ -366,3 +366,4 @@
     <env:controlRef>1918</env:controlRef>
   </env:UNZ>
 </env:unEdifact>
+

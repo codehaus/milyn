@@ -37,7 +37,7 @@
 		<sequence>
 			<element name="UNH" type="tns:UNHType" minOccurs="1"
 				maxOccurs="1" />
-			<any maxOccurs="1" minOccurs="1" namespace="##any" />
+			<any maxOccurs="1" minOccurs="1" namespace="##any" processContents="lax" ecore:name="message"/>
 			<element name="UNT" minOccurs="1" maxOccurs="1" type="tns:UNTType" />
 		</sequence>
 	</complexType>

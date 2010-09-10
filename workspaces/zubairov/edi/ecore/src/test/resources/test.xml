@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ASCII"?>
+<env:unEdifact xmlns:CUSCAR="http://smooks.org/UNEDI/D99AUN/CUSCAR" xmlns:env="http://smooks.org/EDIFACT/41/Envelope">
+  <env:interchangeMessage>
+    <CUSCAR:CUSCAR>
+      <CUSCAR:Beginning_of_message/>
+    </CUSCAR:CUSCAR>
+  </env:interchangeMessage>
+</env:unEdifact>

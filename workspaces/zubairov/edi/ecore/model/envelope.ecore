@@ -88,7 +88,7 @@
         <details key="kind" value="elementWildcard"/>
         <details key="wildcards" value="##any"/>
         <details key="name" value=":1"/>
-        <details key="processing" value="strict"/>
+        <details key="processing" value="lax"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="uNT" lowerBound="1" eType="#//UNTType"

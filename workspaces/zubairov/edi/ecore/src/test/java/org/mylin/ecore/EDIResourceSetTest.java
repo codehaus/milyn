@@ -18,6 +18,7 @@ public class EDIResourceSetTest extends TestCase {
 	public void testEDILoading() throws Exception {
 		//String fileName = "/99a_cuscar_out.xml";
 		String fileName = "/99a_cuscar.edi";
+		//String fileName = "/test.xml";
 		EDIPackageRegistry registry = new EDIPackageRegistry();
 		ResourceSetImpl rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap()
