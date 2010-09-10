@@ -3,7 +3,7 @@ package org.mylin.ecore;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
+import java.text.DateFormat;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 
@@ -31,7 +31,9 @@ public class DirectoryConverter {
 	 */
 	public static final DirectoryConverter INSTANCE = new DirectoryConverter();
 	
-    public static final String ECORE_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-model-ecore.lst";
+    public static final String PLUGIN_XML_ENTRY = "plugin.xml";
+
+	private static final String MANIFEST = "META-INF/MANIFEST.MF";
 
 
 	protected DirectoryConverter() {
@@ -43,7 +45,7 @@ public class DirectoryConverter {
 	 * 
 	 * @param directoryInputStream
 	 */
-	public Archive createArchive(InputStream directoryStream, String urn)
+	public Archive createArchive(InputStream directoryStream, String pluginID)
 			throws IOException {
 		ZipInputStream zipInputStream = new ZipInputStream(directoryStream);
 		UnEdifactSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(
@@ -53,56 +55,58 @@ public class DirectoryConverter {
 				.generatePackages(ediSpecificationReader);
 		ResourceSet rs = prepareResourceSet();
 
-		
-		Archive archive = new Archive();
-		StringBuilder modelListBuilder = new StringBuilder();
-		StringBuilder ecoreListBuilder = new StringBuilder();
-		String pathPrefix = urn.replace(".", "_").replace(":", "/");
+		// TODO Add qualifier
+		Archive archive = new Archive(pluginID + "_1.0.0" + ".jar");
+		StringBuilder pluginXMLBuilder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<?eclipse version=\"3.0\"?>\n" +
+				"<plugin>\n" +
+				"\t<extension point=\"org.eclipse.emf.ecore.dynamic_package\">\n");
+		String pathPrefix = pluginID.replace(".", "_").replace(":", "/");
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		// Writing out ECORE files
 		for (EPackage pkg : packages) {
 			if (pkg.getName().startsWith("common")) {
-				serializePackage(rs, archive, ecoreListBuilder, pathPrefix,
+				serializePackage(rs, archive, pluginXMLBuilder, pathPrefix,
 						out, pkg);
 			}
 		}
 
 		for (EPackage pkg : packages) {
 			if (!pkg.getName().startsWith("common")) {
-				serializePackage(rs, archive, ecoreListBuilder, pathPrefix,
+				serializePackage(rs, archive, pluginXMLBuilder, pathPrefix,
 						out, pkg);
 			}
 		}
 
+		pluginXMLBuilder.append("\t</extension>\n</plugin>");
 		// Add the generated mapping model to the archive...
-		archive.addEntry(ECORE_MAPPING_MODEL_ZIP_LIST_FILE,
-				ecoreListBuilder.toString());
+		archive.addEntry(PLUGIN_XML_ENTRY,
+				pluginXMLBuilder.toString());
 
 		// Add the model set URN to the archive...
-		archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, urn);
-
-		// Add an entry for the interchange properties...
-		Properties interchangeProperties = ediSpecificationReader
-				.getInterchangeProperties();
-		ByteArrayOutputStream propertiesOutStream = new ByteArrayOutputStream();
-		try {
-			interchangeProperties.store(propertiesOutStream,
-					"UN/EDIFACT Interchange Properties");
-			propertiesOutStream.flush();
-			archive.addEntry(
-					EDIUtils.EDI_MAPPING_MODEL_INTERCHANGE_PROPERTIES_FILE,
-					propertiesOutStream.toByteArray());
-		} finally {
-			propertiesOutStream.close();
-		}
-
+		archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, pluginID);
+		
+		archive.addEntry(MANIFEST, generateManifest(pluginID));
+		
 		return archive;
 	}
 
+	private String generateManifest(String pluginID) {
+		StringBuilder result = new StringBuilder();
+		result.append("Manifest-Version: 1.0\n");
+		result.append("Bundle-ManifestVersion: 2\n");
+		result.append("Bundle-Name: " + pluginID + "\n");
+		result.append("Bundle-SymbolicName: " + pluginID + ";singleton:=true\n");
+		result.append("Bundle-Version: 1.0.0\n");
+		result.append("Bundle-ClassPath: .\n");
+		result.append("Bundle-ActivationPolicy: lazy\n");
+		return result.toString();
+	}
+
 	private void serializePackage(ResourceSet rs, Archive archive,
-			StringBuilder modelListBuilder, String pathPrefix,
+			StringBuilder pluginBuilder, String pathPrefix,
 			ByteArrayOutputStream out, EPackage pkg) throws IOException {
 		String message = pkg.getName();
 		String ecoreEntryPath = pathPrefix + "/" + message + ".ecore";
@@ -116,9 +120,11 @@ public class DirectoryConverter {
 		archive.addEntry(ecoreEntryPath, out.toByteArray());
 
 		// Add this messages archive entry to the mapping model list file...
-		modelListBuilder.append("/" + ecoreEntryPath);
-		modelListBuilder.append("!" + pkg.getNsURI());
-		modelListBuilder.append("\n");
+		pluginBuilder.append("\t\t<resource \n\t\t\tlocation=\"");
+		pluginBuilder.append(ecoreEntryPath);
+		pluginBuilder.append("\" \n\t\t\turi=\"");
+		pluginBuilder.append(pkg.getNsURI());
+		pluginBuilder.append("\">\n\t\t</resource>\n");
 	}
 
 	private ResourceSet prepareResourceSet() {

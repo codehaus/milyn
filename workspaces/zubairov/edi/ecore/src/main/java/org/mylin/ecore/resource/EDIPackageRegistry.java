@@ -33,6 +33,7 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 	 * UID
 	 */
 	private static final long serialVersionUID = -400421356940005210L;
+	
 	private EPackage cuscar;
 
 	public EDIPackageRegistry() {
