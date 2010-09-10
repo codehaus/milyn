@@ -28,6 +28,7 @@ public class EJCUtilsTest extends TestCase {
         assertEquals("CustomerADDRESS", EJCUtils.encodeClassName("Customer_ADDRESS"));
         assertEquals("CustomerAddress", EJCUtils.encodeClassName("Customer_address"));
         assertEquals("Default", EJCUtils.encodeClassName("default"));
+        assertEquals("_1CustomerAddressPOBox", EJCUtils.encodeClassName("1CustomerAddressP.O.Box"));
     }
 
     public void testEncodeAttribute() throws IllegalNameException {
@@ -39,5 +40,7 @@ public class EJCUtilsTest extends TestCase {
         assertEquals("_default", EJCUtils.encodeAttributeName("default"));
         assertEquals("_package", EJCUtils.encodeAttributeName("package"));
         assertEquals("_package", EJCUtils.encodeAttributeName("Package"));
+        assertEquals("_1address", EJCUtils.encodeAttributeName("1ADDRESS"));
+        assertEquals("_1addressPOBox", EJCUtils.encodeAttributeName("_1addressP.O.Box"));
     }
 }

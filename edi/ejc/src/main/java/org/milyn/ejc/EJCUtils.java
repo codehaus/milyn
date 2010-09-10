@@ -47,9 +47,9 @@ public class EJCUtils {
             nameRebuilder.setCharAt(0, name.charAt(0));
             result = nameRebuilder.toString();
         }
-        result = EJCUtils.deleteWithPascalNotation(result, '-');
-        result = EJCUtils.deleteWithPascalNotation(result, ' ');
+
         result = EJCUtils.deleteWithPascalNotation(result, '_');
+        result = EJCUtils.encodeJavaIdentifier(result);
 
         if(Character.isLowerCase(result.charAt(0))) {
             result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
@@ -91,9 +91,8 @@ public class EJCUtils {
             result = name;
         }
 
-        result = EJCUtils.deleteWithPascalNotation(result, '-');
-        result = EJCUtils.deleteWithPascalNotation(result, ' ');
         result = EJCUtils.deleteWithPascalNotation(result, '_');
+        result = EJCUtils.encodeJavaIdentifier(result);
 
         if(Character.isUpperCase(result.charAt(0))) {
             result = Character.toLowerCase(result.charAt(0)) + result.substring(1);
@@ -104,6 +103,31 @@ public class EJCUtils {
         }
 
         return result;
+    }
+
+    public static String encodeJavaIdentifier(String identifier) {
+        StringBuilder result = new StringBuilder();
+        int len = identifier.length();
+        boolean matchPrevious = false;
+        char currentChar;
+
+        for (int i = 0; i < len; i++) {
+            currentChar = identifier.charAt(i);
+
+            if(i == 0 && !Character.isJavaIdentifierStart(currentChar)) {
+                result.append('_');
+            }           
+            if(!Character.isJavaIdentifierPart(currentChar)) {
+                matchPrevious = true;
+                continue;
+            }
+            if (matchPrevious) {
+                currentChar = Character.toUpperCase(currentChar);
+                matchPrevious = false;
+            }
+            result.append(currentChar);
+        }
+        return result.toString();
     }
 
     /**
