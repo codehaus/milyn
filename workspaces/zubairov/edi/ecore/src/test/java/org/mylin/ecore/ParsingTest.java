@@ -7,6 +7,11 @@ import junit.framework.TestCase;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
@@ -30,9 +35,10 @@ public class ParsingTest extends TestCase {
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws EDIConfigurationException
+	 * @throws JDOMException 
 	 */
 	public void testParser() throws IOException, SAXException,
-			EDIConfigurationException {
+			EDIConfigurationException, JDOMException {
 		EPackage pkg = TestingUtils.loadModel("cuscar.ecore");
 		IEdimap edimap = new EdimapAdapter(pkg);
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
@@ -40,14 +46,11 @@ public class ParsingTest extends TestCase {
 		parser.addMappingModel(new EdifactModel(edimap));
 		parser.ignoreNewLines(true);
 
-		MockContentHandler handler;
-
 		// Test message 01 - no UNA segment...
-		handler = new MockContentHandler();
-		parser.setContentHandler(handler);
-		parser.parse(new InputSource(getClass().getResourceAsStream(
+		SAXBuilder builder = new MockBuilder(parser);
+		Document document = builder.build(new InputSource(getClass().getResourceAsStream(
 				"/99a_cuscar.edi")));
-		System.out.println(handler.xmlMapping);
+		new XMLOutputter(Format.getPrettyFormat()).output(document, System.out);
 	}
 
 	/**

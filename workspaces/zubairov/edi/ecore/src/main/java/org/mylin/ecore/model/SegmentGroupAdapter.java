@@ -8,6 +8,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.milyn.edisax.model.internal.IMappingNode;
 import org.milyn.edisax.model.internal.ISegmentGroup;
 import org.mylin.ecore.ECoreConversionUtils;
@@ -145,6 +146,13 @@ public class SegmentGroupAdapter implements ISegmentGroup {
 			throw new IllegalArgumentException("Segments list of segment group empty : " + clazz);
 		}
 		return getSegments().get(0).getSegcode();
+	}
+
+	public String getNamespace() {
+		if (ref != null) {
+			return ExtendedMetaData.INSTANCE.getNamespace(ref);
+		}
+		return ExtendedMetaData.INSTANCE.getNamespace(clazz);
 	}
 
 }

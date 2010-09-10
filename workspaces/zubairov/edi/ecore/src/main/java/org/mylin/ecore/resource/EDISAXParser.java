@@ -17,14 +17,14 @@ import org.xml.sax.XMLReader;
  */
 public class EDISAXParser extends SAXParser {
 
-	protected final EDIParser parser;
+	protected final XMLReader parser;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param parser
 	 */
-	public EDISAXParser(EDIParser parser) {
+	public EDISAXParser(XMLReader parser) {
 		this.parser = parser;
 	}
 	

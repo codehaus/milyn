@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.milyn.edisax.model.internal.IMappingNode;
 import org.milyn.edisax.model.internal.IValueNode;
 import org.milyn.javabean.DataDecodeException;
@@ -83,6 +84,10 @@ public class ValueNodeAdapter implements IValueNode {
 
 	public String getDataTypeParametersString() {
 		throw new UnsupportedOperationException("TODO Implement");
+	}
+	
+	public String getNamespace() {
+		return ExtendedMetaData.INSTANCE.getNamespace(feature);
 	}
 
 }
