@@ -180,13 +180,13 @@ public interface EnvelopePackage extends EPackage {
 	int INTERCHANGE_MESSAGE_TYPE__UNH = 0;
 
 	/**
-	 * The feature id for the '<em><b>Any</b></em>' attribute list.
+	 * The feature id for the '<em><b>Message</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INTERCHANGE_MESSAGE_TYPE__ANY = 1;
+	int INTERCHANGE_MESSAGE_TYPE__MESSAGE = 1;
 
 	/**
 	 * The feature id for the '<em><b>UNT</b></em>' containment reference.
@@ -474,13 +474,13 @@ public interface EnvelopePackage extends EPackage {
 	int UN_EDIFACT_TYPE__UNB = 0;
 
 	/**
-	 * The feature id for the '<em><b>Interchange Message</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Messages</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE = 1;
+	int UN_EDIFACT_TYPE__MESSAGES = 1;
 
 	/**
 	 * The feature id for the '<em><b>UNZ</b></em>' containment reference.
@@ -740,15 +740,15 @@ public interface EnvelopePackage extends EPackage {
 	EReference getInterchangeMessageType_UNH();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getAny <em>Any</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getMessage <em>Message</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Any</em>'.
-	 * @see org.mylin.ecore.model.envelope.InterchangeMessageType#getAny()
+	 * @return the meta object for the attribute list '<em>Message</em>'.
+	 * @see org.mylin.ecore.model.envelope.InterchangeMessageType#getMessage()
 	 * @see #getInterchangeMessageType()
 	 * @generated
 	 */
-	EAttribute getInterchangeMessageType_Any();
+	EAttribute getInterchangeMessageType_Message();
 
 	/**
 	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getUNT <em>UNT</em>}'.
@@ -1020,15 +1020,15 @@ public interface EnvelopePackage extends EPackage {
 	EReference getUnEdifactType_UNB();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.mylin.ecore.model.envelope.UnEdifactType#getInterchangeMessage <em>Interchange Message</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.mylin.ecore.model.envelope.UnEdifactType#getMessages <em>Messages</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Interchange Message</em>'.
-	 * @see org.mylin.ecore.model.envelope.UnEdifactType#getInterchangeMessage()
+	 * @return the meta object for the containment reference list '<em>Messages</em>'.
+	 * @see org.mylin.ecore.model.envelope.UnEdifactType#getMessages()
 	 * @see #getUnEdifactType()
 	 * @generated
 	 */
-	EReference getUnEdifactType_InterchangeMessage();
+	EReference getUnEdifactType_Messages();
 
 	/**
 	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNZ <em>UNZ</em>}'.
@@ -1265,12 +1265,12 @@ public interface EnvelopePackage extends EPackage {
 		EReference INTERCHANGE_MESSAGE_TYPE__UNH = eINSTANCE.getInterchangeMessageType_UNH();
 
 		/**
-		 * The meta object literal for the '<em><b>Any</b></em>' attribute list feature.
+		 * The meta object literal for the '<em><b>Message</b></em>' attribute list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute INTERCHANGE_MESSAGE_TYPE__ANY = eINSTANCE.getInterchangeMessageType_Any();
+		EAttribute INTERCHANGE_MESSAGE_TYPE__MESSAGE = eINSTANCE.getInterchangeMessageType_Message();
 
 		/**
 		 * The meta object literal for the '<em><b>UNT</b></em>' containment reference feature.
@@ -1485,12 +1485,12 @@ public interface EnvelopePackage extends EPackage {
 		EReference UN_EDIFACT_TYPE__UNB = eINSTANCE.getUnEdifactType_UNB();
 
 		/**
-		 * The meta object literal for the '<em><b>Interchange Message</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Messages</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE = eINSTANCE.getUnEdifactType_InterchangeMessage();
+		EReference UN_EDIFACT_TYPE__MESSAGES = eINSTANCE.getUnEdifactType_Messages();
 
 		/**
 		 * The meta object literal for the '<em><b>UNZ</b></em>' containment reference feature.

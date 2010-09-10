@@ -19,7 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNB <em>UNB</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getInterchangeMessage <em>Interchange Message</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getMessages <em>Messages</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNZ <em>UNZ</em>}</li>
  * </ul>
  * </p>
@@ -57,21 +57,21 @@ public interface UnEdifactType extends EObject {
 	void setUNB(UNBType value);
 
 	/**
-	 * Returns the value of the '<em><b>Interchange Message</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Messages</b></em>' containment reference list.
 	 * The list contents are of type {@link org.mylin.ecore.model.envelope.InterchangeMessageType}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Interchange Message</em>' containment reference list isn't clear,
+	 * If the meaning of the '<em>Messages</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Interchange Message</em>' containment reference list.
-	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUnEdifactType_InterchangeMessage()
+	 * @return the value of the '<em>Messages</em>' containment reference list.
+	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUnEdifactType_Messages()
 	 * @model containment="true" required="true"
 	 *        extendedMetaData="kind='element' name='interchangeMessage' namespace='##targetNamespace'"
 	 * @generated
 	 */
-	EList<InterchangeMessageType> getInterchangeMessage();
+	EList<InterchangeMessageType> getMessages();
 
 	/**
 	 * Returns the value of the '<em><b>UNZ</b></em>' containment reference.

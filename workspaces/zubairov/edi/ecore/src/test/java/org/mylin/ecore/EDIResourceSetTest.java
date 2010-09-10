@@ -36,7 +36,7 @@ public class EDIResourceSetTest extends TestCase {
 		DocumentRoot root = (DocumentRoot) resource.getContents().get(0);
 		UnEdifactType unEdifact = root.getUnEdifact();
 		assertEquals("XXXXXLCTA", unEdifact.getUNB().getRecipient().getId());
-		assertEquals(2, unEdifact.getInterchangeMessage().size());
+		assertEquals(2, unEdifact.getMessages().size());
 	}
 
 }

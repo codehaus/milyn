@@ -289,7 +289,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getInterchangeMessageType_Any() {
+	public EAttribute getInterchangeMessageType_Message() {
 		return (EAttribute)interchangeMessageTypeEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -523,7 +523,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getUnEdifactType_InterchangeMessage() {
+	public EReference getUnEdifactType_Messages() {
 		return (EReference)unEdifactTypeEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -667,7 +667,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 
 		interchangeMessageTypeEClass = createEClass(INTERCHANGE_MESSAGE_TYPE);
 		createEReference(interchangeMessageTypeEClass, INTERCHANGE_MESSAGE_TYPE__UNH);
-		createEAttribute(interchangeMessageTypeEClass, INTERCHANGE_MESSAGE_TYPE__ANY);
+		createEAttribute(interchangeMessageTypeEClass, INTERCHANGE_MESSAGE_TYPE__MESSAGE);
 		createEReference(interchangeMessageTypeEClass, INTERCHANGE_MESSAGE_TYPE__UNT);
 
 		messageIdentifierTypeEClass = createEClass(MESSAGE_IDENTIFIER_TYPE);
@@ -699,7 +699,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 
 		unEdifactTypeEClass = createEClass(UN_EDIFACT_TYPE);
 		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__UNB);
-		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE);
+		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__MESSAGES);
 		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__UNZ);
 
 		unhTypeEClass = createEClass(UNH_TYPE);
@@ -762,7 +762,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 
 		initEClass(interchangeMessageTypeEClass, InterchangeMessageType.class, "InterchangeMessageType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getInterchangeMessageType_UNH(), this.getUNHType(), null, "uNH", null, 1, 1, InterchangeMessageType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getInterchangeMessageType_Any(), ecorePackage.getEFeatureMapEntry(), "any", null, 1, 1, InterchangeMessageType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getInterchangeMessageType_Message(), ecorePackage.getEFeatureMapEntry(), "message", null, 1, 1, InterchangeMessageType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getInterchangeMessageType_UNT(), this.getUNTType(), null, "uNT", null, 1, 1, InterchangeMessageType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(messageIdentifierTypeEClass, MessageIdentifierType.class, "MessageIdentifierType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -794,7 +794,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 
 		initEClass(unEdifactTypeEClass, UnEdifactType.class, "UnEdifactType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getUnEdifactType_UNB(), this.getUNBType(), null, "uNB", null, 1, 1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getUnEdifactType_InterchangeMessage(), this.getInterchangeMessageType(), null, "interchangeMessage", null, 1, -1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getUnEdifactType_Messages(), this.getInterchangeMessageType(), null, "messages", null, 1, -1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getUnEdifactType_UNZ(), this.getUNZType(), null, "uNZ", null, 1, 1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(unhTypeEClass, UNHType.class, "UNHType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -908,7 +908,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
-		  (getInterchangeMessageType_Any(), 
+		  (getInterchangeMessageType_Message(), 
 		   source, 
 		   new String[] {
 			 "kind", "elementWildcard",
@@ -1108,7 +1108,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
-		  (getUnEdifactType_InterchangeMessage(), 
+		  (getUnEdifactType_Messages(), 
 		   source, 
 		   new String[] {
 			 "kind", "element",

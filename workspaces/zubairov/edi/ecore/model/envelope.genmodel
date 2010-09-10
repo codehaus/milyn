@@ -20,7 +20,7 @@
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//InterchangeMessageType">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//InterchangeMessageType/uNH"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//InterchangeMessageType/any"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//InterchangeMessageType/message"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//InterchangeMessageType/uNT"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//MessageIdentifierType">
@@ -52,7 +52,7 @@
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//UnEdifactType">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/uNB"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/interchangeMessage"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/messages"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/uNZ"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//UNHType">

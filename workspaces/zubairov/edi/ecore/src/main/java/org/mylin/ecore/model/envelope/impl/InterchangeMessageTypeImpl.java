@@ -32,7 +32,7 @@ import org.mylin.ecore.model.envelope.UNTType;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.InterchangeMessageTypeImpl#getUNH <em>UNH</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.InterchangeMessageTypeImpl#getAny <em>Any</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.InterchangeMessageTypeImpl#getMessage <em>Message</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.InterchangeMessageTypeImpl#getUNT <em>UNT</em>}</li>
  * </ul>
  * </p>
@@ -51,14 +51,14 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 	protected UNHType uNH;
 
 	/**
-	 * The cached value of the '{@link #getAny() <em>Any</em>}' attribute list.
+	 * The cached value of the '{@link #getMessage() <em>Message</em>}' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getAny()
+	 * @see #getMessage()
 	 * @generated
 	 * @ordered
 	 */
-	protected FeatureMap any;
+	protected FeatureMap message;
 
 	/**
 	 * The cached value of the '{@link #getUNT() <em>UNT</em>}' containment reference.
@@ -137,11 +137,11 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FeatureMap getAny() {
-		if (any == null) {
-			any = new BasicFeatureMap(this, EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__ANY);
+	public FeatureMap getMessage() {
+		if (message == null) {
+			message = new BasicFeatureMap(this, EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__MESSAGE);
 		}
-		return any;
+		return message;
 	}
 
 	/**
@@ -197,8 +197,8 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 		switch (featureID) {
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNH:
 				return basicSetUNH(null, msgs);
-			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__ANY:
-				return ((InternalEList<?>)getAny()).basicRemove(otherEnd, msgs);
+			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__MESSAGE:
+				return ((InternalEList<?>)getMessage()).basicRemove(otherEnd, msgs);
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNT:
 				return basicSetUNT(null, msgs);
 		}
@@ -215,9 +215,9 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 		switch (featureID) {
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNH:
 				return getUNH();
-			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__ANY:
-				if (coreType) return getAny();
-				return ((FeatureMap.Internal)getAny()).getWrapper();
+			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__MESSAGE:
+				if (coreType) return getMessage();
+				return ((FeatureMap.Internal)getMessage()).getWrapper();
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNT:
 				return getUNT();
 		}
@@ -235,8 +235,8 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNH:
 				setUNH((UNHType)newValue);
 				return;
-			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__ANY:
-				((FeatureMap.Internal)getAny()).set(newValue);
+			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__MESSAGE:
+				((FeatureMap.Internal)getMessage()).set(newValue);
 				return;
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNT:
 				setUNT((UNTType)newValue);
@@ -256,8 +256,8 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNH:
 				setUNH((UNHType)null);
 				return;
-			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__ANY:
-				getAny().clear();
+			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__MESSAGE:
+				getMessage().clear();
 				return;
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNT:
 				setUNT((UNTType)null);
@@ -276,8 +276,8 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 		switch (featureID) {
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNH:
 				return uNH != null;
-			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__ANY:
-				return any != null && !any.isEmpty();
+			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__MESSAGE:
+				return message != null && !message.isEmpty();
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE__UNT:
 				return uNT != null;
 		}
@@ -294,8 +294,8 @@ public class InterchangeMessageTypeImpl extends EObjectImpl implements Interchan
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (any: ");
-		result.append(any);
+		result.append(" (message: ");
+		result.append(message);
 		result.append(')');
 		return result.toString();
 	}

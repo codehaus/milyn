@@ -36,7 +36,7 @@ import org.mylin.ecore.model.envelope.UnEdifactType;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getUNB <em>UNB</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getInterchangeMessage <em>Interchange Message</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getMessages <em>Messages</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getUNZ <em>UNZ</em>}</li>
  * </ul>
  * </p>
@@ -55,14 +55,14 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	protected UNBType uNB;
 
 	/**
-	 * The cached value of the '{@link #getInterchangeMessage() <em>Interchange Message</em>}' containment reference list.
+	 * The cached value of the '{@link #getMessages() <em>Messages</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getInterchangeMessage()
+	 * @see #getMessages()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<InterchangeMessageType> interchangeMessage;
+	protected EList<InterchangeMessageType> messages;
 
 	/**
 	 * The cached value of the '{@link #getUNZ() <em>UNZ</em>}' containment reference.
@@ -141,11 +141,11 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<InterchangeMessageType> getInterchangeMessage() {
-		if (interchangeMessage == null) {
-			interchangeMessage = new EObjectContainmentEList<InterchangeMessageType>(InterchangeMessageType.class, this, EnvelopePackage.UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE);
+	public EList<InterchangeMessageType> getMessages() {
+		if (messages == null) {
+			messages = new EObjectContainmentEList<InterchangeMessageType>(InterchangeMessageType.class, this, EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES);
 		}
-		return interchangeMessage;
+		return messages;
 	}
 
 	/**
@@ -201,8 +201,8 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		switch (featureID) {
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
 				return basicSetUNB(null, msgs);
-			case EnvelopePackage.UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE:
-				return ((InternalEList<?>)getInterchangeMessage()).basicRemove(otherEnd, msgs);
+			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+				return ((InternalEList<?>)getMessages()).basicRemove(otherEnd, msgs);
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
 				return basicSetUNZ(null, msgs);
 		}
@@ -219,8 +219,8 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		switch (featureID) {
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
 				return getUNB();
-			case EnvelopePackage.UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE:
-				return getInterchangeMessage();
+			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+				return getMessages();
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
 				return getUNZ();
 		}
@@ -239,9 +239,9 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
 				setUNB((UNBType)newValue);
 				return;
-			case EnvelopePackage.UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE:
-				getInterchangeMessage().clear();
-				getInterchangeMessage().addAll((Collection<? extends InterchangeMessageType>)newValue);
+			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+				getMessages().clear();
+				getMessages().addAll((Collection<? extends InterchangeMessageType>)newValue);
 				return;
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
 				setUNZ((UNZType)newValue);
@@ -261,8 +261,8 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
 				setUNB((UNBType)null);
 				return;
-			case EnvelopePackage.UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE:
-				getInterchangeMessage().clear();
+			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+				getMessages().clear();
 				return;
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
 				setUNZ((UNZType)null);
@@ -281,8 +281,8 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		switch (featureID) {
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
 				return uNB != null;
-			case EnvelopePackage.UN_EDIFACT_TYPE__INTERCHANGE_MESSAGE:
-				return interchangeMessage != null && !interchangeMessage.isEmpty();
+			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+				return messages != null && !messages.isEmpty();
 			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
 				return uNZ != null;
 		}

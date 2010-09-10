@@ -19,7 +19,7 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getUNH <em>UNH</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getAny <em>Any</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getMessage <em>Message</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.InterchangeMessageType#getUNT <em>UNT</em>}</li>
  * </ul>
  * </p>
@@ -57,21 +57,21 @@ public interface InterchangeMessageType extends EObject {
 	void setUNH(UNHType value);
 
 	/**
-	 * Returns the value of the '<em><b>Any</b></em>' attribute list.
+	 * Returns the value of the '<em><b>Message</b></em>' attribute list.
 	 * The list contents are of type {@link org.eclipse.emf.ecore.util.FeatureMap.Entry}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Any</em>' attribute list isn't clear,
+	 * If the meaning of the '<em>Message</em>' attribute list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Any</em>' attribute list.
-	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getInterchangeMessageType_Any()
+	 * @return the value of the '<em>Message</em>' attribute list.
+	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getInterchangeMessageType_Message()
 	 * @model dataType="org.eclipse.emf.ecore.EFeatureMapEntry" required="true" many="false"
 	 *        extendedMetaData="kind='elementWildcard' wildcards='##any' name=':1' processing='lax'"
 	 * @generated
 	 */
-	FeatureMap getAny();
+	FeatureMap getMessage();
 
 	/**
 	 * Returns the value of the '<em><b>UNT</b></em>' containment reference.
