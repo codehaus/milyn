@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ecore
-Bundle-SymbolicName: ecore
+Bundle-SymbolicName: ecore;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Export-Package: org.mylin.ecore,
  org.mylin.ecore.model,
@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.emf;bundle-version="2.6.0",
  org.eclipse.emf.codegen.ecore;bundle-version="2.6.0",
  org.eclipse.emf.importer;bundle-version="2.6.0",
  org.eclipse.emf.importer.ecore;bundle-version="2.6.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

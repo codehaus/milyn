@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
+import org.mylin.ecore.model.envelope.DocumentRoot;
+import org.mylin.ecore.model.envelope.UnEdifactType;
 import org.mylin.ecore.resource.EDIFactResourceFactoryImpl;
 import org.mylin.ecore.resource.EDIPackageRegistry;
 
@@ -31,6 +33,10 @@ public class EDIResourceSetTest extends TestCase {
 		map.put(XMLResource.OPTION_EXTENDED_META_DATA, true);
 		resource.load(getClass().getResourceAsStream(fileName),
 				map);
+		DocumentRoot root = (DocumentRoot) resource.getContents().get(0);
+		UnEdifactType unEdifact = root.getUnEdifact();
+		assertEquals("XXXXXLCTA", unEdifact.getUNB().getRecipient().getId());
+		assertEquals(2, unEdifact.getInterchangeMessage().size());
 	}
 
 }

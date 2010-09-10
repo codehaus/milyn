@@ -11,10 +11,10 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser.MappingRegistry;
 import org.mylin.ecore.model.EdimapAdapter;
+import org.mylin.ecore.model.envelope.EnvelopePackage;
 import org.xml.sax.SAXException;
 
 /**
@@ -33,13 +33,15 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 	 * UID
 	 */
 	private static final long serialVersionUID = -400421356940005210L;
-	private EPackage envelope;
 	private EPackage cuscar;
 
 	public EDIPackageRegistry() {
 		super(EPackage.Registry.INSTANCE);
+		// We need to initialize EnvelopePackage
+		// so that it woudl register itself to 
+		// global package registry
+		EnvelopePackage.eINSTANCE.getNsPrefix();
 		try {
-			envelope = loadModel("model/envelope.ecore");
 			cuscar = loadModel("cuscar.ecore");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -72,9 +74,6 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 
 	@Override
 	public EPackage getEPackage(String nsURI) {
-		if (ControlBlockHandler.NAMESPACE.equals(nsURI)) {
-			return envelope;
-		}
 		if (nsURI != null && nsURI.endsWith("CUSCAR")) {
 			return cuscar;
 		}
@@ -83,9 +82,6 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 
 	@Override
 	public EFactory getEFactory(String nsURI) {
-		if (ControlBlockHandler.NAMESPACE.equals(nsURI)) {
-			return envelope.getEFactoryInstance();
-		}
 		if (nsURI != null && nsURI.endsWith("CUSCAR")) {
 			return cuscar.getEFactoryInstance();
 		}

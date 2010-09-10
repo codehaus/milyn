@@ -10,7 +10,7 @@
 			<element name="UNB" type="tns:UNBType" minOccurs="1"
 				maxOccurs="1"></element>
 			<element name="interchangeMessage" type="tns:interchangeMessageType"
-				maxOccurs="unbounded"></element>
+				maxOccurs="unbounded" ecore:name="messages"/>
 			<element name="UNZ" type="tns:UNZType" minOccurs="1"
 				maxOccurs="1"></element>
 		</sequence>
