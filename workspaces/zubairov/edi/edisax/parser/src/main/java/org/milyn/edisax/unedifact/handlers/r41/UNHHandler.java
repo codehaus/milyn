@@ -101,34 +101,35 @@ class UNHHandler implements ControlBlockHandler {
 		unhSegment.setXmltag("UNH");
 		unhSegment.setDescription("UNH - Message Header");
 		unhSegment.setTruncatable(true);
-		unhSegment.addField(new Field("messageRefNum", true));
-		unhSegment.addField(new Field("messageIdentifier", true).
-                addComponent(new Component("id", true)).
-                addComponent(new Component("versionNum", true)).
-                addComponent(new Component("releaseNum", true)).
-                addComponent(new Component("controllingAgencyCode", true)).
-                addComponent(new Component("associationAssignedCode", false)).
-                addComponent(new Component("codeListDirVersionNum", false)).
-                addComponent(new Component("typeSubFunctionId", false)));
-		unhSegment.addField(new Field("commonAccessRef", false));
-		unhSegment.addField(new Field("transferStatus", false).
-                addComponent(new Component("sequence", true)).
-                addComponent(new Component("firstAndLast", false)));
-		unhSegment.addField(new Field("subset", false).
-                addComponent(new Component("id", true)).
-                addComponent(new Component("versionNum", false)).
-                addComponent(new Component("releaseNum", false)).
-                addComponent(new Component("controllingAgencyCode", false)));
-		unhSegment.addField(new Field("implementationGuideline", false).
-                addComponent(new Component("id", true)).
-                addComponent(new Component("versionNum", false)).
-                addComponent(new Component("releaseNum", false)).
-                addComponent(new Component("controllingAgencyCode", false)));
-		unhSegment.addField(new Field("scenario", false).
-                addComponent(new Component("id", true)).
-                addComponent(new Component("versionNum", false)).
-                addComponent(new Component("releaseNum", false)).
-                addComponent(new Component("controllingAgencyCode", false)));
+		unhSegment.setNamespace(ControlBlockHandler.NAMESPACE);
+		unhSegment.addField(new Field("messageRefNum", ControlBlockHandler.NAMESPACE, true));
+		unhSegment.addField(new Field("messageIdentifier", ControlBlockHandler.NAMESPACE, true).
+                addComponent(new Component("id", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("versionNum", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("releaseNum", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("controllingAgencyCode", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("associationAssignedCode", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("codeListDirVersionNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("typeSubFunctionId", ControlBlockHandler.NAMESPACE, false)));
+		unhSegment.addField(new Field("commonAccessRef", ControlBlockHandler.NAMESPACE, false));
+		unhSegment.addField(new Field("transferStatus", ControlBlockHandler.NAMESPACE, false).
+                addComponent(new Component("sequence", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("firstAndLast", ControlBlockHandler.NAMESPACE, false)));
+		unhSegment.addField(new Field("subset", ControlBlockHandler.NAMESPACE, false).
+                addComponent(new Component("id", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("versionNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("releaseNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("controllingAgencyCode", ControlBlockHandler.NAMESPACE, false)));
+		unhSegment.addField(new Field("implementationGuideline", ControlBlockHandler.NAMESPACE, false).
+                addComponent(new Component("id", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("versionNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("releaseNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("controllingAgencyCode", ControlBlockHandler.NAMESPACE, false)));
+		unhSegment.addField(new Field("scenario", ControlBlockHandler.NAMESPACE, false).
+                addComponent(new Component("id", ControlBlockHandler.NAMESPACE, true)).
+                addComponent(new Component("versionNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("releaseNum", ControlBlockHandler.NAMESPACE, false)).
+                addComponent(new Component("controllingAgencyCode", ControlBlockHandler.NAMESPACE, false)));
 
 		// UNT Segment Definition...
 		// http://www.gefeg.com/jswg/v41/se/se20.htm
@@ -137,8 +138,9 @@ class UNHHandler implements ControlBlockHandler {
 		untSegment.setXmltag("UNT");
 		untSegment.setDescription("UNT - Message Trailer");
 		untSegment.setTruncatable(true);
-		untSegment.addField(new Field("segmentCount", true));
-		untSegment.addField(new Field("messageRefNum", true));
+		untSegment.setNamespace(ControlBlockHandler.NAMESPACE);
+		untSegment.addField(new Field("segmentCount",ControlBlockHandler.NAMESPACE, true));
+		untSegment.addField(new Field("messageRefNum", ControlBlockHandler.NAMESPACE, true));
 	}
 
     private static class UNTSegmentListener implements BufferedSegmentListener {
