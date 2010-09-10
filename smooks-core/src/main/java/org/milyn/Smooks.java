@@ -180,6 +180,16 @@ public class Smooks {
         AssertArgument.isNotNull(filterSettings, "filterSettings");
         filterSettings.applySettings(this);
     }
+    
+    /**
+     * Set the Exports for this Smooks instance.
+     * @param exports The exports that will be created by this Smooks instance.
+     */
+    public Smooks setExports(Exports exports) {
+        AssertArgument.isNotNull(exports, "exports");
+        Exports.setExportsInApplicationContext(getApplicationContext(), exports);
+        return this;
+    }
 
     /**
      * Set the configuration for the reader to be used on this Smooks instance.

@@ -17,6 +17,7 @@ package org.milyn.smooks.camel.processor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -25,11 +26,12 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Service;
-import org.apache.camel.util.ObjectHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.Exports;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Visitor;
@@ -51,7 +53,6 @@ public class SmooksProcessor implements Processor, Service
     private Smooks smooks;
     private String configUri;
     private String reportPath;
-    private Result result;
 
     private Set<VisitorAppender> visitorAppenders = new HashSet<VisitorAppender>();
     private Map<String, Visitor> selectorVisitorMap = new HashMap<String, Visitor>();
@@ -73,19 +74,36 @@ public class SmooksProcessor implements Processor, Service
         exchange.getOut().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
         setupSmooksReporting(executionContext);
 
-        if (result != null)
+        Exports exports = Exports.getExports(smooks.getApplicationContext());
+        if (exports.hasExports())
         {
-            Source source = getSource(exchange);
-            smooks.filterSource(executionContext, source, result);
-            exchange.getOut().setBody(result);
-        } else
-        {
-            Source source = getSource(exchange);
-            smooks.filterSource(executionContext, source);
+            Result[] results = exports.createResults();
+	        smooks.filterSource(executionContext, getSource(exchange), results);
+	        setResultOnBody(exports, results, exchange);
         }
+        else
+		{
+	        smooks.filterSource(executionContext, getSource(exchange));
+        }
+        
         executionContext.removeAttribute(Exchange.class);
     }
-
+    
+    protected void setResultOnBody(final Exports exports, final Result[] results, final Exchange exchange)
+    {
+        final Message message = exchange.getOut();
+        List<Object> objects = Exports.extractResults(results, exports);
+        if (objects.size() == 1)
+        {
+	        message.setBody(objects.get(0));
+        }
+        else
+        {
+	        message.setBody(objects);
+        }
+        
+    }
+    
     private void setupSmooksReporting(ExecutionContext executionContext)
     {
         if (reportPath != null)
@@ -113,16 +131,6 @@ public class SmooksProcessor implements Processor, Service
     public void setSmooksConfig(String smooksConfig)
     {
         this.configUri = smooksConfig;
-    }
-
-    public SmooksProcessor setResultType(String resultType)
-    {
-        if (resultType != null)
-        {
-            Class<?> loadClass = ObjectHelper.loadClass(resultType);
-            this.result = (Result) ObjectHelper.newInstance(loadClass);
-        }
-        return this;
     }
 
     /**

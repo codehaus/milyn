@@ -22,23 +22,23 @@ import org.junit.Test;
 /**
  * 
  * @author Daniel Bevenius
- *
+ * 
  */
 public class ExampleRouteBuilderTest extends CamelTestSupport
 {
-	@Override
-	public RouteBuilder createRouteBuilder()
-	{
-		return new ExampleRouteBuilder();
-	}
-	
-	@Test
-	public void route() throws Exception
-	{
-		MockEndpoint result = getMockEndpoint("mock:result");
-		result.setExpectedMessageCount(1);
-		Thread.sleep(1000);
-		result.assertIsSatisfied(1000);
-	}
+    @Override
+    public RouteBuilder createRouteBuilder()
+    {
+        return new ExampleRouteBuilder();
+    }
+
+    @Test
+    public void route() throws Exception
+    {
+        MockEndpoint result = getMockEndpoint("mock:result");
+        result.setExpectedMessageCount(1);
+        Thread.sleep(1000);
+        result.assertIsSatisfied(1000);
+    }
 
 }

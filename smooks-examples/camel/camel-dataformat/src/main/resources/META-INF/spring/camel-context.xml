@@ -5,7 +5,6 @@
 
 	<bean id="smooks" class="org.milyn.smooks.camel.dataformat.SmooksDataFormat">
 	  	<constructor-arg><value>smooks-config.xml</value></constructor-arg>
-	  	<constructor-arg><value>org.milyn.payload.StringResult</value></constructor-arg>
 	</bean>
 	
 	<bean id="exampleRouteBuilder" class="example.ExampleRouteBuilder"/>

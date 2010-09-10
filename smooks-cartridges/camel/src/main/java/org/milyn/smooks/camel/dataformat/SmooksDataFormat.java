@@ -42,26 +42,24 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
  */
 public class SmooksDataFormat implements DataFormat
 {
-
     public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
     private String resultBeanId;
     private SmooksProcessor processor;
 
-    public SmooksDataFormat(String smooksConfig, String resultType) throws Exception
+    public SmooksDataFormat(String smooksConfig) throws Exception
     {
-        this(smooksConfig, resultType, null);
+        this(smooksConfig, null);
     }
 
-    public SmooksDataFormat(String smooksConfig, String resultType, String resultBeanId) throws Exception
+    public SmooksDataFormat(String smooksConfig, String resultBeanId) throws Exception
     {
         this.resultBeanId = resultBeanId;
-        createAndStartSmooksProcessor(smooksConfig, resultType);
+        createAndStartSmooksProcessor(smooksConfig);
     }
 
-    private void createAndStartSmooksProcessor(String smooksConfig, String resultType) throws Exception
+    private void createAndStartSmooksProcessor(String smooksConfig) throws Exception
     {
         processor = new SmooksProcessor(smooksConfig);
-        processor.setResultType(resultType);
         processor.start();
     }
 

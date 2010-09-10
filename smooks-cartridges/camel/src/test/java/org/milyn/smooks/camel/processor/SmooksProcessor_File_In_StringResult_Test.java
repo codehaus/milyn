@@ -19,7 +19,9 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+import org.milyn.Exports;
 import org.milyn.Smooks;
+import org.milyn.payload.StringResult;
 
 /**
  * 
@@ -45,10 +47,11 @@ public class SmooksProcessor_File_In_StringResult_Test extends CamelTestSupport 
 	 */
 	@Override
 	protected RouteBuilder createRouteBuilder() throws Exception {
+	    
         return new RouteBuilder() {
             public void configure() {
                 from("file://target/smooks").
-                process(new SmooksProcessor(new Smooks()).setResultType("org.milyn.payload.StringResult")).
+                process(new SmooksProcessor(new Smooks().setExports(new Exports(StringResult.class)))).
         		to("mock:a");
             }
         };

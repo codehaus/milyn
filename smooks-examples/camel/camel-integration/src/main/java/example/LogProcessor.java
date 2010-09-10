@@ -22,17 +22,17 @@ import org.apache.commons.logging.LogFactory;
 public class LogProcessor implements Processor
 {
     private final Log log = LogFactory.getLog(getClass());
-	private final String string;
+    private final String string;
 
-	public LogProcessor(String string)
-	{
-		this.string = string;
-	}
+    public LogProcessor(String string)
+    {
+        this.string = string;
+    }
 
-	public void process(Exchange exchange) throws Exception
-	{
-		LogEvent logEvent = (LogEvent) exchange.getIn().getBody();
-		log.info("Logging event [" + string + "]" + logEvent);
-	}
+    public void process(Exchange exchange) throws Exception
+    {
+        LogEvent logEvent = (LogEvent) exchange.getIn().getBody();
+        log.info("Logging event [" + string + "]" + logEvent);
+    }
 
 }

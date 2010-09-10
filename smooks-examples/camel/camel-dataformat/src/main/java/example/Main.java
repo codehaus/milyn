@@ -30,42 +30,41 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class Main
 {
-	private static final String camelConfig = "META-INF/spring/camel-context.xml";
-	
-	public static void main(String... args) throws Exception
-	{
-		CamelContext camelContext = configureAndStartCamel(camelConfig);
-		// Give Camel time to process the file.
-		Thread.sleep(3000);
-		camelContext.stop();
-		printEndMessage();
-	}
-	
-	private static void pause(String message)
-	{
-		try
-		{
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("> " + message);
-			in.readLine();
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		System.out.println("\n");
-	}
-	
-	private static CamelContext configureAndStartCamel(String camelConfig) throws Exception
-	{
-        ApplicationContext springContext =  new ClassPathXmlApplicationContext(camelConfig);
-		return (CamelContext) springContext.getBean("camelContext");
-	}
-	
-	private static void printEndMessage()
-	{
-		System.out.println("\n\n");
-		pause("And that's it!  Press 'enter' to finish...");
-	}
+    private static final String camelConfig = "META-INF/spring/camel-context.xml";
+
+    public static void main(String... args) throws Exception
+    {
+        CamelContext camelContext = configureAndStartCamel(camelConfig);
+        // Give Camel time to process the file.
+        Thread.sleep(3000);
+        camelContext.stop();
+        printEndMessage();
+    }
+
+    private static void pause(String message)
+    {
+        try
+        {
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("> " + message);
+            in.readLine();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println("\n");
+    }
+
+    private static CamelContext configureAndStartCamel(String camelConfig) throws Exception
+    {
+        ApplicationContext springContext = new ClassPathXmlApplicationContext(camelConfig);
+        return (CamelContext) springContext.getBean("camelContext");
+    }
+
+    private static void printEndMessage()
+    {
+        System.out.println("\n\n");
+        pause("And that's it!  Press 'enter' to finish...");
+    }
 
 }
