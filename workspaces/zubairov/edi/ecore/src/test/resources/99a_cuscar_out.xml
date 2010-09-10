@@ -1,382 +1,368 @@
-<?xml version="1.0"?>
-<unEdifact>
-	<UNB>
-		<syntaxIdentifier>
-			<id>UNOA</id>
-			<versionNum>2</versionNum>
-		</syntaxIdentifier>
-		<sender>
-			<id>SENDER</id>
-		</sender>
-		<recipient>
-			<id>XXXXXHHLCTA</id>
-		</recipient>
-		<dateTime>
-			<date>100421</date>
-			<time>0437</time>
-		</dateTime>
-		<controlRef>1918</controlRef>
-	</UNB>
-	<interchangeMessage>
-		<UNH>
-			<messageRefNum>163477</messageRefNum>
-			<messageIdentifier>
-				<id>CUSCAR</id>
-				<versionNum>D</versionNum>
-				<releaseNum>99A</releaseNum>
-				<controllingAgencyCode>UN</controllingAgencyCode>
-				<associationAssignedCode>SCPRBL</associationAssignedCode>
-			</messageIdentifier>
-		</UNH>
-		<CUSCAR>
-			<Beginning_of_message>
-				<DOCUMENT_MESSAGE_NAME>
-				</DOCUMENT_MESSAGE_NAME>
-				<DOCUMENT_MESSAGE_IDENTIFICATION>
-					<Document_message_number>MOL-EU2-HFA-012W-XXXX8896514-01</Document_message_number>
-				</DOCUMENT_MESSAGE_IDENTIFICATION>
-				<Message_function__coded>VSA</Message_function__coded>
-			</Beginning_of_message>
-			<Date_time_period>
-				<DATE_TIME_PERIOD>
-					<Date_time_period_qualifier>184</Date_time_period_qualifier>
-					<Date_time_period>20100429</Date_time_period>
-					<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
-				</DATE_TIME_PERIOD>
-			</Date_time_period>
-			<Place_location_identification>
-				<Place_location_qualifier>9</Place_location_qualifier>
-				<LOCATION_IDENTIFICATION>
-					<Place_location_identification>CNYTN</Place_location_identification>
-				</LOCATION_IDENTIFICATION>
-			</Place_location_identification>
-			<Quantity>
-				<QUANTITY_DETAILS>
-					<Quantity_qualifier>104</Quantity_qualifier>
-					<Quantity>1</Quantity>
-				</QUANTITY_DETAILS>
-			</Quantity>
-			<Segment_group_1>
-				<Reference>
-					<REFERENCE>
-						<Reference_qualifier>ACE</Reference_qualifier>
-						<Reference_number></Reference_number>
-						<Line_number>OHNE</Line_number>
-					</REFERENCE>
-				</Reference>
-			</Segment_group_1>
-			<Segment_group_1>
-				<Reference>
-					<REFERENCE>
-						<Reference_qualifier>ABE</Reference_qualifier>
-						<Reference_number>400190754417</Reference_number>
-					</REFERENCE>
-				</Reference>
-			</Segment_group_1>
-			<Segment_group_2>
-				<Name_and_address>
-					<Party_qualifier>RL</Party_qualifier>
-					<PARTY_IDENTIFICATION_DETAILS>
-						<Party_identification>5209394</Party_identification>
-					</PARTY_IDENTIFICATION_DETAILS>
-				</Name_and_address>
-			</Segment_group_2>
-			<Segment_group_4>
-				<Details_of_transport>
-					<Transport_stage_qualifier>13</Transport_stage_qualifier>
-					<Conveyance_reference_number></Conveyance_reference_number>
-					<MODE_OF_TRANSPORT>
-					</MODE_OF_TRANSPORT>
-					<TRANSPORT_MEANS>
-					</TRANSPORT_MEANS>
-					<CARRIER>
-					</CARRIER>
-					<Transit_direction__coded></Transit_direction__coded>
-					<EXCESS_TRANSPORTATION_INFORMATION>
-					</EXCESS_TRANSPORTATION_INFORMATION>
-					<TRANSPORT_IDENTIFICATION>
-						<Id._of_means_of_transport_identification>02</Id._of_means_of_transport_identification>
-						<Code_list_qualifier></Code_list_qualifier>
-						<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
-						<Id._of_the_means_of_transport>3EPF4</Id._of_the_means_of_transport>
-					</TRANSPORT_IDENTIFICATION>
-				</Details_of_transport>
-				<Date_time_period>
-					<DATE_TIME_PERIOD>
-						<Date_time_period_qualifier>132</Date_time_period_qualifier>
-						<Date_time_period>20100429</Date_time_period>
-						<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
-					</DATE_TIME_PERIOD>
-				</Date_time_period>
-			</Segment_group_4>
-			<General_indicator>
-				<PROCESSING_INDICATOR>
-					<Processing_indicator__coded>962</Processing_indicator__coded>
-					<Code_list_qualifier></Code_list_qualifier>
-					<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
-					<Process_type_identification>J</Process_type_identification>
-				</PROCESSING_INDICATOR>
-			</General_indicator>
-			<Segment_group_7>
-				<Consignment_information>
-					<Consolidation_item_number>1</Consolidation_item_number>
-					<DOCUMENT_MESSAGE_DETAILS>
-						<Document_message_number></Document_message_number>
-						<Document_message_status__coded>1</Document_message_status__coded>
-					</DOCUMENT_MESSAGE_DETAILS>
-				</Consignment_information>
-				<Segment_group_8>
-					<Reference>
-						<REFERENCE>
-							<Reference_qualifier>0</Reference_qualifier>
-						</REFERENCE>
-					</Reference>
-					<Place_location_identification>
-						<Place_location_qualifier>113</Place_location_qualifier>
-						<LOCATION_IDENTIFICATION>
-							<Place_location_identification>CN</Place_location_identification>
-						</LOCATION_IDENTIFICATION>
-					</Place_location_identification>
-					<Place_location_identification>
-						<Place_location_qualifier>8</Place_location_qualifier>
-						<LOCATION_IDENTIFICATION>
-							<Place_location_identification>XXXXX</Place_location_identification>
-						</LOCATION_IDENTIFICATION>
-					</Place_location_identification>
-					<General_indicator>
-						<PROCESSING_INDICATOR>
-							<Processing_indicator__coded>902</Processing_indicator__coded>
-							<Code_list_qualifier></Code_list_qualifier>
-							<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
-							<Process_type_identification>N</Process_type_identification>
-						</PROCESSING_INDICATOR>
-					</General_indicator>
-					<Segment_group_14>
-						<Goods_item_details>
-							<Goods_item_number>0</Goods_item_number>
-							<NUMBER_AND_TYPE_OF_PACKAGES>
-								<Number_of_packages>4375</Number_of_packages>
-								<Type_of_packages_identification>CT</Type_of_packages_identification>
-							</NUMBER_AND_TYPE_OF_PACKAGES>
-						</Goods_item_details>
-						<Free_text>
-							<Text_subject_qualifier>TRA</Text_subject_qualifier>
-							<Text_function__coded></Text_function__coded>
-							<TEXT_REFERENCE>
-							</TEXT_REFERENCE>
-							<TEXT_LITERAL>
-								<Free_text>XXXX8896514</Free_text>
-							</TEXT_LITERAL>
-						</Free_text>
-						<Free_text>
-							<Text_subject_qualifier>AAA</Text_subject_qualifier>
-							<Text_function__coded></Text_function__coded>
-							<TEXT_REFERENCE>
-							</TEXT_REFERENCE>
-							<TEXT_LITERAL>
-								<Free_text>HOT AIR BRUSH ORDER  4500185467 MODEL  SC002E QTY  17500 PCS</Free_text>
-							</TEXT_LITERAL>
-						</Free_text>
-						<Measurements>
-							<Measurement_purpose_qualifier>WT</Measurement_purpose_qualifier>
-							<MEASUREMENT_DETAILS>
-								<Property_measured__coded>G</Property_measured__coded>
-							</MEASUREMENT_DETAILS>
-							<VALUE_RANGE>
-								<Measure_unit_qualifier>KGM</Measure_unit_qualifier>
-								<Measurement_value>10062.5</Measurement_value>
-							</VALUE_RANGE>
-						</Measurements>
-					</Segment_group_14>
-				</Segment_group_8>
-			</Segment_group_7>
-		</CUSCAR>
-		<UNT>
-			<segmentCount>21</segmentCount>
-			<messageRefNum>163477</messageRefNum>
-		</UNT>
-	</interchangeMessage>
-	<interchangeMessage>
-		<UNH>
-			<messageRefNum>163478</messageRefNum>
-			<messageIdentifier>
-				<id>CUSCAR</id>
-				<versionNum>D</versionNum>
-				<releaseNum>99A</releaseNum>
-				<controllingAgencyCode>UN</controllingAgencyCode>
-				<associationAssignedCode>SCPRBL</associationAssignedCode>
-			</messageIdentifier>
-		</UNH>
-		<CUSCAR>
-			<Beginning_of_message>
-				<DOCUMENT_MESSAGE_NAME>
-				</DOCUMENT_MESSAGE_NAME>
-				<DOCUMENT_MESSAGE_IDENTIFICATION>
-					<Document_message_number>MOL-EU2-HFA-012W-XXXX5086746-01</Document_message_number>
-				</DOCUMENT_MESSAGE_IDENTIFICATION>
-				<Message_function__coded>VSA</Message_function__coded>
-			</Beginning_of_message>
-			<Date_time_period>
-				<DATE_TIME_PERIOD>
-					<Date_time_period_qualifier>184</Date_time_period_qualifier>
-					<Date_time_period>20100429</Date_time_period>
-					<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
-				</DATE_TIME_PERIOD>
-			</Date_time_period>
-			<Place_location_identification>
-				<Place_location_qualifier>9</Place_location_qualifier>
-				<LOCATION_IDENTIFICATION>
-					<Place_location_identification>KRPUS</Place_location_identification>
-				</LOCATION_IDENTIFICATION>
-			</Place_location_identification>
-			<Quantity>
-				<QUANTITY_DETAILS>
-					<Quantity_qualifier>104</Quantity_qualifier>
-					<Quantity>1</Quantity>
-				</QUANTITY_DETAILS>
-			</Quantity>
-			<Segment_group_1>
-				<Reference>
-					<REFERENCE>
-						<Reference_qualifier>ACE</Reference_qualifier>
-						<Reference_number></Reference_number>
-						<Line_number>OHNE</Line_number>
-					</REFERENCE>
-				</Reference>
-			</Segment_group_1>
-			<Segment_group_1>
-				<Reference>
-					<REFERENCE>
-						<Reference_qualifier>ABE</Reference_qualifier>
-						<Reference_number>400186967152</Reference_number>
-					</REFERENCE>
-				</Reference>
-			</Segment_group_1>
-			<Segment_group_2>
-				<Name_and_address>
-					<Party_qualifier>RL</Party_qualifier>
-					<PARTY_IDENTIFICATION_DETAILS>
-						<Party_identification>5209394</Party_identification>
-					</PARTY_IDENTIFICATION_DETAILS>
-				</Name_and_address>
-			</Segment_group_2>
-			<Segment_group_4>
-				<Details_of_transport>
-					<Transport_stage_qualifier>13</Transport_stage_qualifier>
-					<Conveyance_reference_number></Conveyance_reference_number>
-					<MODE_OF_TRANSPORT>
-					</MODE_OF_TRANSPORT>
-					<TRANSPORT_MEANS>
-					</TRANSPORT_MEANS>
-					<CARRIER>
-					</CARRIER>
-					<Transit_direction__coded></Transit_direction__coded>
-					<EXCESS_TRANSPORTATION_INFORMATION>
-					</EXCESS_TRANSPORTATION_INFORMATION>
-					<TRANSPORT_IDENTIFICATION>
-						<Id._of_means_of_transport_identification>02</Id._of_means_of_transport_identification>
-						<Code_list_qualifier></Code_list_qualifier>
-						<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
-						<Id._of_the_means_of_transport>3EPF4</Id._of_the_means_of_transport>
-					</TRANSPORT_IDENTIFICATION>
-				</Details_of_transport>
-				<Date_time_period>
-					<DATE_TIME_PERIOD>
-						<Date_time_period_qualifier>132</Date_time_period_qualifier>
-						<Date_time_period>20100429</Date_time_period>
-						<Date_time_period_format_qualifier>102</Date_time_period_format_qualifier>
-					</DATE_TIME_PERIOD>
-				</Date_time_period>
-			</Segment_group_4>
-			<General_indicator>
-				<PROCESSING_INDICATOR>
-					<Processing_indicator__coded>962</Processing_indicator__coded>
-					<Code_list_qualifier></Code_list_qualifier>
-					<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
-					<Process_type_identification>J</Process_type_identification>
-				</PROCESSING_INDICATOR>
-			</General_indicator>
-			<Segment_group_7>
-				<Consignment_information>
-					<Consolidation_item_number>1</Consolidation_item_number>
-					<DOCUMENT_MESSAGE_DETAILS>
-						<Document_message_number></Document_message_number>
-						<Document_message_status__coded>1</Document_message_status__coded>
-					</DOCUMENT_MESSAGE_DETAILS>
-				</Consignment_information>
-				<Segment_group_8>
-					<Reference>
-						<REFERENCE>
-							<Reference_qualifier>0</Reference_qualifier>
-						</REFERENCE>
-					</Reference>
-					<Place_location_identification>
-						<Place_location_qualifier>113</Place_location_qualifier>
-						<LOCATION_IDENTIFICATION>
-							<Place_location_identification>TW</Place_location_identification>
-						</LOCATION_IDENTIFICATION>
-					</Place_location_identification>
-					<Place_location_identification>
-						<Place_location_qualifier>8</Place_location_qualifier>
-						<LOCATION_IDENTIFICATION>
-							<Place_location_identification>XXXXX</Place_location_identification>
-						</LOCATION_IDENTIFICATION>
-					</Place_location_identification>
-					<General_indicator>
-						<PROCESSING_INDICATOR>
-							<Processing_indicator__coded>902</Processing_indicator__coded>
-							<Code_list_qualifier></Code_list_qualifier>
-							<Code_list_responsible_agency__coded></Code_list_responsible_agency__coded>
-							<Process_type_identification>N</Process_type_identification>
-						</PROCESSING_INDICATOR>
-					</General_indicator>
-					<Segment_group_14>
-						<Goods_item_details>
-							<Goods_item_number>0</Goods_item_number>
-							<NUMBER_AND_TYPE_OF_PACKAGES>
-								<Number_of_packages>19</Number_of_packages>
-								<Type_of_packages_identification></Type_of_packages_identification>
-							</NUMBER_AND_TYPE_OF_PACKAGES>
-						</Goods_item_details>
-						<Free_text>
-							<Text_subject_qualifier>TRA</Text_subject_qualifier>
-							<Text_function__coded></Text_function__coded>
-							<TEXT_REFERENCE>
-							</TEXT_REFERENCE>
-							<TEXT_LITERAL>
-								<Free_text>XXXX5086746</Free_text>
-							</TEXT_LITERAL>
-						</Free_text>
-						<Free_text>
-							<Text_subject_qualifier>AAA</Text_subject_qualifier>
-							<Text_function__coded></Text_function__coded>
-							<TEXT_REFERENCE>
-							</TEXT_REFERENCE>
-							<TEXT_LITERAL>
-								<Free_text>TISSUE PAPER DOUBLE COATED TAPE B GRADE DS(WHITE/WHITE)</Free_text>
-							</TEXT_LITERAL>
-						</Free_text>
-						<Measurements>
-							<Measurement_purpose_qualifier>WT</Measurement_purpose_qualifier>
-							<MEASUREMENT_DETAILS>
-								<Property_measured__coded>G</Property_measured__coded>
-							</MEASUREMENT_DETAILS>
-							<VALUE_RANGE>
-								<Measure_unit_qualifier>KGM</Measure_unit_qualifier>
-								<Measurement_value>19950</Measurement_value>
-							</VALUE_RANGE>
-						</Measurements>
-					</Segment_group_14>
-				</Segment_group_8>
-			</Segment_group_7>
-		</CUSCAR>
-		<UNT>
-			<segmentCount>21</segmentCount>
-			<messageRefNum>163478</messageRefNum>
-		</UNT>
-	</interchangeMessage>
-	<UNZ>
-		<controlCount>2</controlCount>
-		<controlRef>1918</controlRef>
-	</UNZ>
-</unEdifact>
+<?xml version="1.0" encoding="UTF-8"?>
+<env:unEdifact xmlns:env="http://smooks.org/EDIFACT/41/Envelope">
+  <env:UNB>
+    <env:syntaxIdentifier>
+      <env:id>UNOA</env:id>
+      <env:versionNum>2</env:versionNum>
+    </env:syntaxIdentifier>
+    <env:sender>
+      <env:id>SENDER</env:id>
+    </env:sender>
+    <env:recipient>
+      <env:id>XXXXXHHLCTA</env:id>
+    </env:recipient>
+    <env:dateTime>
+      <env:date>100421</env:date>
+      <env:time>0437</env:time>
+    </env:dateTime>
+    <env:controlRef>1918</env:controlRef>
+  </env:UNB>
+  <env:interchangeMessage>
+    <env:UNH>
+      <messageRefNum>163477</messageRefNum>
+      <messageIdentifier>
+        <id>CUSCAR</id>
+        <versionNum>D</versionNum>
+        <releaseNum>99A</releaseNum>
+        <controllingAgencyCode>UN</controllingAgencyCode>
+        <associationAssignedCode>SCPRBL</associationAssignedCode>
+      </messageIdentifier>
+    </env:UNH>
+    <ns1:CUSCAR xmlns:ns1="http://smooks.org/UNEDI/D99AUN/CUSCAR">
+      <ns1:Beginning_of_message>
+        <ns2:DOCUMENT_MESSAGE_NAME xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+        <ns2:DOCUMENT_MESSAGE_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Document_message_number>MOL-EU2-HFA-012W-XXXX8896514-01</ns2:Document_message_number>
+        </ns2:DOCUMENT_MESSAGE_IDENTIFICATION>
+        <ns2:Message_function__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">VSA</ns2:Message_function__coded>
+      </ns1:Beginning_of_message>
+      <ns1:Date_time_period>
+        <ns2:DATE_TIME_PERIOD xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Date_time_period_qualifier>184</ns2:Date_time_period_qualifier>
+          <ns2:Date_time_period>20100429</ns2:Date_time_period>
+          <ns2:Date_time_period_format_qualifier>102</ns2:Date_time_period_format_qualifier>
+        </ns2:DATE_TIME_PERIOD>
+      </ns1:Date_time_period>
+      <ns1:Place_location_identification>
+        <ns2:Place_location_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">9</ns2:Place_location_qualifier>
+        <ns2:LOCATION_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Place_location_identification>CNYTN</ns2:Place_location_identification>
+        </ns2:LOCATION_IDENTIFICATION>
+      </ns1:Place_location_identification>
+      <ns1:Quantity>
+        <ns2:QUANTITY_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Quantity_qualifier>104</ns2:Quantity_qualifier>
+          <ns2:Quantity>1</ns2:Quantity>
+        </ns2:QUANTITY_DETAILS>
+      </ns1:Quantity>
+      <ns1:Segment_group_1>
+        <ns1:Reference>
+          <ns2:REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Reference_qualifier>ACE</ns2:Reference_qualifier>
+            <ns2:Reference_number />
+            <ns2:Line_number>OHNE</ns2:Line_number>
+          </ns2:REFERENCE>
+        </ns1:Reference>
+      </ns1:Segment_group_1>
+      <ns1:Segment_group_1>
+        <ns1:Reference>
+          <ns2:REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Reference_qualifier>ABE</ns2:Reference_qualifier>
+            <ns2:Reference_number>400190754417</ns2:Reference_number>
+          </ns2:REFERENCE>
+        </ns1:Reference>
+      </ns1:Segment_group_1>
+      <ns1:Segment_group_2>
+        <ns1:Name_and_address>
+          <ns2:Party_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">RL</ns2:Party_qualifier>
+          <ns2:PARTY_IDENTIFICATION_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Party_identification>5209394</ns2:Party_identification>
+          </ns2:PARTY_IDENTIFICATION_DETAILS>
+        </ns1:Name_and_address>
+      </ns1:Segment_group_2>
+      <ns1:Segment_group_4>
+        <ns1:Details_of_transport>
+          <ns2:Transport_stage_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">13</ns2:Transport_stage_qualifier>
+          <ns2:Conveyance_reference_number xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:MODE_OF_TRANSPORT xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:TRANSPORT_MEANS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:CARRIER xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:Transit_direction__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:EXCESS_TRANSPORTATION_INFORMATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:TRANSPORT_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Id._of_means_of_transport_identification>02</ns2:Id._of_means_of_transport_identification>
+            <ns2:Code_list_qualifier />
+            <ns2:Code_list_responsible_agency__coded />
+            <ns2:Id._of_the_means_of_transport>3EPF4</ns2:Id._of_the_means_of_transport>
+          </ns2:TRANSPORT_IDENTIFICATION>
+        </ns1:Details_of_transport>
+        <ns1:Date_time_period>
+          <ns2:DATE_TIME_PERIOD xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Date_time_period_qualifier>132</ns2:Date_time_period_qualifier>
+            <ns2:Date_time_period>20100429</ns2:Date_time_period>
+            <ns2:Date_time_period_format_qualifier>102</ns2:Date_time_period_format_qualifier>
+          </ns2:DATE_TIME_PERIOD>
+        </ns1:Date_time_period>
+      </ns1:Segment_group_4>
+      <ns1:General_indicator>
+        <ns2:PROCESSING_INDICATOR xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Processing_indicator__coded>962</ns2:Processing_indicator__coded>
+          <ns2:Code_list_qualifier />
+          <ns2:Code_list_responsible_agency__coded />
+          <ns2:Process_type_identification>J</ns2:Process_type_identification>
+        </ns2:PROCESSING_INDICATOR>
+      </ns1:General_indicator>
+      <ns1:Segment_group_7>
+        <ns1:Consignment_information>
+          <ns2:Consolidation_item_number xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">1</ns2:Consolidation_item_number>
+          <ns2:DOCUMENT_MESSAGE_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Document_message_number />
+            <ns2:Document_message_status__coded>1</ns2:Document_message_status__coded>
+          </ns2:DOCUMENT_MESSAGE_DETAILS>
+        </ns1:Consignment_information>
+        <ns1:Segment_group_8>
+          <ns1:Reference>
+            <ns2:REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Reference_qualifier>0</ns2:Reference_qualifier>
+            </ns2:REFERENCE>
+          </ns1:Reference>
+          <ns1:Place_location_identification>
+            <ns2:Place_location_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">113</ns2:Place_location_qualifier>
+            <ns2:LOCATION_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Place_location_identification>CN</ns2:Place_location_identification>
+            </ns2:LOCATION_IDENTIFICATION>
+          </ns1:Place_location_identification>
+          <ns1:Place_location_identification>
+            <ns2:Place_location_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">8</ns2:Place_location_qualifier>
+            <ns2:LOCATION_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Place_location_identification>XXXXX</ns2:Place_location_identification>
+            </ns2:LOCATION_IDENTIFICATION>
+          </ns1:Place_location_identification>
+          <ns1:General_indicator>
+            <ns2:PROCESSING_INDICATOR xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Processing_indicator__coded>902</ns2:Processing_indicator__coded>
+              <ns2:Code_list_qualifier />
+              <ns2:Code_list_responsible_agency__coded />
+              <ns2:Process_type_identification>N</ns2:Process_type_identification>
+            </ns2:PROCESSING_INDICATOR>
+          </ns1:General_indicator>
+          <ns1:Segment_group_14>
+            <ns1:Goods_item_details>
+              <ns2:Goods_item_number xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">0</ns2:Goods_item_number>
+              <ns2:NUMBER_AND_TYPE_OF_PACKAGES xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Number_of_packages>4375</ns2:Number_of_packages>
+                <ns2:Type_of_packages_identification>CT</ns2:Type_of_packages_identification>
+              </ns2:NUMBER_AND_TYPE_OF_PACKAGES>
+            </ns1:Goods_item_details>
+            <ns1:Free_text>
+              <ns2:Text_subject_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">TRA</ns2:Text_subject_qualifier>
+              <ns2:Text_function__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_LITERAL xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Free_text>XXXX8896514</ns2:Free_text>
+              </ns2:TEXT_LITERAL>
+            </ns1:Free_text>
+            <ns1:Free_text>
+              <ns2:Text_subject_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">AAA</ns2:Text_subject_qualifier>
+              <ns2:Text_function__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_LITERAL xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Free_text>HOT AIR BRUSH ORDER  4500185467 MODEL  SC002E QTY  17500 PCS</ns2:Free_text>
+              </ns2:TEXT_LITERAL>
+            </ns1:Free_text>
+            <ns1:Measurements>
+              <ns2:Measurement_purpose_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">WT</ns2:Measurement_purpose_qualifier>
+              <ns2:MEASUREMENT_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Property_measured__coded>G</ns2:Property_measured__coded>
+              </ns2:MEASUREMENT_DETAILS>
+              <ns2:VALUE_RANGE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Measure_unit_qualifier>KGM</ns2:Measure_unit_qualifier>
+                <ns2:Measurement_value>10062.5</ns2:Measurement_value>
+              </ns2:VALUE_RANGE>
+            </ns1:Measurements>
+          </ns1:Segment_group_14>
+        </ns1:Segment_group_8>
+      </ns1:Segment_group_7>
+    </ns1:CUSCAR>
+    <env:UNT>
+      <segmentCount>21</segmentCount>
+      <messageRefNum>163477</messageRefNum>
+    </env:UNT>
+  </env:interchangeMessage>
+  <env:interchangeMessage>
+    <env:UNH>
+      <messageRefNum>163478</messageRefNum>
+      <messageIdentifier>
+        <id>CUSCAR</id>
+        <versionNum>D</versionNum>
+        <releaseNum>99A</releaseNum>
+        <controllingAgencyCode>UN</controllingAgencyCode>
+        <associationAssignedCode>SCPRBL</associationAssignedCode>
+      </messageIdentifier>
+    </env:UNH>
+    <ns1:CUSCAR xmlns:ns1="http://smooks.org/UNEDI/D99AUN/CUSCAR">
+      <ns1:Beginning_of_message>
+        <ns2:DOCUMENT_MESSAGE_NAME xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+        <ns2:DOCUMENT_MESSAGE_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Document_message_number>MOL-EU2-HFA-012W-XXXX5086746-01</ns2:Document_message_number>
+        </ns2:DOCUMENT_MESSAGE_IDENTIFICATION>
+        <ns2:Message_function__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">VSA</ns2:Message_function__coded>
+      </ns1:Beginning_of_message>
+      <ns1:Date_time_period>
+        <ns2:DATE_TIME_PERIOD xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Date_time_period_qualifier>184</ns2:Date_time_period_qualifier>
+          <ns2:Date_time_period>20100429</ns2:Date_time_period>
+          <ns2:Date_time_period_format_qualifier>102</ns2:Date_time_period_format_qualifier>
+        </ns2:DATE_TIME_PERIOD>
+      </ns1:Date_time_period>
+      <ns1:Place_location_identification>
+        <ns2:Place_location_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">9</ns2:Place_location_qualifier>
+        <ns2:LOCATION_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Place_location_identification>KRPUS</ns2:Place_location_identification>
+        </ns2:LOCATION_IDENTIFICATION>
+      </ns1:Place_location_identification>
+      <ns1:Quantity>
+        <ns2:QUANTITY_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Quantity_qualifier>104</ns2:Quantity_qualifier>
+          <ns2:Quantity>1</ns2:Quantity>
+        </ns2:QUANTITY_DETAILS>
+      </ns1:Quantity>
+      <ns1:Segment_group_1>
+        <ns1:Reference>
+          <ns2:REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Reference_qualifier>ACE</ns2:Reference_qualifier>
+            <ns2:Reference_number />
+            <ns2:Line_number>OHNE</ns2:Line_number>
+          </ns2:REFERENCE>
+        </ns1:Reference>
+      </ns1:Segment_group_1>
+      <ns1:Segment_group_1>
+        <ns1:Reference>
+          <ns2:REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Reference_qualifier>ABE</ns2:Reference_qualifier>
+            <ns2:Reference_number>400186967152</ns2:Reference_number>
+          </ns2:REFERENCE>
+        </ns1:Reference>
+      </ns1:Segment_group_1>
+      <ns1:Segment_group_2>
+        <ns1:Name_and_address>
+          <ns2:Party_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">RL</ns2:Party_qualifier>
+          <ns2:PARTY_IDENTIFICATION_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Party_identification>5209394</ns2:Party_identification>
+          </ns2:PARTY_IDENTIFICATION_DETAILS>
+        </ns1:Name_and_address>
+      </ns1:Segment_group_2>
+      <ns1:Segment_group_4>
+        <ns1:Details_of_transport>
+          <ns2:Transport_stage_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">13</ns2:Transport_stage_qualifier>
+          <ns2:Conveyance_reference_number xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:MODE_OF_TRANSPORT xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:TRANSPORT_MEANS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:CARRIER xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:Transit_direction__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:EXCESS_TRANSPORTATION_INFORMATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+          <ns2:TRANSPORT_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Id._of_means_of_transport_identification>02</ns2:Id._of_means_of_transport_identification>
+            <ns2:Code_list_qualifier />
+            <ns2:Code_list_responsible_agency__coded />
+            <ns2:Id._of_the_means_of_transport>3EPF4</ns2:Id._of_the_means_of_transport>
+          </ns2:TRANSPORT_IDENTIFICATION>
+        </ns1:Details_of_transport>
+        <ns1:Date_time_period>
+          <ns2:DATE_TIME_PERIOD xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Date_time_period_qualifier>132</ns2:Date_time_period_qualifier>
+            <ns2:Date_time_period>20100429</ns2:Date_time_period>
+            <ns2:Date_time_period_format_qualifier>102</ns2:Date_time_period_format_qualifier>
+          </ns2:DATE_TIME_PERIOD>
+        </ns1:Date_time_period>
+      </ns1:Segment_group_4>
+      <ns1:General_indicator>
+        <ns2:PROCESSING_INDICATOR xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+          <ns2:Processing_indicator__coded>962</ns2:Processing_indicator__coded>
+          <ns2:Code_list_qualifier />
+          <ns2:Code_list_responsible_agency__coded />
+          <ns2:Process_type_identification>J</ns2:Process_type_identification>
+        </ns2:PROCESSING_INDICATOR>
+      </ns1:General_indicator>
+      <ns1:Segment_group_7>
+        <ns1:Consignment_information>
+          <ns2:Consolidation_item_number xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">1</ns2:Consolidation_item_number>
+          <ns2:DOCUMENT_MESSAGE_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+            <ns2:Document_message_number />
+            <ns2:Document_message_status__coded>1</ns2:Document_message_status__coded>
+          </ns2:DOCUMENT_MESSAGE_DETAILS>
+        </ns1:Consignment_information>
+        <ns1:Segment_group_8>
+          <ns1:Reference>
+            <ns2:REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Reference_qualifier>0</ns2:Reference_qualifier>
+            </ns2:REFERENCE>
+          </ns1:Reference>
+          <ns1:Place_location_identification>
+            <ns2:Place_location_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">113</ns2:Place_location_qualifier>
+            <ns2:LOCATION_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Place_location_identification>TW</ns2:Place_location_identification>
+            </ns2:LOCATION_IDENTIFICATION>
+          </ns1:Place_location_identification>
+          <ns1:Place_location_identification>
+            <ns2:Place_location_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">8</ns2:Place_location_qualifier>
+            <ns2:LOCATION_IDENTIFICATION xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Place_location_identification>XXXXX</ns2:Place_location_identification>
+            </ns2:LOCATION_IDENTIFICATION>
+          </ns1:Place_location_identification>
+          <ns1:General_indicator>
+            <ns2:PROCESSING_INDICATOR xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+              <ns2:Processing_indicator__coded>902</ns2:Processing_indicator__coded>
+              <ns2:Code_list_qualifier />
+              <ns2:Code_list_responsible_agency__coded />
+              <ns2:Process_type_identification>N</ns2:Process_type_identification>
+            </ns2:PROCESSING_INDICATOR>
+          </ns1:General_indicator>
+          <ns1:Segment_group_14>
+            <ns1:Goods_item_details>
+              <ns2:Goods_item_number xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">0</ns2:Goods_item_number>
+              <ns2:NUMBER_AND_TYPE_OF_PACKAGES xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Number_of_packages>19</ns2:Number_of_packages>
+                <ns2:Type_of_packages_identification />
+              </ns2:NUMBER_AND_TYPE_OF_PACKAGES>
+            </ns1:Goods_item_details>
+            <ns1:Free_text>
+              <ns2:Text_subject_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">TRA</ns2:Text_subject_qualifier>
+              <ns2:Text_function__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_LITERAL xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Free_text>XXXX5086746</ns2:Free_text>
+              </ns2:TEXT_LITERAL>
+            </ns1:Free_text>
+            <ns1:Free_text>
+              <ns2:Text_subject_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">AAA</ns2:Text_subject_qualifier>
+              <ns2:Text_function__coded xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_REFERENCE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions" />
+              <ns2:TEXT_LITERAL xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Free_text>TISSUE PAPER DOUBLE COATED TAPE B GRADE DS(WHITE/WHITE)</ns2:Free_text>
+              </ns2:TEXT_LITERAL>
+            </ns1:Free_text>
+            <ns1:Measurements>
+              <ns2:Measurement_purpose_qualifier xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">WT</ns2:Measurement_purpose_qualifier>
+              <ns2:MEASUREMENT_DETAILS xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Property_measured__coded>G</ns2:Property_measured__coded>
+              </ns2:MEASUREMENT_DETAILS>
+              <ns2:VALUE_RANGE xmlns:ns2="http://smooks.org/UNEDI/local/modelsetDefinitions">
+                <ns2:Measure_unit_qualifier>KGM</ns2:Measure_unit_qualifier>
+                <ns2:Measurement_value>19950</ns2:Measurement_value>
+              </ns2:VALUE_RANGE>
+            </ns1:Measurements>
+          </ns1:Segment_group_14>
+        </ns1:Segment_group_8>
+      </ns1:Segment_group_7>
+    </ns1:CUSCAR>
+    <env:UNT>
+      <segmentCount>21</segmentCount>
+      <messageRefNum>163478</messageRefNum>
+    </env:UNT>
+  </env:interchangeMessage>
+  <env:UNZ>
+    <env:controlCount>2</env:controlCount>
+    <env:controlRef>1918</env:controlRef>
+  </env:UNZ>
+</env:unEdifact>
