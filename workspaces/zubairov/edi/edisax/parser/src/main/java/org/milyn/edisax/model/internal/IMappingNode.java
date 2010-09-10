@@ -11,5 +11,7 @@ public interface IMappingNode {
 	public abstract IMappingNode getParent();
 
 	public abstract String getJavaName();
+	
+	public abstract String getNamespace();
 
 }

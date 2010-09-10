@@ -25,6 +25,8 @@ import org.xml.sax.SAXException;
  */
 public interface ControlBlockHandler {
 
+	public static final String NAMESPACE = "http://smooks.org/EDIFACT/Envelope";
+	
 	/**
 	 * Process an interchange control block.
 	 * @param interchangeContext The interchange context.

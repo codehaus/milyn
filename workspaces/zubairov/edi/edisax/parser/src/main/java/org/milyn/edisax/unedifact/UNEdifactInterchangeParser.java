@@ -55,14 +55,63 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeReader {
 
+	/**
+	 * Mapping registry interface
+	 * 
+	 * @author zubairov
+	 *
+	 */
+	public interface MappingRegistry {
+		
+		/**
+		 * Returns an instance of {@link EdifactModel} for specified {@link Description}
+		 * 
+		 * @param desc
+		 * @return
+		 * @throws SAXException if not found
+		 */
+		public EdifactModel getModel(String lookupName) throws SAXException;
+		
+	}
+	
     private Map<String, Boolean> features = new HashMap<String, Boolean>();
 	
 	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
 	
 	private Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
+	
+	private MappingRegistry registry = new MappingRegistry() {
+		
+		public EdifactModel getModel(String lookupName) throws SAXException {
+			AssertArgument.isNotNull(lookupName, "lookupName");
+			Map<Description, EdifactModel> model = UNEdifactInterchangeParser.this.mappingModels;
+			for (Map.Entry<Description, EdifactModel> entry : model.entrySet()) {
+				String entryName = entry.getKey().getName() + ":" + entry.getKey().getVersion();
+				if (lookupName.equals(entryName)) {
+					return entry.getValue();
+				}
+			}
+			throw new SAXException("Can't find a suitable Edifact model for lookup name " + lookupName);
+		}
+		
+	};
+	
 	private ContentHandler contentHandler;
     private HierarchyChangeListener hierarchyChangeListener;
 
+    public UNEdifactInterchangeParser() {
+    	// default constructor
+    }
+    
+    /**
+     * Constructor with {@link MappingRegistry}
+     * 
+     * @param registry
+     */
+    public UNEdifactInterchangeParser(MappingRegistry registry) {
+    	this.registry = registry;
+    }
+    
     public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
 		AssertArgument.isNotNull(unedifactInterchange, "unedifactInterchange");
 
@@ -70,7 +119,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse EDI stream.");
         }
 
-        if(mappingModels == null || mappingModels.isEmpty()) {
+        if (registry == null && (mappingModels == null || mappingModels.isEmpty())) {
             throw new IllegalStateException("'mappingModels' not set.  Cannot parse EDI stream.");
         }
 		
@@ -83,13 +132,14 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	        segmentReader.setIgnoreNewLines(getFeature(EDIParser.FEATURE_IGNORE_NEWLINES));
 	        
 	        contentHandler.startDocument();
-	        contentHandler.startElement(XMLConstants.NULL_NS_URI, "unEdifact", "unEdifact", new AttributesImpl());
+	        String alias = EDIParser.getNamespaceAlias(ControlBlockHandler.NAMESPACE);
+	        contentHandler.startElement(ControlBlockHandler.NAMESPACE, "unEdifact", alias +":unEdifact", new AttributesImpl());
 	
 	        while(true) {
 		        segCode = segmentReader.peek(3);
 		        if(segCode.length() == 3) {
                     ControlBlockHandlerFactory controlBlockHandlerFactory = new UNEdifact41ControlBlockHandlerFactory(hierarchyChangeListener);
-		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
+		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, registry, contentHandler, controlBlockHandlerFactory, validate);
 
                     ControlBlockHandler handler = controlBlockHandlerFactory.getControlBlockHandler(segCode);
 
@@ -102,7 +152,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	        }
 	        
 	        contentHandler.characters(new char[] {'\n'}, 0, 1);
-	        contentHandler.endElement(XMLConstants.NULL_NS_URI, "unEdifact", "unEdifact");
+	        contentHandler.endElement(ControlBlockHandler.NAMESPACE, "unEdifact", alias +":unEdifact");
 	        contentHandler.endDocument();
         } finally {
         	contentHandler = null;
@@ -236,4 +286,5 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 
     public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
     }
+    
 }

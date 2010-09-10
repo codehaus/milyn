@@ -15,8 +15,6 @@
 */
 package org.milyn.edisax.interchange;
 
-import java.util.Map;
-
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIParser;
@@ -24,6 +22,7 @@ import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.unedifact.UNEdifactInterchangeParser.MappingRegistry;
 import org.milyn.lang.MutableInt;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -38,12 +37,12 @@ public class InterchangeContext {
     public static final String INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME = "interchangeMessage";
 
 	private BufferedSegmentReader segmentReader; 
-	private Map<Description, EdifactModel> mappingModels;
 	private ContentHandler contentHandler;
 	private EDIParser controlSegmentParser;
     public MutableInt indentDepth = new MutableInt(0);
     private ControlBlockHandlerFactory controlBlockHandlerFactory;
     private boolean validate;
+	private final MappingRegistry registry;
 
     /**
 	 * Public constructor.
@@ -54,13 +53,13 @@ public class InterchangeContext {
      * @param controlBlockHandlerFactory Control Block Handler Factory.
      * @param validate Validate the data types of the EDI message data as defined in the mapping model.
 	 */
-	public InterchangeContext(BufferedSegmentReader segmentReader, Map<Description, EdifactModel> mappingModels, ContentHandler contentHandler, ControlBlockHandlerFactory controlBlockHandlerFactory, boolean validate) {
+	public InterchangeContext(BufferedSegmentReader segmentReader, MappingRegistry registry, ContentHandler contentHandler, ControlBlockHandlerFactory controlBlockHandlerFactory, boolean validate) {
 		AssertArgument.isNotNull(segmentReader, "segmentReader");
-		AssertArgument.isNotNull(mappingModels, "mappingModels");
+		AssertArgument.isNotNull(registry, "registry");
 		AssertArgument.isNotNull(contentHandler, "contentHandler");
         AssertArgument.isNotNull(controlBlockHandlerFactory, "controlBlockHandlerFactory");
 		this.segmentReader = segmentReader;
-		this.mappingModels = mappingModels;
+		this.registry = registry;
 		this.contentHandler = contentHandler;
         this.controlBlockHandlerFactory = controlBlockHandlerFactory;
 		this.validate = validate;
@@ -83,10 +82,6 @@ public class InterchangeContext {
 
     public BufferedSegmentReader getSegmentReader() {
 		return segmentReader;
-	}
-
-    public Map<Description, EdifactModel> getMappingModels() {
-		return mappingModels;
 	}
 
     public ContentHandler getContentHandler() {
@@ -114,13 +109,22 @@ public class InterchangeContext {
 	}
 
     public void mapControlSegment(Segment controlSegment, boolean clearSegmentBuffer) throws SAXException {
-		controlSegmentParser.startElement(controlSegment.getXmltag(), true);
+		controlSegmentParser.startElement(controlSegment.getXmltag(), ControlBlockHandler.NAMESPACE, true);
 		controlSegmentParser.mapFields(segmentReader.getCurrentSegmentFields(), controlSegment);
-		controlSegmentParser.endElement(controlSegment.getXmltag(), true);
+		controlSegmentParser.endElement(controlSegment.getXmltag(), ControlBlockHandler.NAMESPACE, true);
 
 		// And clear the buffer... we're finished with this data...
 		if(clearSegmentBuffer) {
 			segmentReader.getSegmentBuffer().setLength(0);
 		}
+	}
+
+    /**
+     * Returns a {@link MappingRegistry} associated with context
+     * 
+     * @return
+     */
+	public MappingRegistry getMappingRegistry() {
+		return registry;
 	}
 }

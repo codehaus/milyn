@@ -15,14 +15,10 @@
 */
 package org.milyn.edisax.unedifact;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
-import org.milyn.edisax.model.internal.Description;
+import org.milyn.edisax.unedifact.UNEdifactInterchangeParser.MappingRegistry;
+import org.milyn.edisax.util.EDIUtils;
 import org.xml.sax.SAXException;
 
 /**
@@ -32,8 +28,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class UNEdifactUtil {
 
-	public static EdifactModel getMappingModel(String messageName, Delimiters delimiters, Map<Description, EdifactModel> mappingModels) throws SAXException {
-		Set<Entry<Description, EdifactModel>> modelSet = mappingModels.entrySet();
+	public static EdifactModel getMappingModel(String messageName, Delimiters delimiters, MappingRegistry reg) throws SAXException {
 		String[] nameComponents = EDIUtils.split(messageName, delimiters.getComponent(), delimiters.getEscape());
 		StringBuilder lookupNameBuilder = new StringBuilder();
 		
@@ -45,16 +40,6 @@ public abstract class UNEdifactUtil {
 			lookupNameBuilder.append(nameComponents[i]);
 		}
 		String lookupName = lookupNameBuilder.toString().trim();
-		
-		for(Entry<Description, EdifactModel> mappingModel : modelSet) {
-			Description description = mappingModel.getKey();
-			String compoundName = description.getName() + ":" + description.getVersion();
-			
-			if(compoundName.equals(lookupName)) {
-				return mappingModel.getValue();
-			}
-		}
-		
-		throw new SAXException("Mapping Model '" + messageName + "' not found in supplied set of Mapping model.");
+		return reg.getModel(lookupName);
 	}
 }

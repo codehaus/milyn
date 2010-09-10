@@ -41,7 +41,7 @@ class UNGHandler implements ControlBlockHandler {
     public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 
-		interchangeContext.getControlSegmentParser().startElement("group", true);
+		interchangeContext.getControlSegmentParser().startElement("group", NAMESPACE, true);
 
 		segmentReader.moveToNextSegment(false);
 		interchangeContext.mapControlSegment(ungSegment, true);
@@ -59,7 +59,7 @@ class UNGHandler implements ControlBlockHandler {
 	        }
         }
 
-        interchangeContext.getControlSegmentParser().endElement("group", true);
+        interchangeContext.getControlSegmentParser().endElement("group", NAMESPACE, true);
 	}
 
     private static void createSegmentsDefs() {

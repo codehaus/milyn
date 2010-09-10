@@ -24,6 +24,7 @@ public class MappingNode implements IMappingNode {
     private String nodeTypeRef;
     private String documentation;
     private IMappingNode parent;
+    private String namespace;
     
 	public MappingNode() {
 	}
@@ -88,4 +89,13 @@ public class MappingNode implements IMappingNode {
             return xmltag;
         }
     }
+
+	public String getNamespace() {
+		return namespace;
+	}
+	
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 }
+
