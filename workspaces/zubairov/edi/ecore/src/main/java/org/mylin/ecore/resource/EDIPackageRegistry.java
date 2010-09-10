@@ -38,7 +38,7 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 	public EDIPackageRegistry() {
 		super(EPackage.Registry.INSTANCE);
 		// We need to initialize EnvelopePackage
-		// so that it woudl register itself to 
+		// so that it would register itself to 
 		// global package registry
 		EnvelopePackage.eINSTANCE.getNsPrefix();
 		try {
