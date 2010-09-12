@@ -22,7 +22,8 @@
             <id>all</id>
             <modules>
                 <!-- UN/EDIFACT D93A... -->
-                <!--<module>unedifact/d93a/mapping</module>-->
+                <module>unedifact/d93a/mapping</module>
+                <module>unedifact/d93a/binding</module>
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
@@ -41,7 +42,8 @@
             <id>deploy</id>
             <modules>
                 <!-- UN/EDIFACT D93A... -->
-                <!--<module>unedifact/d93a/mapping</module>-->
+                <module>unedifact/d93a/mapping</module>
+                <module>unedifact/d93a/binding</module>
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
