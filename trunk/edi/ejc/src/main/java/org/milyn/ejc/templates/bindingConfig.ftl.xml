@@ -18,13 +18,13 @@
     <jb:bean beanId="${beanConfig.beanId}" class="${beanConfig.runtimeClass.name}" createOnElement="${beanConfig.createOnElement}">
     <#list beanConfig.valueBindings as valueBinding>
         <#if valueBinding.decoderConfigs?exists>
-        <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}" decoder="${valueBinding.decoderType}">
+        <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}" decoder="${valueBinding.decoderType}" default="null">
         <#list valueBinding.decoderConfigs as config>
             <jb:decodeParam name="${config.key}">${config.value}</jb:decodeParam>
         </#list>
         </jb:value>
         <#else>
-        <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}"/>
+        <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}" default="null"/>
         </#if>
     </#list>
     <#list beanConfig.wireBindings as binding>
