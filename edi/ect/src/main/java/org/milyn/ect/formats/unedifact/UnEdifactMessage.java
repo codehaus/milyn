@@ -41,7 +41,7 @@ public class UnEdifactMessage {
      * Group2 = documentation
      */
     //private static final String MESSAGE_DEFINITION_START = "^(\\d{4})* *(.*)";
-    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[ \\+\\|]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
+    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[ \\+\\|X]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
 
     /**
      * Marks the end of the Message Definition section.
@@ -72,7 +72,7 @@ public class UnEdifactMessage {
      * Group4 = isMandatory
      * Group5 = max occurance
      */                  
-    private static String SEGMENT_REGULAR = "(\\d{4})*[\\+\\* ]*(\\w{3}) *(.*) *(M|C) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR = "(\\d{4})*[\\+\\* X]*(\\w{3}) *(.*) *(M|C) *(\\d*)[ \\|]*";
 
     /**
      * Extracts information from Regular segment definition.
