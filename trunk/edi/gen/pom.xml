@@ -27,8 +27,8 @@
                 <module>unedifact/d93a/binding</module>
 
                 <!-- UN/EDIFACT D01C... -->
-                <module>unedifact/d01c/mapping</module>
-                <module>unedifact/d01c/binding</module>
+                <!--<module>unedifact/d01c/mapping</module>-->
+                <!--<module>unedifact/d01c/binding</module>-->
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
@@ -51,8 +51,8 @@
                 <module>unedifact/d93a/binding</module>
                 
                 <!-- UN/EDIFACT D01C... -->
-                <module>unedifact/d01c/mapping</module>
-                <module>unedifact/d01c/binding</module>
+                <!--<module>unedifact/d01c/mapping</module>-->
+                <!--<module>unedifact/d01c/binding</module>-->
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
@@ -140,16 +140,16 @@
         <repository>
             <id>codehaus.maven.repo</id>
             <name>Milyn Central Maven2 Repository</name>
-            <url>dav:https://dav.codehaus.org/repository/milyn/</url>
+            <url>https://dav.codehaus.org/repository/milyn/</url>
         </repository>
         <snapshotRepository>
             <id>codehaus.maven.repo</id>
             <name>Milyn Central Maven2 SNAPSHOT Repository</name>
-            <url>dav:https://dav.codehaus.org/snapshots.repository/milyn/</url>
+            <url>https://dav.codehaus.org/snapshots.repository/milyn/</url>
         </snapshotRepository>
         <site>
             <id>codehaus.maven.repo</id>
-            <url>dav:https://dav.codehaus.org/xfire/</url>
+            <url>https://dav.codehaus.org/xfire/</url>
         </site>
     </distributionManagement>
 
