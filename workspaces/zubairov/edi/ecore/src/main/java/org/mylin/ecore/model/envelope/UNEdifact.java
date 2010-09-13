@@ -12,23 +12,24 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Un Edifact Type</b></em>'.
+ * A representation of the model object '<em><b>UN Edifact</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNB <em>UNB</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getMessages <em>Messages</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNZ <em>UNZ</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.UNEdifact#getUNB <em>UNB</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.UNEdifact#getMessages <em>Messages</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.UNEdifact#getUNZ <em>UNZ</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUnEdifactType()
- * @model extendedMetaData="name='unEdifactType' kind='elementOnly'"
+ * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNEdifact()
+ * @model annotation="smooks-mapping-data type='group'"
+ *        extendedMetaData="name='unEdifactType' kind='elementOnly'"
  * @generated
  */
-public interface UnEdifactType extends EObject {
+public interface UNEdifact extends EObject {
 	/**
 	 * Returns the value of the '<em><b>UNB</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
@@ -39,15 +40,16 @@ public interface UnEdifactType extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>UNB</em>' containment reference.
 	 * @see #setUNB(UNBType)
-	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUnEdifactType_UNB()
+	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNEdifact_UNB()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data segcode='UNB' type='segment'"
 	 *        extendedMetaData="kind='element' name='UNB' namespace='##targetNamespace'"
 	 * @generated
 	 */
 	UNBType getUNB();
 
 	/**
-	 * Sets the value of the '{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNB <em>UNB</em>}' containment reference.
+	 * Sets the value of the '{@link org.mylin.ecore.model.envelope.UNEdifact#getUNB <em>UNB</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>UNB</em>' containment reference.
@@ -66,8 +68,9 @@ public interface UnEdifactType extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Messages</em>' containment reference list.
-	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUnEdifactType_Messages()
+	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNEdifact_Messages()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data type='group'"
 	 *        extendedMetaData="kind='element' name='interchangeMessage' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -83,15 +86,16 @@ public interface UnEdifactType extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>UNZ</em>' containment reference.
 	 * @see #setUNZ(UNZType)
-	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUnEdifactType_UNZ()
+	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNEdifact_UNZ()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data segcode='UNZ' type='segment'"
 	 *        extendedMetaData="kind='element' name='UNZ' namespace='##targetNamespace'"
 	 * @generated
 	 */
 	UNZType getUNZ();
 
 	/**
-	 * Sets the value of the '{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNZ <em>UNZ</em>}' containment reference.
+	 * Sets the value of the '{@link org.mylin.ecore.model.envelope.UNEdifact#getUNZ <em>UNZ</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>UNZ</em>' containment reference.
@@ -100,4 +104,4 @@ public interface UnEdifactType extends EObject {
 	 */
 	void setUNZ(UNZType value);
 
-} // UnEdifactType
+} // UNEdifact

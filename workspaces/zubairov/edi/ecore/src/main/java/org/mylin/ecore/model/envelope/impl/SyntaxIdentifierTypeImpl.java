@@ -6,9 +6,11 @@
  */
 package org.mylin.ecore.model.envelope.impl;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.EObjectImpl;
@@ -27,7 +29,6 @@ import org.mylin.ecore.model.envelope.SyntaxIdentifierType;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.SyntaxIdentifierTypeImpl#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.SyntaxIdentifierTypeImpl#getId <em>Id</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.SyntaxIdentifierTypeImpl#getVersionNum <em>Version Num</em>}</li>
  * </ul>
@@ -36,16 +37,6 @@ import org.mylin.ecore.model.envelope.SyntaxIdentifierType;
  * @generated
  */
 public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdentifierType {
-	/**
-	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMixed()
-	 * @generated
-	 * @ordered
-	 */
-	protected FeatureMap mixed;
-
 	/**
 	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -57,6 +48,16 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	protected static final String ID_EDEFAULT = null;
 
 	/**
+	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getId()
+	 * @generated
+	 * @ordered
+	 */
+	protected String id = ID_EDEFAULT;
+
+	/**
 	 * The default value of the '{@link #getVersionNum() <em>Version Num</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -65,6 +66,16 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	 * @ordered
 	 */
 	protected static final String VERSION_NUM_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getVersionNum() <em>Version Num</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getVersionNum()
+	 * @generated
+	 * @ordered
+	 */
+	protected String versionNum = VERSION_NUM_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -90,20 +101,8 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FeatureMap getMixed() {
-		if (mixed == null) {
-			mixed = new BasicFeatureMap(this, EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__MIXED);
-		}
-		return mixed;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public String getId() {
-		return (String)getMixed().get(EnvelopePackage.Literals.SYNTAX_IDENTIFIER_TYPE__ID, true);
+		return id;
 	}
 
 	/**
@@ -112,7 +111,10 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	 * @generated
 	 */
 	public void setId(String newId) {
-		((FeatureMap.Internal)getMixed()).set(EnvelopePackage.Literals.SYNTAX_IDENTIFIER_TYPE__ID, newId);
+		String oldId = id;
+		id = newId;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__ID, oldId, id));
 	}
 
 	/**
@@ -121,7 +123,7 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	 * @generated
 	 */
 	public String getVersionNum() {
-		return (String)getMixed().get(EnvelopePackage.Literals.SYNTAX_IDENTIFIER_TYPE__VERSION_NUM, true);
+		return versionNum;
 	}
 
 	/**
@@ -130,21 +132,10 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	 * @generated
 	 */
 	public void setVersionNum(String newVersionNum) {
-		((FeatureMap.Internal)getMixed()).set(EnvelopePackage.Literals.SYNTAX_IDENTIFIER_TYPE__VERSION_NUM, newVersionNum);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__MIXED:
-				return ((InternalEList<?>)getMixed()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
+		String oldVersionNum = versionNum;
+		versionNum = newVersionNum;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__VERSION_NUM, oldVersionNum, versionNum));
 	}
 
 	/**
@@ -155,9 +146,6 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__MIXED:
-				if (coreType) return getMixed();
-				return ((FeatureMap.Internal)getMixed()).getWrapper();
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__ID:
 				return getId();
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__VERSION_NUM:
@@ -174,9 +162,6 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__MIXED:
-				((FeatureMap.Internal)getMixed()).set(newValue);
-				return;
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__ID:
 				setId((String)newValue);
 				return;
@@ -195,9 +180,6 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__MIXED:
-				getMixed().clear();
-				return;
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__ID:
 				setId(ID_EDEFAULT);
 				return;
@@ -216,12 +198,10 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__MIXED:
-				return mixed != null && !mixed.isEmpty();
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__ID:
-				return ID_EDEFAULT == null ? getId() != null : !ID_EDEFAULT.equals(getId());
+				return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE__VERSION_NUM:
-				return VERSION_NUM_EDEFAULT == null ? getVersionNum() != null : !VERSION_NUM_EDEFAULT.equals(getVersionNum());
+				return VERSION_NUM_EDEFAULT == null ? versionNum != null : !VERSION_NUM_EDEFAULT.equals(versionNum);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -236,8 +216,10 @@ public class SyntaxIdentifierTypeImpl extends EObjectImpl implements SyntaxIdent
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (mixed: ");
-		result.append(mixed);
+		result.append(" (id: ");
+		result.append(id);
+		result.append(", versionNum: ");
+		result.append(versionNum);
 		result.append(')');
 		return result.toString();
 	}

@@ -57,6 +57,7 @@ public interface RecipientType extends EObject {
 	 * @see #setId(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getRecipientType_Id()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true" transient="true" volatile="true" derived="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='id' namespace='##targetNamespace'"
 	 * @generated
 	 */

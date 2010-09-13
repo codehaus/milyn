@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://smooks.org/EDIFACT/41/Envelope"
 	xmlns:tns="http://smooks.org/EDIFACT/41/Envelope" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:smooks="smooks-mapping-data"
 	elementFormDefault="qualified" ecore:nsPrefix="env" ecore:name="envelope">
 
-	<element name="unEdifact" type="tns:unEdifactType"></element>
+	<element name="unEdifact" type="tns:unEdifactType"/>
 
-	<complexType name="unEdifactType">
+	<complexType name="unEdifactType" ecore:name="UNEdifact" smooks:type="group">
 		<sequence>
 			<element name="UNB" type="tns:UNBType" minOccurs="1"
-				maxOccurs="1"></element>
+				maxOccurs="1" smooks:segcode="UNB" smooks:type="segment"/>
 			<element name="interchangeMessage" type="tns:interchangeMessageType"
-				maxOccurs="unbounded" ecore:name="messages"/>
+				maxOccurs="unbounded" ecore:name="messages" smooks:type="group"/>
 			<element name="UNZ" type="tns:UNZType" minOccurs="1"
-				maxOccurs="1"></element>
+				maxOccurs="1" smooks:type="segment" smooks:segcode="UNZ"/>
 		</sequence>
 	</complexType>
 
 	<complexType name="UNBType">
 		<sequence>
-			<element name="syntaxIdentifier" type="tns:SyntaxIdentifierType" />
-			<element name="sender" type="tns:SenderType" />
-			<element name="recipient" type="tns:RecipientType" />
-			<element name="dateTime" type="tns:DateTimeType" />
-			<element name="controlRef" type="string" />
+			<element name="syntaxIdentifier" type="tns:SyntaxIdentifierType" smooks:type="field"/>
+			<element name="sender" type="tns:SenderType" smooks:type="field"/>
+			<element name="recipient" type="tns:RecipientType" smooks:type="field"/>
+			<element name="dateTime" type="tns:DateTimeType" smooks:type="field"/>
+			<element name="controlRef" type="string" smooks:type="field"/>
 		</sequence>
 	</complexType>
 
@@ -33,46 +34,46 @@
 		</sequence>
 	</complexType>
 
-	<complexType name="interchangeMessageType">
+	<complexType name="interchangeMessageType" mixed="false">
 		<sequence>
 			<element name="UNH" type="tns:UNHType" minOccurs="1"
-				maxOccurs="1" />
-			<any maxOccurs="1" minOccurs="1" namespace="##any" processContents="lax" ecore:name="message"/>
-			<element name="UNT" minOccurs="1" maxOccurs="1" type="tns:UNTType" />
+				maxOccurs="1" smooks:type="segment" smooks:segcode="UNH"/>
+			<any maxOccurs="1" minOccurs="1" namespace="##any" processContents="lax" ecore:name="message" smooks:type="group"/>
+			<element name="UNT" minOccurs="1" maxOccurs="1" type="tns:UNTType" smooks:type="segment" smooks:segcode="UNT"/>
 		</sequence>
 	</complexType>
 
-	<complexType name="UNHType" mixed="true">
+	<complexType name="UNHType" mixed="false">
 		<sequence>
-			<element name="messageRefNum" type="string" />
-			<element name="messageIdentifier" type="tns:MessageIdentifierType" />
+			<element name="messageRefNum" type="string" smooks:type="field"/>
+			<element name="messageIdentifier" type="tns:MessageIdentifierType" smooks:type="field"/>
 		</sequence>
 	</complexType>
 
 
-	<complexType name="SyntaxIdentifierType" mixed="true">
+	<complexType name="SyntaxIdentifierType" mixed="false">
 		<sequence>
-			<element name="id" type="string" />
-			<element name="versionNum" type="string" />
+			<element name="id" type="string"  smooks:type="component"/>
+			<element name="versionNum" type="string"  smooks:type="component"/>
 		</sequence>
 	</complexType>
 
 	<complexType name="SenderType" mixed="true">
 		<sequence>
-			<element name="id" type="string" />
+			<element name="id" type="string" smooks:type="component"/>
 		</sequence>
 	</complexType>
 
 	<complexType name="RecipientType" mixed="true">
 		<sequence>
-			<element name="id" type="string" />
+			<element name="id" type="string" smooks:type="component"/>
 		</sequence>
 	</complexType>
 
 	<complexType name="DateTimeType" mixed="true">
 		<sequence>
-			<element name="date" type="string" />
-			<element name="time" type="string" />
+			<element name="date" type="string" smooks:type="component"/>
+			<element name="time" type="string" smooks:type="component"/>
 		</sequence>
 	</complexType>
 
@@ -88,8 +89,8 @@
 
 	<complexType name="UNTType">
 		<sequence>
-			<element name="segmentCount" type="long" />
-			<element name="messageRefNum" type="string" />
+			<element name="segmentCount" type="long" smooks:type="field"/>
+			<element name="messageRefNum" type="string" smooks:type="field"/>
 		</sequence>
 	</complexType>
 </schema>

@@ -25,25 +25,25 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.mylin.ecore.model.envelope.EnvelopePackage;
 import org.mylin.ecore.model.envelope.InterchangeMessageType;
 import org.mylin.ecore.model.envelope.UNBType;
+import org.mylin.ecore.model.envelope.UNEdifact;
 import org.mylin.ecore.model.envelope.UNZType;
-import org.mylin.ecore.model.envelope.UnEdifactType;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Un Edifact Type</b></em>'.
+ * An implementation of the model object '<em><b>UN Edifact</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getUNB <em>UNB</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getMessages <em>Messages</em>}</li>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl#getUNZ <em>UNZ</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl#getUNB <em>UNB</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl#getMessages <em>Messages</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl#getUNZ <em>UNZ</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
+public class UNEdifactImpl extends EObjectImpl implements UNEdifact {
 	/**
 	 * The cached value of the '{@link #getUNB() <em>UNB</em>}' containment reference.
 	 * <!-- begin-user-doc -->
@@ -79,7 +79,7 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected UnEdifactTypeImpl() {
+	protected UNEdifactImpl() {
 		super();
 	}
 
@@ -90,7 +90,7 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return EnvelopePackage.Literals.UN_EDIFACT_TYPE;
+		return EnvelopePackage.Literals.UN_EDIFACT;
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		UNBType oldUNB = uNB;
 		uNB = newUNB;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT_TYPE__UNB, oldUNB, newUNB);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT__UNB, oldUNB, newUNB);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -126,14 +126,14 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		if (newUNB != uNB) {
 			NotificationChain msgs = null;
 			if (uNB != null)
-				msgs = ((InternalEObject)uNB).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT_TYPE__UNB, null, msgs);
+				msgs = ((InternalEObject)uNB).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT__UNB, null, msgs);
 			if (newUNB != null)
-				msgs = ((InternalEObject)newUNB).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT_TYPE__UNB, null, msgs);
+				msgs = ((InternalEObject)newUNB).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT__UNB, null, msgs);
 			msgs = basicSetUNB(newUNB, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT_TYPE__UNB, newUNB, newUNB));
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT__UNB, newUNB, newUNB));
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	 */
 	public EList<InterchangeMessageType> getMessages() {
 		if (messages == null) {
-			messages = new EObjectContainmentEList<InterchangeMessageType>(InterchangeMessageType.class, this, EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES);
+			messages = new EObjectContainmentEList<InterchangeMessageType>(InterchangeMessageType.class, this, EnvelopePackage.UN_EDIFACT__MESSAGES);
 		}
 		return messages;
 	}
@@ -166,7 +166,7 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		UNZType oldUNZ = uNZ;
 		uNZ = newUNZ;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT_TYPE__UNZ, oldUNZ, newUNZ);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT__UNZ, oldUNZ, newUNZ);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -181,14 +181,14 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 		if (newUNZ != uNZ) {
 			NotificationChain msgs = null;
 			if (uNZ != null)
-				msgs = ((InternalEObject)uNZ).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT_TYPE__UNZ, null, msgs);
+				msgs = ((InternalEObject)uNZ).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT__UNZ, null, msgs);
 			if (newUNZ != null)
-				msgs = ((InternalEObject)newUNZ).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT_TYPE__UNZ, null, msgs);
+				msgs = ((InternalEObject)newUNZ).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UN_EDIFACT__UNZ, null, msgs);
 			msgs = basicSetUNZ(newUNZ, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT_TYPE__UNZ, newUNZ, newUNZ));
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UN_EDIFACT__UNZ, newUNZ, newUNZ));
 	}
 
 	/**
@@ -199,11 +199,11 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
+			case EnvelopePackage.UN_EDIFACT__UNB:
 				return basicSetUNB(null, msgs);
-			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+			case EnvelopePackage.UN_EDIFACT__MESSAGES:
 				return ((InternalEList<?>)getMessages()).basicRemove(otherEnd, msgs);
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
+			case EnvelopePackage.UN_EDIFACT__UNZ:
 				return basicSetUNZ(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -217,11 +217,11 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
+			case EnvelopePackage.UN_EDIFACT__UNB:
 				return getUNB();
-			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+			case EnvelopePackage.UN_EDIFACT__MESSAGES:
 				return getMessages();
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
+			case EnvelopePackage.UN_EDIFACT__UNZ:
 				return getUNZ();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -236,14 +236,14 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
+			case EnvelopePackage.UN_EDIFACT__UNB:
 				setUNB((UNBType)newValue);
 				return;
-			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+			case EnvelopePackage.UN_EDIFACT__MESSAGES:
 				getMessages().clear();
 				getMessages().addAll((Collection<? extends InterchangeMessageType>)newValue);
 				return;
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
+			case EnvelopePackage.UN_EDIFACT__UNZ:
 				setUNZ((UNZType)newValue);
 				return;
 		}
@@ -258,13 +258,13 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
+			case EnvelopePackage.UN_EDIFACT__UNB:
 				setUNB((UNBType)null);
 				return;
-			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+			case EnvelopePackage.UN_EDIFACT__MESSAGES:
 				getMessages().clear();
 				return;
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
+			case EnvelopePackage.UN_EDIFACT__UNZ:
 				setUNZ((UNZType)null);
 				return;
 		}
@@ -279,14 +279,14 @@ public class UnEdifactTypeImpl extends EObjectImpl implements UnEdifactType {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNB:
+			case EnvelopePackage.UN_EDIFACT__UNB:
 				return uNB != null;
-			case EnvelopePackage.UN_EDIFACT_TYPE__MESSAGES:
+			case EnvelopePackage.UN_EDIFACT__MESSAGES:
 				return messages != null && !messages.isEmpty();
-			case EnvelopePackage.UN_EDIFACT_TYPE__UNZ:
+			case EnvelopePackage.UN_EDIFACT__UNZ:
 				return uNZ != null;
 		}
 		return super.eIsSet(featureID);
 	}
 
-} //UnEdifactTypeImpl
+} //UNEdifactImpl

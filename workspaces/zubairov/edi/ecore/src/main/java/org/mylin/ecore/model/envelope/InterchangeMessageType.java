@@ -41,6 +41,7 @@ public interface InterchangeMessageType extends EObject {
 	 * @see #setUNH(UNHType)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getInterchangeMessageType_UNH()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data segcode='UNH' type='segment'"
 	 *        extendedMetaData="kind='element' name='UNH' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -68,7 +69,8 @@ public interface InterchangeMessageType extends EObject {
 	 * @return the value of the '<em>Message</em>' attribute list.
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getInterchangeMessageType_Message()
 	 * @model dataType="org.eclipse.emf.ecore.EFeatureMapEntry" required="true" many="false"
-	 *        extendedMetaData="kind='elementWildcard' wildcards='##any' name=':1' processing='lax'"
+	 *        annotation="smooks-mapping-data type='group'"
+	 *        extendedMetaData="kind='elementWildcard' wildcards='##any' name=':1' processing='skip'"
 	 * @generated
 	 */
 	FeatureMap getMessage();
@@ -85,6 +87,7 @@ public interface InterchangeMessageType extends EObject {
 	 * @see #setUNT(UNTType)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getInterchangeMessageType_UNT()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data segcode='UNT' type='segment'"
 	 *        extendedMetaData="kind='element' name='UNT' namespace='##targetNamespace'"
 	 * @generated
 	 */

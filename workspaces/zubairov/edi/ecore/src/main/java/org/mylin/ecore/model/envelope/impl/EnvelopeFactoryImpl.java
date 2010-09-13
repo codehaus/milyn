@@ -68,7 +68,7 @@ public class EnvelopeFactoryImpl extends EFactoryImpl implements EnvelopeFactory
 			case EnvelopePackage.SENDER_TYPE: return createSenderType();
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE: return createSyntaxIdentifierType();
 			case EnvelopePackage.UNB_TYPE: return createUNBType();
-			case EnvelopePackage.UN_EDIFACT_TYPE: return createUnEdifactType();
+			case EnvelopePackage.UN_EDIFACT: return createUNEdifact();
 			case EnvelopePackage.UNH_TYPE: return createUNHType();
 			case EnvelopePackage.UNT_TYPE: return createUNTType();
 			case EnvelopePackage.UNZ_TYPE: return createUNZType();
@@ -162,9 +162,9 @@ public class EnvelopeFactoryImpl extends EFactoryImpl implements EnvelopeFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public UnEdifactType createUnEdifactType() {
-		UnEdifactTypeImpl unEdifactType = new UnEdifactTypeImpl();
-		return unEdifactType;
+	public UNEdifact createUNEdifact() {
+		UNEdifactImpl unEdifact = new UNEdifactImpl();
+		return unEdifact;
 	}
 
 	/**

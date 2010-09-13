@@ -98,13 +98,13 @@ public interface EnvelopeFactory extends EFactory {
 	UNBType createUNBType();
 
 	/**
-	 * Returns a new object of class '<em>Un Edifact Type</em>'.
+	 * Returns a new object of class '<em>UN Edifact</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Un Edifact Type</em>'.
+	 * @return a new object of class '<em>UN Edifact</em>'.
 	 * @generated
 	 */
-	UnEdifactType createUnEdifactType();
+	UNEdifact createUNEdifact();
 
 	/**
 	 * Returns a new object of class '<em>UNH Type</em>'.

@@ -40,6 +40,7 @@ public interface UNTType extends EObject {
 	 * @see #setSegmentCount(long)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNTType_SegmentCount()
 	 * @model unsettable="true" dataType="org.eclipse.emf.ecore.xml.type.Long" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='segmentCount' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -92,6 +93,7 @@ public interface UNTType extends EObject {
 	 * @see #setMessageRefNum(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNTType_MessageRefNum()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='messageRefNum' namespace='##targetNamespace'"
 	 * @generated
 	 */

@@ -1,5 +1,7 @@
 package org.mylin.ecore;
 
+import static org.mylin.ecore.SmooksMetadata.ANNOTATION_TYPE_KEY;
+
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EAnnotation;
@@ -35,8 +37,6 @@ import org.milyn.edisax.model.internal.SegmentGroup;
  */
 public class ECoreConversionUtils {
 
-	private static final String XML_TAG_ANNOTATION_KEY = "xmlTag";
-
 	/**
 	 * Supported data types for conversion
 	 * 
@@ -44,16 +44,6 @@ public class ECoreConversionUtils {
 	private static final EDataType ETYPES[] = { EcorePackage.Literals.ESTRING,
 			EcorePackage.Literals.ELONG, EcorePackage.Literals.EBIG_DECIMAL,
 			EcorePackage.Literals.EFLOAT };
-
-	public static final String ANNOTATION_TYPE = "smooks-mapping-data";
-
-	public static final String SEGMENT_TYPE = "segment";
-
-	public static final String SEGMENT_GROUP_TYPE = "group";
-
-	private static final String FIELD_TYPE = "field";
-
-	private static final String COMPONENT_TYPE = "component";
 
 	private static ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
 
@@ -65,14 +55,14 @@ public class ECoreConversionUtils {
 	 */
 	public static EClass segmentToEClass(Segment segment) {
 		EClass clazz = segmentGroupToEClass(segment);
-		annotate(clazz, "segcode", segment.getSegcode());
+		annotate(clazz, SmooksMetadata.SEGCODE, segment.getSegcode());
 		annotate(clazz, "segcodePattern", segment.getSegcodePattern()
 				.toString());
 		annotate(clazz, "truncable", String.valueOf(segment.isTruncatable()));
 		annotate(clazz, "ignoreUnmappedFields",
 				String.valueOf(segment.isIgnoreUnmappedFields()));
 		annotate(clazz, "description", segment.getDescription());
-		annotate(clazz, "type", SEGMENT_TYPE);
+		annotate(clazz, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.SEGMENT_TYPE);
 		return clazz;
 	}
 
@@ -119,7 +109,8 @@ public class ECoreConversionUtils {
 	public static EReference segmentToEReference(Segment segment,
 			EClass refClass) {
 		EReference reference = segmentGroupToEReference(segment, refClass);
-		annotate(reference, "type", SEGMENT_TYPE);
+		annotate(reference, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.SEGMENT_TYPE);
+		annotate(reference, SmooksMetadata.SEGCODE, segment.getSegcode());
 		reference.setName(segment.getSegcode());
 		return reference;
 	}
@@ -143,7 +134,7 @@ public class ECoreConversionUtils {
 			annotate(element, "documentation", node.getDocumentation());
 		}
 		if (node.getXmltag() != null) {
-			annotate(element, XML_TAG_ANNOTATION_KEY, node.getXmltag());
+			annotate(element, SmooksMetadata.XML_TAG_ANNOTATION_KEY, node.getXmltag());
 		}
 		if (element instanceof EClassifier) {
 			metadata.setName((EClassifier) element, node.getXmltag());
@@ -166,10 +157,10 @@ public class ECoreConversionUtils {
 	 * @param value
 	 */
 	private static void annotate(EModelElement element, String key, String value) {
-		EAnnotation annotation = element.getEAnnotation(ANNOTATION_TYPE);
+		EAnnotation annotation = element.getEAnnotation(SmooksMetadata.ANNOTATION_TYPE);
 		if (annotation == null) {
 			annotation = EcoreFactory.eINSTANCE.createEAnnotation();
-			annotation.setSource(ANNOTATION_TYPE);
+			annotation.setSource(SmooksMetadata.ANNOTATION_TYPE);
 			element.getEAnnotations().add(annotation);
 		}
 		annotation.getDetails().put(key, value);
@@ -194,7 +185,8 @@ public class ECoreConversionUtils {
 		addMappingInformation(reference, grp);
 		annotate(reference, "minOccurs", String.valueOf(grp.getMinOccurs()));
 		annotate(reference, "maxOccurs", String.valueOf(grp.getMaxOccurs()));
-		annotate(reference, "type", SEGMENT_GROUP_TYPE);
+		annotate(reference, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.SEGMENT_GROUP_TYPE);
+		annotate(reference, SmooksMetadata.SEGCODE, grp.getSegcode());
 		return reference;
 	}
 
@@ -236,7 +228,7 @@ public class ECoreConversionUtils {
 	private static void annotateField(IField field, EModelElement attr) {
 		annotate(attr, "truncable", String.valueOf(field.isTruncatable()));
 		annotate(attr, "required", String.valueOf(field.isRequired()));
-		annotate(attr, "type", FIELD_TYPE);
+		annotate(attr, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.FIELD_TYPE);
 		annotateValueNode(attr, field);
 	}
 
@@ -295,7 +287,7 @@ public class ECoreConversionUtils {
 		result.setEType(toEType(component.getTypeClass()));
 		annotate(result, "truncable", String.valueOf(component.isTruncatable()));
 		annotate(result, "required", String.valueOf(component.isRequired()));
-		annotate(result, "type", COMPONENT_TYPE);
+		annotate(result, ANNOTATION_TYPE_KEY, SmooksMetadata.COMPONENT_TYPE);
 		annotateValueNode(result, component);
 		addMappingInformation(result, component);
 		return result;
@@ -325,7 +317,7 @@ public class ECoreConversionUtils {
 		EClass newClass = EcoreFactory.eINSTANCE.createEClass();
 		newClass.setName(classifierName);
 		addMappingInformation(newClass, field);
-		annotate(newClass, "type", FIELD_TYPE);
+		annotate(newClass, ANNOTATION_TYPE_KEY, SmooksMetadata.FIELD_TYPE);
 		annotateValueNode(newClass, field);
 		return newClass;
 	}

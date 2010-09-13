@@ -58,6 +58,7 @@ public interface DateTimeType extends EObject {
 	 * @see #setDate(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getDateTimeType_Date()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true" transient="true" volatile="true" derived="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='date' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -85,6 +86,7 @@ public interface DateTimeType extends EObject {
 	 * @see #setTime(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getDateTimeType_Time()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true" transient="true" volatile="true" derived="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='time' namespace='##targetNamespace'"
 	 * @generated
 	 */

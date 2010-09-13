@@ -11,8 +11,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.milyn.edisax.model.internal.IMappingNode;
 import org.milyn.edisax.model.internal.ISegmentGroup;
-import org.mylin.ecore.ECoreConversionUtils;
 import org.mylin.ecore.EMFHelper;
+import org.mylin.ecore.SmooksMetadata;
 
 /**
  * Adapter class that adapts {@link EClass} to {@link ISegmentGroup}
@@ -88,9 +88,9 @@ public class SegmentGroupAdapter implements ISegmentGroup {
 			for (EStructuralFeature feature : features) {
 				if (feature instanceof EReference) {
 					String type = EMFHelper.getAnnotationValue(feature, "type");
-					if (ECoreConversionUtils.SEGMENT_TYPE.equals(type)) {
+					if (SmooksMetadata.SEGMENT_TYPE.equals(type)) {
 						segments.add(new SegmentAdapter((EReference)feature));
-					} else if (ECoreConversionUtils.SEGMENT_GROUP_TYPE.equals(type)) {
+					} else if (SmooksMetadata.SEGMENT_GROUP_TYPE.equals(type)) {
 						segments.add(new SegmentGroupAdapter((EReference) feature));
 					} else {
 						throw new UnsupportedOperationException("Not supported Reference type " + type);

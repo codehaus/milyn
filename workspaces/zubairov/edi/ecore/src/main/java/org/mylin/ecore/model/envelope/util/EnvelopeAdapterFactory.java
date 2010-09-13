@@ -104,8 +104,8 @@ public class EnvelopeAdapterFactory extends AdapterFactoryImpl {
 				return createUNBTypeAdapter();
 			}
 			@Override
-			public Adapter caseUnEdifactType(UnEdifactType object) {
-				return createUnEdifactTypeAdapter();
+			public Adapter caseUNEdifact(UNEdifact object) {
+				return createUNEdifactAdapter();
 			}
 			@Override
 			public Adapter caseUNHType(UNHType object) {
@@ -252,16 +252,16 @@ public class EnvelopeAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.mylin.ecore.model.envelope.UnEdifactType <em>Un Edifact Type</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.mylin.ecore.model.envelope.UNEdifact <em>UN Edifact</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.mylin.ecore.model.envelope.UnEdifactType
+	 * @see org.mylin.ecore.model.envelope.UNEdifact
 	 * @generated
 	 */
-	public Adapter createUnEdifactTypeAdapter() {
+	public Adapter createUNEdifactAdapter() {
 		return null;
 	}
 

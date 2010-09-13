@@ -39,7 +39,6 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/id"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//SyntaxIdentifierType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/mixed"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/versionNum"/>
     </genClasses>
@@ -50,13 +49,12 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNBType/dateTime"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/controlRef"/>
     </genClasses>
-    <genClasses ecoreClass="envelope.ecore#//UnEdifactType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/uNB"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/messages"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UnEdifactType/uNZ"/>
+    <genClasses ecoreClass="envelope.ecore#//UNEdifact">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNEdifact/uNB"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNEdifact/messages"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNEdifact/uNZ"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//UNHType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//UNHType/mixed"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNHType/messageRefNum"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference envelope.ecore#//UNHType/messageIdentifier"/>
     </genClasses>

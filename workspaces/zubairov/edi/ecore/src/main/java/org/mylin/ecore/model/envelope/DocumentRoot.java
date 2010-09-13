@@ -94,13 +94,13 @@ public interface DocumentRoot extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Un Edifact</em>' containment reference.
-	 * @see #setUnEdifact(UnEdifactType)
+	 * @see #setUnEdifact(UNEdifact)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getDocumentRoot_UnEdifact()
 	 * @model containment="true" upper="-2" transient="true" volatile="true" derived="true"
 	 *        extendedMetaData="kind='element' name='unEdifact' namespace='##targetNamespace'"
 	 * @generated
 	 */
-	UnEdifactType getUnEdifact();
+	UNEdifact getUnEdifact();
 
 	/**
 	 * Sets the value of the '{@link org.mylin.ecore.model.envelope.DocumentRoot#getUnEdifact <em>Un Edifact</em>}' containment reference.
@@ -110,6 +110,6 @@ public interface DocumentRoot extends EObject {
 	 * @see #getUnEdifact()
 	 * @generated
 	 */
-	void setUnEdifact(UnEdifactType value);
+	void setUnEdifact(UNEdifact value);
 
 } // DocumentRoot

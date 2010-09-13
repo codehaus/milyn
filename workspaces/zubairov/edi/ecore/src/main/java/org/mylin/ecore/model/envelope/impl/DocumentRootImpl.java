@@ -7,25 +7,20 @@
 package org.mylin.ecore.model.envelope.impl;
 
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EMap;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.impl.EStringToStringMapEntryImpl;
-
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.mylin.ecore.model.envelope.DocumentRoot;
 import org.mylin.ecore.model.envelope.EnvelopePackage;
-import org.mylin.ecore.model.envelope.UnEdifactType;
+import org.mylin.ecore.model.envelope.UNEdifact;
 
 /**
  * <!-- begin-user-doc -->
@@ -134,8 +129,8 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public UnEdifactType getUnEdifact() {
-		return (UnEdifactType)getMixed().get(EnvelopePackage.Literals.DOCUMENT_ROOT__UN_EDIFACT, true);
+	public UNEdifact getUnEdifact() {
+		return (UNEdifact)getMixed().get(EnvelopePackage.Literals.DOCUMENT_ROOT__UN_EDIFACT, true);
 	}
 
 	/**
@@ -143,7 +138,7 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetUnEdifact(UnEdifactType newUnEdifact, NotificationChain msgs) {
+	public NotificationChain basicSetUnEdifact(UNEdifact newUnEdifact, NotificationChain msgs) {
 		return ((FeatureMap.Internal)getMixed()).basicAdd(EnvelopePackage.Literals.DOCUMENT_ROOT__UN_EDIFACT, newUnEdifact, msgs);
 	}
 
@@ -152,7 +147,7 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setUnEdifact(UnEdifactType newUnEdifact) {
+	public void setUnEdifact(UNEdifact newUnEdifact) {
 		((FeatureMap.Internal)getMixed()).set(EnvelopePackage.Literals.DOCUMENT_ROOT__UN_EDIFACT, newUnEdifact);
 	}
 
@@ -217,7 +212,7 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 				((EStructuralFeature.Setting)getXSISchemaLocation()).set(newValue);
 				return;
 			case EnvelopePackage.DOCUMENT_ROOT__UN_EDIFACT:
-				setUnEdifact((UnEdifactType)newValue);
+				setUnEdifact((UNEdifact)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -241,7 +236,7 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 				getXSISchemaLocation().clear();
 				return;
 			case EnvelopePackage.DOCUMENT_ROOT__UN_EDIFACT:
-				setUnEdifact((UnEdifactType)null);
+				setUnEdifact((UNEdifact)null);
 				return;
 		}
 		super.eUnset(featureID);

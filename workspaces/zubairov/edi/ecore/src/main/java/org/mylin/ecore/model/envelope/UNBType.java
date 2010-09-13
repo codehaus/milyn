@@ -41,6 +41,7 @@ public interface UNBType extends EObject {
 	 * @see #setSyntaxIdentifier(SyntaxIdentifierType)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNBType_SyntaxIdentifier()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='syntaxIdentifier' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -68,6 +69,7 @@ public interface UNBType extends EObject {
 	 * @see #setSender(SenderType)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNBType_Sender()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='sender' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -95,6 +97,7 @@ public interface UNBType extends EObject {
 	 * @see #setRecipient(RecipientType)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNBType_Recipient()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='recipient' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -122,6 +125,7 @@ public interface UNBType extends EObject {
 	 * @see #setDateTime(DateTimeType)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNBType_DateTime()
 	 * @model containment="true" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='dateTime' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -149,6 +153,7 @@ public interface UNBType extends EObject {
 	 * @see #setControlRef(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNBType_ControlRef()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='controlRef' namespace='##targetNamespace'"
 	 * @generated
 	 */

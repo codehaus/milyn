@@ -10,11 +10,8 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
-
 import org.mylin.ecore.model.envelope.DateTimeType;
 import org.mylin.ecore.model.envelope.DocumentRoot;
 import org.mylin.ecore.model.envelope.EnvelopeFactory;
@@ -25,10 +22,10 @@ import org.mylin.ecore.model.envelope.RecipientType;
 import org.mylin.ecore.model.envelope.SenderType;
 import org.mylin.ecore.model.envelope.SyntaxIdentifierType;
 import org.mylin.ecore.model.envelope.UNBType;
+import org.mylin.ecore.model.envelope.UNEdifact;
 import org.mylin.ecore.model.envelope.UNHType;
 import org.mylin.ecore.model.envelope.UNTType;
 import org.mylin.ecore.model.envelope.UNZType;
-import org.mylin.ecore.model.envelope.UnEdifactType;
 
 /**
  * <!-- begin-user-doc -->
@@ -98,7 +95,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass unEdifactTypeEClass = null;
+	private EClass unEdifactEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -424,7 +421,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSyntaxIdentifierType_Mixed() {
+	public EAttribute getSyntaxIdentifierType_Id() {
 		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -433,17 +430,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSyntaxIdentifierType_Id() {
-		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EAttribute getSyntaxIdentifierType_VersionNum() {
-		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(2);
+		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -505,8 +493,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getUnEdifactType() {
-		return unEdifactTypeEClass;
+	public EClass getUNEdifact() {
+		return unEdifactEClass;
 	}
 
 	/**
@@ -514,8 +502,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getUnEdifactType_UNB() {
-		return (EReference)unEdifactTypeEClass.getEStructuralFeatures().get(0);
+	public EReference getUNEdifact_UNB() {
+		return (EReference)unEdifactEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -523,8 +511,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getUnEdifactType_Messages() {
-		return (EReference)unEdifactTypeEClass.getEStructuralFeatures().get(1);
+	public EReference getUNEdifact_Messages() {
+		return (EReference)unEdifactEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -532,8 +520,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getUnEdifactType_UNZ() {
-		return (EReference)unEdifactTypeEClass.getEStructuralFeatures().get(2);
+	public EReference getUNEdifact_UNZ() {
+		return (EReference)unEdifactEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -550,7 +538,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getUNHType_Mixed() {
+	public EAttribute getUNHType_MessageRefNum() {
 		return (EAttribute)unhTypeEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -559,17 +547,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getUNHType_MessageRefNum() {
-		return (EAttribute)unhTypeEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getUNHType_MessageIdentifier() {
-		return (EReference)unhTypeEClass.getEStructuralFeatures().get(2);
+		return (EReference)unhTypeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -686,7 +665,6 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		createEAttribute(senderTypeEClass, SENDER_TYPE__ID);
 
 		syntaxIdentifierTypeEClass = createEClass(SYNTAX_IDENTIFIER_TYPE);
-		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__MIXED);
 		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__ID);
 		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__VERSION_NUM);
 
@@ -697,13 +675,12 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		createEReference(unbTypeEClass, UNB_TYPE__DATE_TIME);
 		createEAttribute(unbTypeEClass, UNB_TYPE__CONTROL_REF);
 
-		unEdifactTypeEClass = createEClass(UN_EDIFACT_TYPE);
-		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__UNB);
-		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__MESSAGES);
-		createEReference(unEdifactTypeEClass, UN_EDIFACT_TYPE__UNZ);
+		unEdifactEClass = createEClass(UN_EDIFACT);
+		createEReference(unEdifactEClass, UN_EDIFACT__UNB);
+		createEReference(unEdifactEClass, UN_EDIFACT__MESSAGES);
+		createEReference(unEdifactEClass, UN_EDIFACT__UNZ);
 
 		unhTypeEClass = createEClass(UNH_TYPE);
-		createEAttribute(unhTypeEClass, UNH_TYPE__MIXED);
 		createEAttribute(unhTypeEClass, UNH_TYPE__MESSAGE_REF_NUM);
 		createEReference(unhTypeEClass, UNH_TYPE__MESSAGE_IDENTIFIER);
 
@@ -758,7 +735,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		initEAttribute(getDocumentRoot_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_XMLNSPrefixMap(), ecorePackage.getEStringToStringMapEntry(), null, "xMLNSPrefixMap", null, 0, -1, null, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_XSISchemaLocation(), ecorePackage.getEStringToStringMapEntry(), null, "xSISchemaLocation", null, 0, -1, null, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getDocumentRoot_UnEdifact(), this.getUnEdifactType(), null, "unEdifact", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEReference(getDocumentRoot_UnEdifact(), this.getUNEdifact(), null, "unEdifact", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
 		initEClass(interchangeMessageTypeEClass, InterchangeMessageType.class, "InterchangeMessageType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getInterchangeMessageType_UNH(), this.getUNHType(), null, "uNH", null, 1, 1, InterchangeMessageType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -781,9 +758,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		initEAttribute(getSenderType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SenderType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
 		initEClass(syntaxIdentifierTypeEClass, SyntaxIdentifierType.class, "SyntaxIdentifierType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getSyntaxIdentifierType_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSyntaxIdentifierType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SyntaxIdentifierType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSyntaxIdentifierType_VersionNum(), theXMLTypePackage.getString(), "versionNum", null, 1, 1, SyntaxIdentifierType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSyntaxIdentifierType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSyntaxIdentifierType_VersionNum(), theXMLTypePackage.getString(), "versionNum", null, 1, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(unbTypeEClass, UNBType.class, "UNBType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getUNBType_SyntaxIdentifier(), this.getSyntaxIdentifierType(), null, "syntaxIdentifier", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -792,15 +768,14 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		initEReference(getUNBType_DateTime(), this.getDateTimeType(), null, "dateTime", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getUNBType_ControlRef(), theXMLTypePackage.getString(), "controlRef", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(unEdifactTypeEClass, UnEdifactType.class, "UnEdifactType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getUnEdifactType_UNB(), this.getUNBType(), null, "uNB", null, 1, 1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getUnEdifactType_Messages(), this.getInterchangeMessageType(), null, "messages", null, 1, -1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getUnEdifactType_UNZ(), this.getUNZType(), null, "uNZ", null, 1, 1, UnEdifactType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(unEdifactEClass, UNEdifact.class, "UNEdifact", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getUNEdifact_UNB(), this.getUNBType(), null, "uNB", null, 1, 1, UNEdifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getUNEdifact_Messages(), this.getInterchangeMessageType(), null, "messages", null, 1, -1, UNEdifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getUNEdifact_UNZ(), this.getUNZType(), null, "uNZ", null, 1, 1, UNEdifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(unhTypeEClass, UNHType.class, "UNHType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getUNHType_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, UNHType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getUNHType_MessageRefNum(), theXMLTypePackage.getString(), "messageRefNum", null, 1, 1, UNHType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
-		initEReference(getUNHType_MessageIdentifier(), this.getMessageIdentifierType(), null, "messageIdentifier", null, 1, 1, UNHType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getUNHType_MessageRefNum(), theXMLTypePackage.getString(), "messageRefNum", null, 1, 1, UNHType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getUNHType_MessageIdentifier(), this.getMessageIdentifierType(), null, "messageIdentifier", null, 1, 1, UNHType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(untTypeEClass, UNTType.class, "UNTType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getUNTType_SegmentCount(), theXMLTypePackage.getLong(), "segmentCount", null, 1, 1, UNTType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -816,6 +791,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		// Create annotations
 		// http:///org/eclipse/emf/ecore/util/ExtendedMetaData
 		createExtendedMetaDataAnnotations();
+		// smooks-mapping-data
+		createSmooksmappingdataAnnotations();
 	}
 
 	/**
@@ -839,7 +816,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "elementWildcard",
 			 "name", ":mixed"
-		   });		
+		   });			
 		addAnnotation
 		  (getDateTimeType_Date(), 
 		   source, 
@@ -847,7 +824,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "date",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getDateTimeType_Time(), 
 		   source, 
@@ -898,7 +875,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "name", "interchangeMessageType",
 			 "kind", "elementOnly"
-		   });		
+		   });			
 		addAnnotation
 		  (getInterchangeMessageType_UNH(), 
 		   source, 
@@ -906,7 +883,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "UNH",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getInterchangeMessageType_Message(), 
 		   source, 
@@ -914,8 +891,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "elementWildcard",
 			 "wildcards", "##any",
 			 "name", ":1",
-			 "processing", "lax"
-		   });		
+			 "processing", "skip"
+		   });			
 		addAnnotation
 		  (getInterchangeMessageType_UNT(), 
 		   source, 
@@ -984,7 +961,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "elementWildcard",
 			 "name", ":mixed"
-		   });		
+		   });			
 		addAnnotation
 		  (getRecipientType_Id(), 
 		   source, 
@@ -1006,7 +983,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "elementWildcard",
 			 "name", ":mixed"
-		   });		
+		   });			
 		addAnnotation
 		  (getSenderType_Id(), 
 		   source, 
@@ -1020,15 +997,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   source, 
 		   new String[] {
 			 "name", "SyntaxIdentifierType",
-			 "kind", "mixed"
-		   });		
-		addAnnotation
-		  (getSyntaxIdentifierType_Mixed(), 
-		   source, 
-		   new String[] {
-			 "kind", "elementWildcard",
-			 "name", ":mixed"
-		   });		
+			 "kind", "elementOnly"
+		   });			
 		addAnnotation
 		  (getSyntaxIdentifierType_Id(), 
 		   source, 
@@ -1036,7 +1006,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "id",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getSyntaxIdentifierType_VersionNum(), 
 		   source, 
@@ -1051,7 +1021,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "name", "UNBType",
 			 "kind", "elementOnly"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNBType_SyntaxIdentifier(), 
 		   source, 
@@ -1059,7 +1029,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "syntaxIdentifier",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNBType_Sender(), 
 		   source, 
@@ -1067,7 +1037,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "sender",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNBType_Recipient(), 
 		   source, 
@@ -1075,7 +1045,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "recipient",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNBType_DateTime(), 
 		   source, 
@@ -1083,7 +1053,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "dateTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNBType_ControlRef(), 
 		   source, 
@@ -1091,32 +1061,32 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "controlRef",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
-		  (unEdifactTypeEClass, 
+		  (unEdifactEClass, 
 		   source, 
 		   new String[] {
 			 "name", "unEdifactType",
 			 "kind", "elementOnly"
-		   });		
+		   });			
 		addAnnotation
-		  (getUnEdifactType_UNB(), 
+		  (getUNEdifact_UNB(), 
 		   source, 
 		   new String[] {
 			 "kind", "element",
 			 "name", "UNB",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
-		  (getUnEdifactType_Messages(), 
+		  (getUNEdifact_Messages(), 
 		   source, 
 		   new String[] {
 			 "kind", "element",
 			 "name", "interchangeMessage",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
-		  (getUnEdifactType_UNZ(), 
+		  (getUNEdifact_UNZ(), 
 		   source, 
 		   new String[] {
 			 "kind", "element",
@@ -1128,15 +1098,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   source, 
 		   new String[] {
 			 "name", "UNHType",
-			 "kind", "mixed"
-		   });		
-		addAnnotation
-		  (getUNHType_Mixed(), 
-		   source, 
-		   new String[] {
-			 "kind", "elementWildcard",
-			 "name", ":mixed"
-		   });		
+			 "kind", "elementOnly"
+		   });			
 		addAnnotation
 		  (getUNHType_MessageRefNum(), 
 		   source, 
@@ -1144,7 +1107,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "messageRefNum",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNHType_MessageIdentifier(), 
 		   source, 
@@ -1159,7 +1122,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "name", "UNTType",
 			 "kind", "elementOnly"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNTType_SegmentCount(), 
 		   source, 
@@ -1167,7 +1130,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "segmentCount",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNTType_MessageRefNum(), 
 		   source, 
@@ -1199,6 +1162,152 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "name", "controlRef",
 			 "namespace", "##targetNamespace"
 		   });
+	}
+
+	/**
+	 * Initializes the annotations for <b>smooks-mapping-data</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createSmooksmappingdataAnnotations() {
+		String source = "smooks-mapping-data";				
+		addAnnotation
+		  (getDateTimeType_Date(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getDateTimeType_Time(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });									
+		addAnnotation
+		  (getInterchangeMessageType_UNH(), 
+		   source, 
+		   new String[] {
+			 "segcode", "UNH",
+			 "type", "segment"
+		   });			
+		addAnnotation
+		  (getInterchangeMessageType_Message(), 
+		   source, 
+		   new String[] {
+			 "type", "group"
+		   });			
+		addAnnotation
+		  (getInterchangeMessageType_UNT(), 
+		   source, 
+		   new String[] {
+			 "segcode", "UNT",
+			 "type", "segment"
+		   });											
+		addAnnotation
+		  (getRecipientType_Id(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });					
+		addAnnotation
+		  (getSenderType_Id(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });				
+		addAnnotation
+		  (getSyntaxIdentifierType_Id(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_VersionNum(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });				
+		addAnnotation
+		  (getUNBType_SyntaxIdentifier(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_Sender(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_Recipient(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_DateTime(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_ControlRef(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (unEdifactEClass, 
+		   source, 
+		   new String[] {
+			 "type", "group"
+		   });			
+		addAnnotation
+		  (getUNEdifact_UNB(), 
+		   source, 
+		   new String[] {
+			 "segcode", "UNB",
+			 "type", "segment"
+		   });			
+		addAnnotation
+		  (getUNEdifact_Messages(), 
+		   source, 
+		   new String[] {
+			 "type", "group"
+		   });			
+		addAnnotation
+		  (getUNEdifact_UNZ(), 
+		   source, 
+		   new String[] {
+			 "segcode", "UNZ",
+			 "type", "segment"
+		   });				
+		addAnnotation
+		  (getUNHType_MessageRefNum(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNHType_MessageIdentifier(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });				
+		addAnnotation
+		  (getUNTType_SegmentCount(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNTType_MessageRefNum(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });				
 	}
 
 } //EnvelopePackageImpl

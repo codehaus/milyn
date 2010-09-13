@@ -17,6 +17,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="date" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"
         volatile="true" transient="true" derived="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="date"/>
@@ -25,6 +28,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="time" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"
         volatile="true" transient="true" derived="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="time"/>
@@ -61,7 +67,7 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="unEdifact" upperBound="-2"
-        eType="#//UnEdifactType" volatile="true" transient="true" derived="true" containment="true"
+        eType="#//UNEdifact" volatile="true" transient="true" derived="true" containment="true"
         resolveProxies="false">
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
@@ -77,6 +83,10 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="uNH" lowerBound="1" eType="#//UNHType"
         containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="segcode" value="UNH"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="UNH"/>
@@ -85,15 +95,22 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="message" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="group"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="elementWildcard"/>
         <details key="wildcards" value="##any"/>
         <details key="name" value=":1"/>
-        <details key="processing" value="lax"/>
+        <details key="processing" value="skip"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="uNT" lowerBound="1" eType="#//UNTType"
         containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="segcode" value="UNT"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="UNT"/>
@@ -160,6 +177,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"
         volatile="true" transient="true" derived="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="id"/>
@@ -181,6 +201,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"
         volatile="true" transient="true" derived="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="id"/>
@@ -191,17 +214,12 @@
   <eClassifiers xsi:type="ecore:EClass" name="SyntaxIdentifierType">
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
       <details key="name" value="SyntaxIdentifierType"/>
-      <details key="kind" value="mixed"/>
+      <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="kind" value="elementWildcard"/>
-        <details key="name" value=":mixed"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
       </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"
-        volatile="true" transient="true" derived="true">
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="id"/>
@@ -209,8 +227,10 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="versionNum" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String" volatile="true"
-        transient="true" derived="true">
+        eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="versionNum"/>
@@ -225,6 +245,9 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="syntaxIdentifier" lowerBound="1"
         eType="#//SyntaxIdentifierType" containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="syntaxIdentifier"/>
@@ -233,6 +256,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sender" lowerBound="1"
         eType="#//SenderType" containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="sender"/>
@@ -241,6 +267,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="recipient" lowerBound="1"
         eType="#//RecipientType" containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="recipient"/>
@@ -249,6 +278,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dateTime" lowerBound="1"
         eType="#//DateTimeType" containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="dateTime"/>
@@ -257,6 +289,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="controlRef" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="controlRef"/>
@@ -264,13 +299,20 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="UnEdifactType">
+  <eClassifiers xsi:type="ecore:EClass" name="UNEdifact">
+    <eAnnotations source="smooks-mapping-data">
+      <details key="type" value="group"/>
+    </eAnnotations>
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
       <details key="name" value="unEdifactType"/>
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="uNB" lowerBound="1" eType="#//UNBType"
         containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="segcode" value="UNB"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="UNB"/>
@@ -279,6 +321,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messages" lowerBound="1"
         upperBound="-1" eType="#//InterchangeMessageType" containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="group"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="interchangeMessage"/>
@@ -287,6 +332,10 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="uNZ" lowerBound="1" eType="#//UNZType"
         containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="segcode" value="UNZ"/>
+        <details key="type" value="segment"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="UNZ"/>
@@ -297,18 +346,13 @@
   <eClassifiers xsi:type="ecore:EClass" name="UNHType">
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
       <details key="name" value="UNHType"/>
-      <details key="kind" value="mixed"/>
+      <details key="kind" value="elementOnly"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
-      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
-        <details key="kind" value="elementWildcard"/>
-        <details key="name" value=":mixed"/>
-      </eAnnotations>
-    </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="messageRefNum" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String" volatile="true"
-        transient="true" derived="true">
+        eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="messageRefNum"/>
@@ -316,8 +360,10 @@
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="messageIdentifier" lowerBound="1"
-        eType="#//MessageIdentifierType" volatile="true" transient="true" derived="true"
-        containment="true" resolveProxies="false">
+        eType="#//MessageIdentifierType" containment="true" resolveProxies="false">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="messageIdentifier"/>
@@ -332,6 +378,9 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="segmentCount" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Long" unsettable="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="segmentCount"/>
@@ -340,6 +389,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="messageRefNum" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="messageRefNum"/>

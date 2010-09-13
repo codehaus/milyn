@@ -355,22 +355,13 @@ public interface EnvelopePackage extends EPackage {
 	int SYNTAX_IDENTIFIER_TYPE = 6;
 
 	/**
-	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SYNTAX_IDENTIFIER_TYPE__MIXED = 0;
-
-	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SYNTAX_IDENTIFIER_TYPE__ID = 1;
+	int SYNTAX_IDENTIFIER_TYPE__ID = 0;
 
 	/**
 	 * The feature id for the '<em><b>Version Num</b></em>' attribute.
@@ -379,7 +370,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYNTAX_IDENTIFIER_TYPE__VERSION_NUM = 2;
+	int SYNTAX_IDENTIFIER_TYPE__VERSION_NUM = 1;
 
 	/**
 	 * The number of structural features of the '<em>Syntax Identifier Type</em>' class.
@@ -388,7 +379,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SYNTAX_IDENTIFIER_TYPE_FEATURE_COUNT = 3;
+	int SYNTAX_IDENTIFIER_TYPE_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl <em>UNB Type</em>}' class.
@@ -455,14 +446,14 @@ public interface EnvelopePackage extends EPackage {
 	int UNB_TYPE_FEATURE_COUNT = 5;
 
 	/**
-	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl <em>Un Edifact Type</em>}' class.
+	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl <em>UN Edifact</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl
-	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUnEdifactType()
+	 * @see org.mylin.ecore.model.envelope.impl.UNEdifactImpl
+	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNEdifact()
 	 * @generated
 	 */
-	int UN_EDIFACT_TYPE = 8;
+	int UN_EDIFACT = 8;
 
 	/**
 	 * The feature id for the '<em><b>UNB</b></em>' containment reference.
@@ -471,7 +462,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int UN_EDIFACT_TYPE__UNB = 0;
+	int UN_EDIFACT__UNB = 0;
 
 	/**
 	 * The feature id for the '<em><b>Messages</b></em>' containment reference list.
@@ -480,7 +471,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int UN_EDIFACT_TYPE__MESSAGES = 1;
+	int UN_EDIFACT__MESSAGES = 1;
 
 	/**
 	 * The feature id for the '<em><b>UNZ</b></em>' containment reference.
@@ -489,16 +480,16 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int UN_EDIFACT_TYPE__UNZ = 2;
+	int UN_EDIFACT__UNZ = 2;
 
 	/**
-	 * The number of structural features of the '<em>Un Edifact Type</em>' class.
+	 * The number of structural features of the '<em>UN Edifact</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int UN_EDIFACT_TYPE_FEATURE_COUNT = 3;
+	int UN_EDIFACT_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UNHTypeImpl <em>UNH Type</em>}' class.
@@ -511,22 +502,13 @@ public interface EnvelopePackage extends EPackage {
 	int UNH_TYPE = 9;
 
 	/**
-	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int UNH_TYPE__MIXED = 0;
-
-	/**
 	 * The feature id for the '<em><b>Message Ref Num</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int UNH_TYPE__MESSAGE_REF_NUM = 1;
+	int UNH_TYPE__MESSAGE_REF_NUM = 0;
 
 	/**
 	 * The feature id for the '<em><b>Message Identifier</b></em>' containment reference.
@@ -535,7 +517,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int UNH_TYPE__MESSAGE_IDENTIFIER = 2;
+	int UNH_TYPE__MESSAGE_IDENTIFIER = 1;
 
 	/**
 	 * The number of structural features of the '<em>UNH Type</em>' class.
@@ -544,7 +526,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int UNH_TYPE_FEATURE_COUNT = 3;
+	int UNH_TYPE_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UNTTypeImpl <em>UNT Type</em>}' class.
@@ -901,17 +883,6 @@ public interface EnvelopePackage extends EPackage {
 	EClass getSyntaxIdentifierType();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.SyntaxIdentifierType#getMixed <em>Mixed</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Mixed</em>'.
-	 * @see org.mylin.ecore.model.envelope.SyntaxIdentifierType#getMixed()
-	 * @see #getSyntaxIdentifierType()
-	 * @generated
-	 */
-	EAttribute getSyntaxIdentifierType_Mixed();
-
-	/**
 	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SyntaxIdentifierType#getId <em>Id</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -999,47 +970,47 @@ public interface EnvelopePackage extends EPackage {
 	EAttribute getUNBType_ControlRef();
 
 	/**
-	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.UnEdifactType <em>Un Edifact Type</em>}'.
+	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.UNEdifact <em>UN Edifact</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Un Edifact Type</em>'.
-	 * @see org.mylin.ecore.model.envelope.UnEdifactType
+	 * @return the meta object for class '<em>UN Edifact</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNEdifact
 	 * @generated
 	 */
-	EClass getUnEdifactType();
+	EClass getUNEdifact();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNB <em>UNB</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.UNEdifact#getUNB <em>UNB</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference '<em>UNB</em>'.
-	 * @see org.mylin.ecore.model.envelope.UnEdifactType#getUNB()
-	 * @see #getUnEdifactType()
+	 * @see org.mylin.ecore.model.envelope.UNEdifact#getUNB()
+	 * @see #getUNEdifact()
 	 * @generated
 	 */
-	EReference getUnEdifactType_UNB();
+	EReference getUNEdifact_UNB();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.mylin.ecore.model.envelope.UnEdifactType#getMessages <em>Messages</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.mylin.ecore.model.envelope.UNEdifact#getMessages <em>Messages</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Messages</em>'.
-	 * @see org.mylin.ecore.model.envelope.UnEdifactType#getMessages()
-	 * @see #getUnEdifactType()
+	 * @see org.mylin.ecore.model.envelope.UNEdifact#getMessages()
+	 * @see #getUNEdifact()
 	 * @generated
 	 */
-	EReference getUnEdifactType_Messages();
+	EReference getUNEdifact_Messages();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.UnEdifactType#getUNZ <em>UNZ</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.UNEdifact#getUNZ <em>UNZ</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference '<em>UNZ</em>'.
-	 * @see org.mylin.ecore.model.envelope.UnEdifactType#getUNZ()
-	 * @see #getUnEdifactType()
+	 * @see org.mylin.ecore.model.envelope.UNEdifact#getUNZ()
+	 * @see #getUNEdifact()
 	 * @generated
 	 */
-	EReference getUnEdifactType_UNZ();
+	EReference getUNEdifact_UNZ();
 
 	/**
 	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.UNHType <em>UNH Type</em>}'.
@@ -1050,17 +1021,6 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 */
 	EClass getUNHType();
-
-	/**
-	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.UNHType#getMixed <em>Mixed</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Mixed</em>'.
-	 * @see org.mylin.ecore.model.envelope.UNHType#getMixed()
-	 * @see #getUNHType()
-	 * @generated
-	 */
-	EAttribute getUNHType_Mixed();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.UNHType#getMessageRefNum <em>Message Ref Num</em>}'.
@@ -1393,14 +1353,6 @@ public interface EnvelopePackage extends EPackage {
 		EClass SYNTAX_IDENTIFIER_TYPE = eINSTANCE.getSyntaxIdentifierType();
 
 		/**
-		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SYNTAX_IDENTIFIER_TYPE__MIXED = eINSTANCE.getSyntaxIdentifierType_Mixed();
-
-		/**
 		 * The meta object literal for the '<em><b>Id</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1467,14 +1419,14 @@ public interface EnvelopePackage extends EPackage {
 		EAttribute UNB_TYPE__CONTROL_REF = eINSTANCE.getUNBType_ControlRef();
 
 		/**
-		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl <em>Un Edifact Type</em>}' class.
+		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl <em>UN Edifact</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.mylin.ecore.model.envelope.impl.UnEdifactTypeImpl
-		 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUnEdifactType()
+		 * @see org.mylin.ecore.model.envelope.impl.UNEdifactImpl
+		 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNEdifact()
 		 * @generated
 		 */
-		EClass UN_EDIFACT_TYPE = eINSTANCE.getUnEdifactType();
+		EClass UN_EDIFACT = eINSTANCE.getUNEdifact();
 
 		/**
 		 * The meta object literal for the '<em><b>UNB</b></em>' containment reference feature.
@@ -1482,7 +1434,7 @@ public interface EnvelopePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference UN_EDIFACT_TYPE__UNB = eINSTANCE.getUnEdifactType_UNB();
+		EReference UN_EDIFACT__UNB = eINSTANCE.getUNEdifact_UNB();
 
 		/**
 		 * The meta object literal for the '<em><b>Messages</b></em>' containment reference list feature.
@@ -1490,7 +1442,7 @@ public interface EnvelopePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference UN_EDIFACT_TYPE__MESSAGES = eINSTANCE.getUnEdifactType_Messages();
+		EReference UN_EDIFACT__MESSAGES = eINSTANCE.getUNEdifact_Messages();
 
 		/**
 		 * The meta object literal for the '<em><b>UNZ</b></em>' containment reference feature.
@@ -1498,7 +1450,7 @@ public interface EnvelopePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference UN_EDIFACT_TYPE__UNZ = eINSTANCE.getUnEdifactType_UNZ();
+		EReference UN_EDIFACT__UNZ = eINSTANCE.getUNEdifact_UNZ();
 
 		/**
 		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.UNHTypeImpl <em>UNH Type</em>}' class.
@@ -1509,14 +1461,6 @@ public interface EnvelopePackage extends EPackage {
 		 * @generated
 		 */
 		EClass UNH_TYPE = eINSTANCE.getUNHType();
-
-		/**
-		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute UNH_TYPE__MIXED = eINSTANCE.getUNHType_Mixed();
 
 		/**
 		 * The meta object literal for the '<em><b>Message Ref Num</b></em>' attribute feature.
