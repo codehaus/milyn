@@ -63,7 +63,7 @@ public class ParsingTest extends TestCase {
 		EClass root = (EClass) pkg.getEClassifier("CUSCAR");
 		assertNotNull(root);
 		EReference feature = (EReference) root
-				.getEStructuralFeature("placeLocationIdentification");
+				.getEStructuralFeature("LOC");
 		assertNotNull(feature);
 		EClass clazz = feature.getEReferenceType();
 		String[] expected = new String[] { "placeLocationQualifier",

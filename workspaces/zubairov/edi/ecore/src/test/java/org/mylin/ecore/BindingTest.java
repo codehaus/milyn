@@ -53,8 +53,8 @@ public class BindingTest extends TestCase implements MessageHanlder {
 		parseEDI();
 		EObject one = testContent.get(0);
 		EObject two = testContent.get(1);
-		EObject bgm1 = (EObject) get(one, "beginningOfMessage");
-		EObject bgm2 = (EObject) get(two, "beginningOfMessage");
+		EObject bgm1 = (EObject) get(one, "BGM");
+		EObject bgm2 = (EObject) get(two, "BGM");
 		EObject docid1 = (EObject) get(bgm1, "documentMessageIdentification");
 		EObject docid2 = (EObject) get(bgm2, "documentMessageIdentification");
 		assertEquals("MOL-EU2-HFA-012W-XXXX8896514-01",
