@@ -43,9 +43,7 @@
         <module>dynamic-model-builder</module>
         <module>camel</module>
 
-        <!--<module>ejc/ejc-gen</module>-->
-        <!--<module>ejc/ejc-use</module>-->
-        <!--<module>ect-unedifact</module>-->
+        <module>unedifact</module>
     </modules>
 
     <properties>
