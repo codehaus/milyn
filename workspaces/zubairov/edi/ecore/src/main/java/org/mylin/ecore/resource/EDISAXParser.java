@@ -15,6 +15,7 @@ import org.xml.sax.XMLReader;
  * 
  * @author zubairov
  */
+@SuppressWarnings("deprecation")
 public class EDISAXParser extends SAXParser {
 
 	protected final XMLReader parser;
