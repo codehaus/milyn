@@ -72,7 +72,7 @@ public class UnEdifactMessage {
      * Group4 = isMandatory
      * Group5 = max occurance
      */                  
-    private static String SEGMENT_REGULAR = "(\\d{4})*[\\+\\* X]*(\\w{3}) *(.*) *(M|C) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR = "(\\d{4})*[\\+\\* X]*(\\w{3}) *(.*) +(M|C|m|c) *(\\d*)[ \\|]*";
 
     /**
      * Extracts information from Regular segment definition.
@@ -80,7 +80,7 @@ public class UnEdifactMessage {
      * Group2 = segcode
      * Group3 = description
      */
-    private static String SEGMENT_REGULAR_START = "(\\d{4})*[\\+\\* ]*(\\w{3}) *(.*) *\\|";
+    private static String SEGMENT_REGULAR_START = "(\\d{4})*[\\+\\* X]*(\\w{3}) *(.*) *\\|";
 
     /**
      * Extracts information from Regular segment definition.
@@ -88,7 +88,7 @@ public class UnEdifactMessage {
      * Group2 = isMandatory
      * Group3 = max occurance
      */
-    private static String SEGMENT_REGULAR_END = " *(.*) *(M|C) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR_END = " *(.*) +(M|C|m|c) *(\\d*)[ \\|]*";
 
 
     /**
@@ -98,7 +98,7 @@ public class UnEdifactMessage {
      * Group4 = isMandatory
      * Group5 = max occurance 
      */
-    private static String SEGMENT_GROUP_START = "(\\d{4})*[\\+\\* ]*-* *([S|s]egment [G|g]roup \\d*) *-* *(C|M) *(\\d*)[ \\-\\+\\|]*";
+    private static String SEGMENT_GROUP_START = "(\\d{4})*[\\+\\* X]*-* *([S|s]egment [G|g]roup \\d*) *-* +(C|M|c|m) *(\\d*)[ \\-\\+\\|]*";
 
     /**
      * Matches and extracts information from segment at end of segment group.
@@ -109,7 +109,7 @@ public class UnEdifactMessage {
      * Group5 = max occurance
      * Group6 = nrOfClosedGroups
      */
-    private static String SEGMENT_GROUP_END = "(\\d{4})*[\\+\\* ]*(\\w{3}) *([\\w /-]*) *(C|M) *(\\d*) *-+([ |\\+]*)";
+    private static String SEGMENT_GROUP_END = "(\\d{4})*[\\+\\* X]*(\\w{3}) *([\\w /-]*) +(C|M|c|m) *(\\d*) *-+([ |\\+]*)";
 
     /**
      * Newline character applied between documentation lines.
