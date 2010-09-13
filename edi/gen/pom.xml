@@ -27,8 +27,8 @@
                 <module>unedifact/d93a/binding</module>
 
                 <!-- UN/EDIFACT D01C... -->
-                <!--<module>unedifact/d01c/mapping</module>-->
-                <!--<module>unedifact/d01c/binding</module>-->
+                <module>unedifact/d01c/mapping</module>
+                <module>unedifact/d01c/binding</module>
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
@@ -51,8 +51,8 @@
                 <module>unedifact/d93a/binding</module>
                 
                 <!-- UN/EDIFACT D01C... -->
-                <!--<module>unedifact/d01c/mapping</module>-->
-                <!--<module>unedifact/d01c/binding</module>-->
+                <module>unedifact/d01c/mapping</module>
+                <module>unedifact/d01c/binding</module>
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
