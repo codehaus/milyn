@@ -8,6 +8,9 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -37,6 +40,8 @@ public class DirectoryConverter {
 	private static final String MANIFEST = "META-INF/MANIFEST.MF";
 	
 	private static final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmm");
+	
+	Log log = LogFactory.getLog(DirectoryConverter.class);
 
 
 	protected DirectoryConverter() {
@@ -59,35 +64,44 @@ public class DirectoryConverter {
 				.generatePackages(ediSpecificationReader);
 		ResourceSet rs = prepareResourceSet();
 
-		// TODO Add qualifier
 		Archive archive = new Archive(pluginID + "_1.0.0.v" + qualifier + ".jar");
-		StringBuilder pluginXMLBuilder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+		StringBuilder pluginBuilder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<?eclipse version=\"3.0\"?>\n" +
 				"<plugin>\n" +
 				"\t<extension point=\"org.eclipse.emf.ecore.dynamic_package\">\n");
 		String pathPrefix = pluginID.replace(".", "/");
 
+		for (EPackage pkg : packages) {
+			String message = pkg.getName();
+			Resource resource = rs.createResource(URI.createFileURI(message + ".ecore"));
+			resource.getContents().add(pkg);
+		}
+		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-		// Writing out ECORE files
-		for (EPackage pkg : packages) {
-			if (pkg.getName().startsWith("common")) {
-				serializePackage(rs, archive, pluginXMLBuilder, pathPrefix,
-						out, pkg);
+		EList<Resource> resources = rs.getResources();
+		for (Resource resource : resources) {
+			out.reset();
+			EPackage pkg = (EPackage) resource.getContents().get(0);
+			String message = pkg.getName();
+			String ecoreEntryPath = pathPrefix + "/" + message + ".ecore";
+			try {
+			resource.save(out, null);
+			// Add the generated mapping model to the archive...
+			archive.addEntry(ecoreEntryPath, out.toByteArray());
+			// Add entry to plugin.xml
+			pluginBuilder.append("\t\t<resource \n\t\t\tlocation=\"");
+			pluginBuilder.append(ecoreEntryPath);
+			pluginBuilder.append("\" \n\t\t\turi=\"");
+			pluginBuilder.append(pkg.getNsURI());
+			pluginBuilder.append("\">\n\t\t</resource>\n");
+			} catch (Exception e) {
+				System.err.println("Failed to save package " + pkg.getNsURI());
 			}
 		}
-
-		for (EPackage pkg : packages) {
-			if (!pkg.getName().startsWith("common")) {
-				serializePackage(rs, archive, pluginXMLBuilder, pathPrefix,
-						out, pkg);
-			}
-		}
-
-		pluginXMLBuilder.append("\t</extension>\n</plugin>");
-		// Add the generated mapping model to the archive...
+		
+		pluginBuilder.append("\t</extension>\n</plugin>");
 		archive.addEntry(PLUGIN_XML_ENTRY,
-				pluginXMLBuilder.toString());
+				pluginBuilder.toString());
 
 		// Add the model set URN to the archive...
 		archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, pluginID);
@@ -107,28 +121,6 @@ public class DirectoryConverter {
 		result.append("Bundle-ClassPath: .\n");
 		result.append("Bundle-ActivationPolicy: lazy\n");
 		return result.toString();
-	}
-
-	private void serializePackage(ResourceSet rs, Archive archive,
-			StringBuilder pluginBuilder, String pathPrefix,
-			ByteArrayOutputStream out, EPackage pkg) throws IOException {
-		String message = pkg.getName();
-		String ecoreEntryPath = pathPrefix + "/" + message + ".ecore";
-
-		out.reset();
-		Resource resource = rs.createResource(URI.createFileURI(message + ".ecore"));
-		resource.getContents().add(pkg);
-		resource.save(out, null);
-
-		// Add the generated mapping model to the archive...
-		archive.addEntry(ecoreEntryPath, out.toByteArray());
-
-		// Add this messages archive entry to the mapping model list file...
-		pluginBuilder.append("\t\t<resource \n\t\t\tlocation=\"");
-		pluginBuilder.append(ecoreEntryPath);
-		pluginBuilder.append("\" \n\t\t\turi=\"");
-		pluginBuilder.append(pkg.getNsURI());
-		pluginBuilder.append("\">\n\t\t</resource>\n");
 	}
 
 	private ResourceSet prepareResourceSet() {

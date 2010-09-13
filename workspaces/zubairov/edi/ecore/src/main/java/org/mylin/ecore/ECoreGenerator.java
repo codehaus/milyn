@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
@@ -37,6 +39,8 @@ public class ECoreGenerator {
 
 	private static final String COMMON_PACKAGE_NAME = "commonDefinitions";
 
+	private static final Log log = LogFactory.getLog(ECoreGenerator.class);
+
 	/**
 	 * This method will convert information available in
 	 * {@link EdiSpecificationReader} into the set of {@link EPackage} packages.
@@ -50,6 +54,7 @@ public class ECoreGenerator {
 	 */
 	public Set<EPackage> generatePackages(UnEdifactSpecificationReader reader)
 			throws IOException {
+		log.debug("Converting UN EDIFACT Model");
 		Set<EPackage> result = new HashSet<EPackage>();
 
 		// Creating common package
@@ -77,11 +82,13 @@ public class ECoreGenerator {
 						createMappingClases(mappingModel.getSegments(),
 								commonClasses));
 				if (!result.add(pkg)) {
-					throw new RuntimeException("WARN: Duplicated package "
-							+ pkg.getName());
+					log.warn("WARN: Duplicated package " + pkg.getName()
+							+ " for ");
 				}
 			}
 		}
+		log.debug("Converted EDIFACT Model  into " + result.size()
+				+ " EPackages");
 		return result;
 	}
 
@@ -125,7 +132,12 @@ public class ECoreGenerator {
 						.segmentToEReference(segment, refClass);
 				if (parent.getEStructuralFeature(segmentRef.getName()) == null) {
 					parent.getEStructuralFeatures().add(segmentRef);
-				} 
+				} else {
+					if (log.isWarnEnabled()) {
+						log.warn("Duplicate segment " + segmentRef.getName()
+								+ " in " + parent.getName());
+					}
+				}
 			} else if (arg0 instanceof SegmentGroup) {
 				SegmentGroup grp = (SegmentGroup) arg0;
 				EClass refClass = ECoreConversionUtils
@@ -134,7 +146,7 @@ public class ECoreGenerator {
 						.segmentGroupToEReference(grp, refClass);
 				if (parent.getEStructuralFeature(reference.getName()) == null) {
 					parent.getEStructuralFeatures().add(reference);
-				} 
+				}
 				if (!result.add(refClass)) {
 					throw new RuntimeException("Reference class "
 							+ refClass.getName() + " is duplicated in package");
@@ -194,7 +206,7 @@ public class ECoreGenerator {
 				if (!names.contains(attribute.getName())) {
 					result.add(attribute);
 					names.add(attribute.getName());
-				} 
+				}
 			} else {
 				// We have a complex field --> need to define a new
 				// class
@@ -203,7 +215,7 @@ public class ECoreGenerator {
 				if (!names.contains(reference.getName())) {
 					result.add(reference);
 					names.add(reference.getName());
-				} 
+				}
 			}
 		}
 		return result;

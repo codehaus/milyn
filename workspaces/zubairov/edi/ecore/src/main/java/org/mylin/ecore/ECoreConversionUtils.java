@@ -120,6 +120,7 @@ public class ECoreConversionUtils {
 			EClass refClass) {
 		EReference reference = segmentGroupToEReference(segment, refClass);
 		annotate(reference, "type", SEGMENT_TYPE);
+		reference.setName(segment.getSegcode());
 		return reference;
 	}
 
