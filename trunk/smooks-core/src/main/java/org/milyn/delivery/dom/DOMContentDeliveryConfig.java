@@ -108,7 +108,14 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
         processingVisitAfters.sort(Sorter.SortOrder.CONSUMERS_FIRST);
     }
 
-	public void configureFilterBypass() {
+    public void addToExecutionLifecycleSets() throws SmooksConfigurationException {
+        addToExecutionLifecycleSets(assemblyVisitBefores);
+        addToExecutionLifecycleSets(assemblyVisitAfters);
+        addToExecutionLifecycleSets(processingVisitBefores);
+        addToExecutionLifecycleSets(processingVisitAfters);
+    }
+
+    public void configureFilterBypass() {
 		filterBypass = getFilterBypass(assemblyVisitBefores, assemblyVisitAfters, processingVisitBefores, processingVisitAfters, serailizationVisitors);
 	}
 }

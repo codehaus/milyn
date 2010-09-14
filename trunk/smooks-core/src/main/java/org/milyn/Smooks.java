@@ -533,6 +533,7 @@ public class Smooks {
                     FilterResult.setResults(executionContext, results);
 
                     try {
+                        deliveryConfig.executeHandlerInit(executionContext);
                     	messageFilter.doFilter();
                     } finally {
                     	// We want to make sure that all the beans from the BeanContext are available in the

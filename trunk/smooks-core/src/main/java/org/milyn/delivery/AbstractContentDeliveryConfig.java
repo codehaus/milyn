@@ -15,9 +15,12 @@
 */
 package org.milyn.delivery;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.xml.sax.SAXException;
@@ -33,6 +36,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class AbstractContentDeliveryConfig implements ContentDeliveryConfig {
+
+    private static Log logger = LogFactory.getLog(AbstractContentDeliveryConfig.class);
 
 	/**
      * Container context.
@@ -56,6 +61,9 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
      * Config builder events list.
      */
     private List<ConfigBuilderEvent> configBuilderEvents = new ArrayList<ConfigBuilderEvent>();
+
+    private Set<ExecutionLifecycleInitializable> execInitializableHandlers = new LinkedHashSet<ExecutionLifecycleInitializable>();
+    private Set<ExecutionLifecycleCleanable> execCleanableHandlers = new LinkedHashSet<ExecutionLifecycleCleanable>();
 
     private Boolean isDefaultSerializationOn = null;
     
@@ -154,7 +162,38 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
 
         return isDefaultSerializationOn;
     }
-    
+
+    public <T extends Visitor> void addToExecutionLifecycleSets(ContentHandlerConfigMapTable<T> handlerSet) {
+        Collection<List<ContentHandlerConfigMap<T>>> mapEntries = handlerSet.getTable().values();
+
+        for(List<ContentHandlerConfigMap<T>> mapList : mapEntries) {
+            for(ContentHandlerConfigMap<T> map : mapList) {
+                if(map.isLifecycleInitializable()) {
+                    execInitializableHandlers.add((ExecutionLifecycleInitializable) map.getContentHandler());
+                }
+                if(map.isLifecycleCleanable()) {
+                    execCleanableHandlers.add((ExecutionLifecycleCleanable) map.getContentHandler());
+                }
+            }
+        }
+    }
+
+    public void executeHandlerInit(ExecutionContext executionContext) {
+        for(ExecutionLifecycleInitializable handler : execInitializableHandlers) {
+            handler.executeExecutionLifecycleInitialize(executionContext);
+        }
+    }
+
+    public void executeHandlerCleanup(ExecutionContext executionContext) {
+        for(ExecutionLifecycleCleanable handler : execCleanableHandlers) {
+            try {
+                handler.executeExecutionLifecycleCleanup(executionContext);
+            } catch(Throwable t) {
+                logger.error("Error during Visit handler cleanup.", t);
+            }
+        }
+    }
+
     public void initializeXMLReaderPool() {
     	try {
 	        readerPoolSize = Integer.parseInt(ParameterAccessor.getStringParameter(Filter.READER_POOL_SIZE, "0", this).trim());

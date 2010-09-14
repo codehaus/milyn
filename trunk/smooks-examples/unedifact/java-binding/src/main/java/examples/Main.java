@@ -47,7 +47,7 @@ public class Main {
 
         /*------------------------------------------
         Read the interchange to Java Objects...
-        ------------------------------------------*/
+        -------------------------------------------*/
         UNEdifactInterchange interchange;
         try {
             interchange = factory.fromUNEdifact(stream);

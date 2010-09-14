@@ -25,14 +25,16 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class LifecycleCleanupTest extends TestCase {
+public class ExecutionLifecycleTest extends TestCase {
 
     protected void setUp() throws Exception {
         DomAssemblyBefore.cleaned = false;
         DomAssemblyAfter.cleaned = false;
         DomAssemblyAfterWithException.cleaned = false;
+        DomProcessingBefore.initialized = false;
         DomProcessingBefore.cleaned = false;
         DomProcessingAfter.cleaned = false;
+        SaxVisitBefore.initialized = false;
         SaxVisitBefore.cleaned = false;
         SaxVisitAfter.cleaned = false;
         DomProcessingVisitCleanable.cleaned = false;
@@ -46,6 +48,7 @@ public class LifecycleCleanupTest extends TestCase {
         assertTrue(DomAssemblyBefore.cleaned);
         assertTrue(DomAssemblyAfter.cleaned);
         assertTrue(DomAssemblyAfterWithException.cleaned);
+        assertTrue(DomProcessingBefore.initialized);
         assertTrue(DomProcessingBefore.cleaned);
         assertTrue(DomProcessingAfter.cleaned);
     }
@@ -61,6 +64,7 @@ public class LifecycleCleanupTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("sax-config-01.xml"));
 
         smooks.filterSource(new StringSource("<a><b/><c/><d/><e/></a>"), null);
+        assertTrue(SaxVisitBefore.initialized);
         assertTrue(SaxVisitBefore.cleaned);
         assertTrue(SaxVisitAfter.cleaned);
     }

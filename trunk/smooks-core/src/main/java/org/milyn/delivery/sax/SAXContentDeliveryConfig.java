@@ -103,6 +103,11 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         visitAfters.sort(Sorter.SortOrder.CONSUMERS_FIRST);
     }
 
+    public void addToExecutionLifecycleSets() throws SmooksConfigurationException {
+        addToExecutionLifecycleSets(visitBefores);
+        addToExecutionLifecycleSets(visitAfters);
+    }
+
     public void optimizeConfig() {
         if(visitBefores == null || visitAfters == null) {
             throw new IllegalStateException("Illegal call to setChildVisitors() before setVisitBefores() and setVisitAfters() are called.");

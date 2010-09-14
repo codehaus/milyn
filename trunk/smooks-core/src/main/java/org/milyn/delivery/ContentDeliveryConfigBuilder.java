@@ -183,7 +183,8 @@ public class ContentDeliveryConfigBuilder {
             if(sortVisitors) {
                 domConfig.sort();
             }
-            
+
+            domConfig.addToExecutionLifecycleSets();
             domConfig.initializeXMLReaderPool();
             domConfig.configureFilterBypass();
 
@@ -209,6 +210,7 @@ public class ContentDeliveryConfigBuilder {
                 saxConfig.sort();
             }
             
+            saxConfig.addToExecutionLifecycleSets();
             saxConfig.initializeXMLReaderPool();
 
             saxConfig.addIndexCounters();
