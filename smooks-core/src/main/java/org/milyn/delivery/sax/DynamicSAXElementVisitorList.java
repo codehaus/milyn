@@ -16,8 +16,6 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ExecutionLifecycleCleanableList;
-import org.milyn.delivery.ExecutionLifecycleCleanable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +30,9 @@ public class DynamicSAXElementVisitorList {
     private List<SAXVisitBefore> visitBefores = new ArrayList<SAXVisitBefore>();
     private List<SAXVisitChildren> childVisitors = new ArrayList<SAXVisitChildren>();
     private List<SAXVisitAfter> visitAfters = new ArrayList<SAXVisitAfter>();
-    private ExecutionLifecycleCleanableList cleanupList;
 
-    public DynamicSAXElementVisitorList(ExecutionContext executionContext, ExecutionLifecycleCleanableList cleanupList) {
+    public DynamicSAXElementVisitorList(ExecutionContext executionContext) {
         executionContext.setAttribute(DynamicSAXElementVisitorList.class, this);
-        this.cleanupList = cleanupList;
     }
 
     public List<SAXVisitBefore> getVisitBefores() {
@@ -66,10 +62,6 @@ public class DynamicSAXElementVisitorList {
         }
         if(visitor instanceof SAXVisitAfter) {
             list.visitAfters.add((SAXVisitAfter) visitor);
-        }
-
-        if(visitor instanceof ExecutionLifecycleCleanable) {
-            list.cleanupList.add((ExecutionLifecycleCleanable) visitor);
         }
     }
 

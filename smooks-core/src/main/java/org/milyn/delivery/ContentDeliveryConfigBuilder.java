@@ -173,7 +173,6 @@ public class ContentDeliveryConfigBuilder {
             domConfig.setProcessingVisitAfters(visitorConfig.getDomProcessingVisitAfters());
             domConfig.setSerailizationVisitors(visitorConfig.getDomSerializationVisitors());
             domConfig.setVisitCleanables(visitorConfig.getVisitCleanables());
-            domConfig.setExecCleanables(visitorConfig.getExecCleanables());
 
             domConfig.setApplicationContext(applicationContext);
             domConfig.setSmooksResourceConfigurations(resourceConfigTable);
@@ -196,7 +195,6 @@ public class ContentDeliveryConfigBuilder {
             saxConfig.setVisitBefores(visitorConfig.getSaxVisitBefores());
             saxConfig.setVisitAfters(visitorConfig.getSaxVisitAfters());
             saxConfig.setVisitCleanables(visitorConfig.getVisitCleanables());
-            saxConfig.setExecCleanables(visitorConfig.getExecCleanables());
 
             saxConfig.setApplicationContext(applicationContext);
             saxConfig.setSmooksResourceConfigurations(resourceConfigTable);

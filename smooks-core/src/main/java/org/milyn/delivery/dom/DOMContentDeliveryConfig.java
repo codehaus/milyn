@@ -34,7 +34,6 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters;
     private ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors;
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
-    private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables;
     private FilterBypass filterBypass;
 
     public ContentHandlerConfigMapTable<DOMVisitBefore> getAssemblyVisitBefores() {
@@ -83,14 +82,6 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
     public void setVisitCleanables(ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables) {
         this.visitCleanables = visitCleanables;
-    }
-
-    public ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> getExecCleanables() {
-        return execCleanables;
-    }
-
-    public void setExecCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables) {
-        this.execCleanables = execCleanables;
     }
 
     public Filter newFilter(ExecutionContext executionContext) {

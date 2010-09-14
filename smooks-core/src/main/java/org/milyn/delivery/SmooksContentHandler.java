@@ -38,7 +38,6 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
     private SmooksContentHandler parentContentHandler;
     private SmooksContentHandler nestedContentHandler;
     private boolean endReplayed = false;
-    protected ExecutionLifecycleCleanableList cleanupList;
     private SAXEventReplay lastEvent = null;
     private StartElementEvent startEvent = new StartElementEvent();
     private EndElementEvent endEvent = new EndElementEvent();
@@ -49,9 +48,7 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
         this.parentContentHandler = parentContentHandler;
         attachHandler();
 
-        cleanupList = new ExecutionLifecycleCleanableList(executionContext);
         if(parentContentHandler != null) {
-            cleanupList = parentContentHandler.cleanupList;
             parentContentHandler.nestedContentHandler = this;
         }
     }
