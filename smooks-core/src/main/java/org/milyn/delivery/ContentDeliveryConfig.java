@@ -121,7 +121,26 @@ public interface ContentDeliveryConfig {
      * @see #SMOOKS_VISITORS_SORT
      */
     public void sort() throws SmooksConfigurationException;
-    
+
+    /**
+     * Add the execution lifecycle sets for the configuration.
+     * @throws SmooksConfigurationException Error resolving the handlers interested
+     * in the Execution lifecycle.
+     */
+    public void addToExecutionLifecycleSets() throws SmooksConfigurationException;
+
+    /**
+     * Initialize execution context lifecycle aware handlers.
+     * @param executionContext The execution context.
+     */
+    public void executeHandlerInit(ExecutionContext executionContext);
+
+    /**
+     * Cleanup execution context lifecycle aware handlers.
+     * @param executionContext The execution context.
+     */
+    public void executeHandlerCleanup(ExecutionContext executionContext);
+
     /**
      * Get an {@link XMLReader} instance from the 
      * reader pool associated with this ContentDelivery config instance.

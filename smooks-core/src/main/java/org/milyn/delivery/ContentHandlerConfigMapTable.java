@@ -28,6 +28,7 @@ import java.util.*;
 public class ContentHandlerConfigMapTable<T extends ContentHandler> {
 
     private Map<String, List<ContentHandlerConfigMap<T>>> table = new LinkedHashMap<String, List<ContentHandlerConfigMap<T>>>();
+    private List<ContentHandlerConfigMap<T>> list = new ArrayList<ContentHandlerConfigMap<T>>();
     private int count = 0;
     private int userConfiguredCount = 0;
 
@@ -55,6 +56,7 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
             table.put(elementName.toLowerCase(), elementMappings);
         }
         elementMappings.add(mapInst);
+        list.add(mapInst);
         count++;
         
         if(!mapInst.getResourceConfig().isDefaultResource()) {
@@ -109,6 +111,10 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
         }
 
         return combinedList;
+    }
+
+    public List<ContentHandlerConfigMap<T>> getAllMappings() {
+        return list;
     }
 
     /**
