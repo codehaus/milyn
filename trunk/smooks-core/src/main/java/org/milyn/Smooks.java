@@ -536,12 +536,16 @@ public class Smooks {
                         deliveryConfig.executeHandlerInit(executionContext);
                     	messageFilter.doFilter();
                     } finally {
-                    	// We want to make sure that all the beans from the BeanContext are available in the
-                    	// JavaResult, if one is supplied by the user...
-                    	JavaResult javaResult = (JavaResult) FilterResult.getResult(executionContext, JavaResult.class);
-                    	if(javaResult != null) {
-                    		javaResult.getResultMap().putAll(executionContext.getBeanContext().getBeanMap());
-                    	}
+                        try {
+                            // We want to make sure that all the beans from the BeanContext are available in the
+                            // JavaResult, if one is supplied by the user...
+                            JavaResult javaResult = (JavaResult) FilterResult.getResult(executionContext, JavaResult.class);
+                            if(javaResult != null) {
+                                javaResult.getResultMap().putAll(executionContext.getBeanContext().getBeanMap());
+                            }
+                        } finally {
+                            deliveryConfig.executeHandlerCleanup(executionContext);
+                        }
                     }
                 } catch(SmooksException e) {
                     executionContext.setTerminationError(e);

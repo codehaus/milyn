@@ -93,10 +93,6 @@ public class VisitorConfigMap {
      * Visit lifecycle Cleanable visitors.
      */
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables = new ContentHandlerConfigMapTable<VisitLifecycleCleanable>();
-    /**
-     * Execution lifecycle Cleanable visitors.
-     */
-    private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables = new ContentHandlerConfigMapTable<ExecutionLifecycleCleanable>();
 
     /**
      * Config builder events list.
@@ -174,14 +170,6 @@ public class VisitorConfigMap {
 
     public void setVisitCleanables(ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables) {
         this.visitCleanables = visitCleanables;
-    }
-
-    public ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> getExecCleanables() {
-        return execCleanables;
-    }
-
-    public void setExecCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables) {
-        this.execCleanables = execCleanables;
     }
 
     public void setConfigBuilderEvents(List<ConfigBuilderEvent> configBuilderEvents) {
@@ -294,25 +282,6 @@ public class VisitorConfigMap {
         if(visitor instanceof VisitLifecycleCleanable) {
             visitCleanables.addMapping(elementName, resourceConfig, (VisitLifecycleCleanable) visitor);
         }
-
-        if(visitor instanceof ExecutionLifecycleCleanable) {
-            execCleanables.addMapping(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, resourceConfig, (ExecutionLifecycleCleanable) visitor);
-        }
-    }
-
-    public static void execCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables, ExecutionContext executionContext) {
-        List<ContentHandlerConfigMap<ExecutionLifecycleCleanable>> execCleanableList = execCleanables.getMappings(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR);
-
-        if(execCleanableList != null) {
-            for(ContentHandlerConfigMap<ExecutionLifecycleCleanable> execCleanable : execCleanableList) {
-                ExecutionLifecycleCleanable lifecycleCleanable = execCleanable.getContentHandler();
-                try {
-                    lifecycleCleanable.executeExecutionLifecycleCleanup(executionContext);
-                } catch(Exception e) {
-                    logger.error("Error while executing lifecycle cleanable '" + lifecycleCleanable.getClass().getName() + "'.", e);
-                }
-            }
-        }
     }
 
     private void logExecutionEvent(SmooksResourceConfiguration resourceConfig, String message) {
@@ -368,7 +337,6 @@ public class VisitorConfigMap {
             saxVisitBefores.addAll(visitorConfigMap.getSaxVisitBefores());
             saxVisitAfters.addAll(visitorConfigMap.getSaxVisitAfters());
             visitCleanables.addAll(visitorConfigMap.getVisitCleanables());
-            execCleanables.addAll(visitorConfigMap.getExecCleanables());
 
             visitorCount += visitorConfigMap.getVisitorCount();
             saxVisitorCount += visitorConfigMap.getSaxVisitorCount();

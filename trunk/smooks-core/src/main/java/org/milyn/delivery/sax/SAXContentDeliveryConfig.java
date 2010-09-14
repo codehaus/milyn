@@ -40,7 +40,6 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<SAXVisitChildren> childVisitors = new ContentHandlerConfigMapTable<SAXVisitChildren>();
     private ContentHandlerConfigMapTable<SAXVisitAfter> visitAfters;
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
-    private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables;
     private boolean rewriteEntities;
     private boolean maintainElementStack;
     private boolean reverseVisitOrderOnVisitAfter;
@@ -75,14 +74,6 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
     public void setVisitCleanables(ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables) {
         this.visitCleanables = visitCleanables;
-    }
-
-    public ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> getExecCleanables() {
-        return execCleanables;
-    }
-
-    public void setExecCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables) {
-        this.execCleanables = execCleanables;
     }
 
     public Map<String, SAXElementVisitorMap> getOptimizedVisitorConfig() {

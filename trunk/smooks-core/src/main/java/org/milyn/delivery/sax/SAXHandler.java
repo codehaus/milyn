@@ -121,15 +121,10 @@ public class SAXHandler extends SmooksContentHandler {
             terminateOnVisitorException = false;
         }
 
-        dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext, cleanupList);
+        dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext);
     }
 
     public void cleanup() {
-        try {
-            cleanupList.cleanup();
-        } finally {
-            VisitorConfigMap.execCleanables(deliveryConfig.getExecCleanables(), execContext);
-        }
     }
 
     public void startElement(StartElementEvent startEvent) throws SAXException {
