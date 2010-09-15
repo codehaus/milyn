@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EDI Editor
+Bundle-SymbolicName: org.smooks.edi.editor;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.smooks.edi.editor.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.epsilon.dt.exeed;bundle-version="0.8.9",
+ org.apache.commons.lang;bundle-version="2.3.0",
+ org.apache.log4j;bundle-version="1.2.15",
+ org.milyn.ecore;bundle-version="1.0.0",
+ org.apache.commons.logging;bundle-version="1.0.4",
+ org.smooks.edi.lib;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .
+Import-Package: org.milyn.edisax,
+ org.milyn.edisax.model,
+ org.milyn.edisax.unedifact
