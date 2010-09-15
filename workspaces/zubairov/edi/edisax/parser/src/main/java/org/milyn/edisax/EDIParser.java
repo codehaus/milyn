@@ -16,26 +16,48 @@
 
 package org.milyn.edisax;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.*;
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.model.internal.Description;
+import org.milyn.edisax.model.internal.IComponent;
+import org.milyn.edisax.model.internal.IField;
+import org.milyn.edisax.model.internal.IMappingNode;
+import org.milyn.edisax.model.internal.ISegment;
+import org.milyn.edisax.model.internal.ISegmentGroup;
+import org.milyn.edisax.model.internal.IValueNode;
+import org.milyn.edisax.model.internal.SubComponent;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.lang.MutableInt;
 import org.milyn.resource.URIResourceLocator;
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * EDI Parser.
@@ -134,6 +156,7 @@ public class EDIParser implements XMLReader {
     private EdifactModel edifactModel;
     private BufferedSegmentReader segmentReader;
     private static final Map<String, String> aliasesMap = new HashMap<String, String>();
+    private final Stack<String> nsStack = new Stack<String>();
 
     /**
      * Parse the supplied mapping model config path and return the generated EdiMap.
@@ -804,7 +827,11 @@ public class EDIParser implements XMLReader {
         if(indent) {
             indent();
         }
-        String alias = getNamespaceAlias(namespace, contentHandler);
+        String alias = getNamespaceAlias(namespace);
+        if (nsStack.isEmpty() || !nsStack.peek().equals(alias)) {
+        	contentHandler.startPrefixMapping(alias, namespace);
+        }
+        nsStack.push(alias);
         contentHandler.startElement(namespace, elementName, alias + ":" + elementName, EMPTY_ATTRIBS);
         indentDepth.value++;
     }
@@ -820,7 +847,7 @@ public class EDIParser implements XMLReader {
      * @return
      * @throws SAXException 
      */
-    public static String getNamespaceAlias(String namespace, ContentHandler handler) throws SAXException {
+    public static String getNamespaceAlias(String namespace) throws SAXException {
     	if (StringUtils.isEmpty(namespace) || StringUtils.isBlank(namespace)) {
     		return "";
     	}
@@ -831,7 +858,6 @@ public class EDIParser implements XMLReader {
     		} else {
     			result = "ns" + aliasesMap.size();
     		}
-    		handler.startPrefixMapping(result, namespace);
     		aliasesMap.put(namespace, result);
     	}
     	return result;
@@ -854,7 +880,8 @@ public class EDIParser implements XMLReader {
         if(indent) {
             indent();
         }
-        String alias = getNamespaceAlias(namespace, contentHandler);
+        String alias = getNamespaceAlias(namespace);
+        contentHandler.endPrefixMapping(nsStack.pop());
         contentHandler.endElement(namespace, elementName, alias + ":" + elementName);
     }
 

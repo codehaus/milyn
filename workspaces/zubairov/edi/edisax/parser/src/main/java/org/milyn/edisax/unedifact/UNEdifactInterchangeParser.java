@@ -130,7 +130,8 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	        segmentReader.setIgnoreNewLines(getFeature(EDIParser.FEATURE_IGNORE_NEWLINES));
 	        
 	        contentHandler.startDocument();
-	        String alias = EDIParser.getNamespaceAlias(ControlBlockHandler.NAMESPACE, contentHandler);
+	        String alias = EDIParser.getNamespaceAlias(ControlBlockHandler.NAMESPACE);
+	        contentHandler.startPrefixMapping(alias, ControlBlockHandler.NAMESPACE);
 	        contentHandler.startElement(ControlBlockHandler.NAMESPACE, "unEdifact", alias +":unEdifact", new AttributesImpl());
 	
 	        while(true) {
@@ -151,6 +152,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	        
 	        contentHandler.characters(new char[] {'\n'}, 0, 1);
 	        contentHandler.endElement(ControlBlockHandler.NAMESPACE, "unEdifact", alias +":unEdifact");
+	        contentHandler.endPrefixMapping(alias);
 	        contentHandler.endDocument();
         } finally {
         	contentHandler = null;
