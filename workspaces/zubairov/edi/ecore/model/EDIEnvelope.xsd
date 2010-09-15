@@ -58,19 +58,19 @@
 		</sequence>
 	</complexType>
 
-	<complexType name="SenderType" mixed="true">
+	<complexType name="SenderType" mixed="false">
 		<sequence>
 			<element name="id" type="string" smooks:type="component"/>
 		</sequence>
 	</complexType>
 
-	<complexType name="RecipientType" mixed="true">
+	<complexType name="RecipientType" mixed="false">
 		<sequence>
 			<element name="id" type="string" smooks:type="component"/>
 		</sequence>
 	</complexType>
 
-	<complexType name="DateTimeType" mixed="true">
+	<complexType name="DateTimeType" mixed="false">
 		<sequence>
 			<element name="date" type="string" smooks:type="component"/>
 			<element name="time" type="string" smooks:type="component"/>

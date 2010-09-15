@@ -62,7 +62,8 @@ public class ECoreConversionUtils {
 		annotate(clazz, "ignoreUnmappedFields",
 				String.valueOf(segment.isIgnoreUnmappedFields()));
 		annotate(clazz, "description", segment.getDescription());
-		annotate(clazz, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.SEGMENT_TYPE);
+		annotate(clazz, SmooksMetadata.ANNOTATION_TYPE_KEY,
+				SmooksMetadata.SEGMENT_TYPE);
 		return clazz;
 	}
 
@@ -109,7 +110,8 @@ public class ECoreConversionUtils {
 	public static EReference segmentToEReference(Segment segment,
 			EClass refClass) {
 		EReference reference = segmentGroupToEReference(segment, refClass);
-		annotate(reference, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.SEGMENT_TYPE);
+		annotate(reference, SmooksMetadata.ANNOTATION_TYPE_KEY,
+				SmooksMetadata.SEGMENT_TYPE);
 		annotate(reference, SmooksMetadata.SEGCODE, segment.getSegcode());
 		reference.setName(segment.getSegcode());
 		return reference;
@@ -128,24 +130,18 @@ public class ECoreConversionUtils {
 		return clazz;
 	}
 
-	private static void addMappingInformation(EModelElement element,
-			IMappingNode node) {
+	private static void addMappingInformation(EClass clazz, IMappingNode node) {
 		if (node.getDocumentation() != null) {
-			annotate(element, "documentation", node.getDocumentation());
+			annotate(clazz, "documentation", node.getDocumentation());
 		}
-		if (node.getXmltag() != null) {
-			annotate(element, SmooksMetadata.XML_TAG_ANNOTATION_KEY, node.getXmltag());
-		}
-		if (element instanceof EClassifier) {
-			metadata.setName((EClassifier) element, node.getXmltag());
-			metadata.setContentKind((EClass) element,
-					ExtendedMetaData.ELEMENT_ONLY_CONTENT);
-		} else if (element instanceof EStructuralFeature) {
-			metadata.setName((EStructuralFeature) element, node.getXmltag());
-			metadata.setFeatureKind((EStructuralFeature) element,
-					ExtendedMetaData.ELEMENT_FEATURE);
-			setTargetNamespace((EStructuralFeature) element);
-		}
+		metadata.setName(clazz, clazz.getName());
+		metadata.setContentKind(clazz, ExtendedMetaData.ELEMENT_ONLY_CONTENT);
+	}
+
+	private static void addMappingInformation(EStructuralFeature ref, IMappingNode node) {
+		metadata.setName(ref, node.getXmltag());
+		metadata.setFeatureKind(ref, ExtendedMetaData.ELEMENT_FEATURE);
+		setTargetNamespace(ref);
 	}
 
 	/**
@@ -157,7 +153,8 @@ public class ECoreConversionUtils {
 	 * @param value
 	 */
 	private static void annotate(EModelElement element, String key, String value) {
-		EAnnotation annotation = element.getEAnnotation(SmooksMetadata.ANNOTATION_TYPE);
+		EAnnotation annotation = element
+				.getEAnnotation(SmooksMetadata.ANNOTATION_TYPE);
 		if (annotation == null) {
 			annotation = EcoreFactory.eINSTANCE.createEAnnotation();
 			annotation.setSource(SmooksMetadata.ANNOTATION_TYPE);
@@ -185,7 +182,8 @@ public class ECoreConversionUtils {
 		addMappingInformation(reference, grp);
 		annotate(reference, "minOccurs", String.valueOf(grp.getMinOccurs()));
 		annotate(reference, "maxOccurs", String.valueOf(grp.getMaxOccurs()));
-		annotate(reference, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.SEGMENT_GROUP_TYPE);
+		annotate(reference, SmooksMetadata.ANNOTATION_TYPE_KEY,
+				SmooksMetadata.SEGMENT_GROUP_TYPE);
 		annotate(reference, SmooksMetadata.SEGCODE, grp.getSegcode());
 		return reference;
 	}
@@ -228,7 +226,8 @@ public class ECoreConversionUtils {
 	private static void annotateField(IField field, EModelElement attr) {
 		annotate(attr, "truncable", String.valueOf(field.isTruncatable()));
 		annotate(attr, "required", String.valueOf(field.isRequired()));
-		annotate(attr, SmooksMetadata.ANNOTATION_TYPE_KEY, SmooksMetadata.FIELD_TYPE);
+		annotate(attr, SmooksMetadata.ANNOTATION_TYPE_KEY,
+				SmooksMetadata.FIELD_TYPE);
 		annotateValueNode(attr, field);
 	}
 
@@ -362,7 +361,7 @@ public class ECoreConversionUtils {
 	}
 
 	/**
-	 * Creates a fment root class
+	 * Creates a droot root class
 	 * 
 	 * @param rootClass
 	 * @return
@@ -371,19 +370,21 @@ public class ECoreConversionUtils {
 		EClass clazz = EcoreFactory.eINSTANCE.createEClass();
 		clazz.setName("DocumentRoot");
 		metadata.setDocumentRoot(clazz);
-		EReference reference = EcoreFactory.eINSTANCE.createEReference();
-		clazz.getEStructuralFeatures().add(reference);
-		reference.setEType(rootClass);
-		reference.setName(metadata.getName(rootClass));
-		metadata.setName(clazz, metadata.getName(reference));
-		metadata.setFeatureKind(reference, ExtendedMetaData.ELEMENT_FEATURE);
-		setTargetNamespace(reference);
-		reference.setContainment(true);
+		if (rootClass != null) {
+			EReference reference = EcoreFactory.eINSTANCE.createEReference();
+			clazz.getEStructuralFeatures().add(reference);
+			reference.setEType(rootClass);
+			reference.setName(metadata.getName(rootClass));
+			metadata.setFeatureKind(reference, ExtendedMetaData.ELEMENT_FEATURE);
+			setTargetNamespace(reference);
+			reference.setContainment(true);
+		}
 		return clazz;
 	}
 
 	private static void setTargetNamespace(EStructuralFeature element) {
-		EAnnotation eAnnotation = element.getEAnnotation(ExtendedMetaData.ANNOTATION_URI);
+		EAnnotation eAnnotation = element
+				.getEAnnotation(ExtendedMetaData.ANNOTATION_URI);
 		eAnnotation.getDetails().put("namespace", "##targetNamespace");
 	}
 }

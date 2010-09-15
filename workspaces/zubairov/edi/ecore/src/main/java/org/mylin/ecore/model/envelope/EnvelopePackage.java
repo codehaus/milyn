@@ -70,22 +70,13 @@ public interface EnvelopePackage extends EPackage {
 	int DATE_TIME_TYPE = 0;
 
 	/**
-	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATE_TIME_TYPE__MIXED = 0;
-
-	/**
 	 * The feature id for the '<em><b>Date</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DATE_TIME_TYPE__DATE = 1;
+	int DATE_TIME_TYPE__DATE = 0;
 
 	/**
 	 * The feature id for the '<em><b>Time</b></em>' attribute.
@@ -94,7 +85,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATE_TIME_TYPE__TIME = 2;
+	int DATE_TIME_TYPE__TIME = 1;
 
 	/**
 	 * The number of structural features of the '<em>Date Time Type</em>' class.
@@ -103,7 +94,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATE_TIME_TYPE_FEATURE_COUNT = 3;
+	int DATE_TIME_TYPE_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.DocumentRootImpl <em>Document Root</em>}' class.
@@ -281,22 +272,13 @@ public interface EnvelopePackage extends EPackage {
 	int RECIPIENT_TYPE = 4;
 
 	/**
-	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int RECIPIENT_TYPE__MIXED = 0;
-
-	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int RECIPIENT_TYPE__ID = 1;
+	int RECIPIENT_TYPE__ID = 0;
 
 	/**
 	 * The number of structural features of the '<em>Recipient Type</em>' class.
@@ -305,7 +287,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int RECIPIENT_TYPE_FEATURE_COUNT = 2;
+	int RECIPIENT_TYPE_FEATURE_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.SenderTypeImpl <em>Sender Type</em>}' class.
@@ -318,22 +300,13 @@ public interface EnvelopePackage extends EPackage {
 	int SENDER_TYPE = 5;
 
 	/**
-	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SENDER_TYPE__MIXED = 0;
-
-	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SENDER_TYPE__ID = 1;
+	int SENDER_TYPE__ID = 0;
 
 	/**
 	 * The number of structural features of the '<em>Sender Type</em>' class.
@@ -342,7 +315,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SENDER_TYPE_FEATURE_COUNT = 2;
+	int SENDER_TYPE_FEATURE_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.SyntaxIdentifierTypeImpl <em>Syntax Identifier Type</em>}' class.
@@ -614,17 +587,6 @@ public interface EnvelopePackage extends EPackage {
 	EClass getDateTimeType();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.DateTimeType#getMixed <em>Mixed</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Mixed</em>'.
-	 * @see org.mylin.ecore.model.envelope.DateTimeType#getMixed()
-	 * @see #getDateTimeType()
-	 * @generated
-	 */
-	EAttribute getDateTimeType_Mixed();
-
-	/**
 	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.DateTimeType#getDate <em>Date</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -819,17 +781,6 @@ public interface EnvelopePackage extends EPackage {
 	EClass getRecipientType();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.RecipientType#getMixed <em>Mixed</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Mixed</em>'.
-	 * @see org.mylin.ecore.model.envelope.RecipientType#getMixed()
-	 * @see #getRecipientType()
-	 * @generated
-	 */
-	EAttribute getRecipientType_Mixed();
-
-	/**
 	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.RecipientType#getId <em>Id</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -849,17 +800,6 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 */
 	EClass getSenderType();
-
-	/**
-	 * Returns the meta object for the attribute list '{@link org.mylin.ecore.model.envelope.SenderType#getMixed <em>Mixed</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Mixed</em>'.
-	 * @see org.mylin.ecore.model.envelope.SenderType#getMixed()
-	 * @see #getSenderType()
-	 * @generated
-	 */
-	EAttribute getSenderType_Mixed();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SenderType#getId <em>Id</em>}'.
@@ -1141,14 +1081,6 @@ public interface EnvelopePackage extends EPackage {
 		EClass DATE_TIME_TYPE = eINSTANCE.getDateTimeType();
 
 		/**
-		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute DATE_TIME_TYPE__MIXED = eINSTANCE.getDateTimeType_Mixed();
-
-		/**
 		 * The meta object literal for the '<em><b>Date</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1301,14 +1233,6 @@ public interface EnvelopePackage extends EPackage {
 		EClass RECIPIENT_TYPE = eINSTANCE.getRecipientType();
 
 		/**
-		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute RECIPIENT_TYPE__MIXED = eINSTANCE.getRecipientType_Mixed();
-
-		/**
 		 * The meta object literal for the '<em><b>Id</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1325,14 +1249,6 @@ public interface EnvelopePackage extends EPackage {
 		 * @generated
 		 */
 		EClass SENDER_TYPE = eINSTANCE.getSenderType();
-
-		/**
-		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SENDER_TYPE__MIXED = eINSTANCE.getSenderType_Mixed();
 
 		/**
 		 * The meta object literal for the '<em><b>Id</b></em>' attribute feature.

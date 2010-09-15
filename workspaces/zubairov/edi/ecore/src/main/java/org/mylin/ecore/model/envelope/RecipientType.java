@@ -18,33 +18,15 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.mylin.ecore.model.envelope.RecipientType#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.RecipientType#getId <em>Id</em>}</li>
  * </ul>
  * </p>
  *
  * @see org.mylin.ecore.model.envelope.EnvelopePackage#getRecipientType()
- * @model extendedMetaData="name='RecipientType' kind='mixed'"
+ * @model extendedMetaData="name='RecipientType' kind='elementOnly'"
  * @generated
  */
 public interface RecipientType extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Mixed</b></em>' attribute list.
-	 * The list contents are of type {@link org.eclipse.emf.ecore.util.FeatureMap.Entry}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Mixed</em>' attribute list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Mixed</em>' attribute list.
-	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getRecipientType_Mixed()
-	 * @model unique="false" dataType="org.eclipse.emf.ecore.EFeatureMapEntry" many="true"
-	 *        extendedMetaData="kind='elementWildcard' name=':mixed'"
-	 * @generated
-	 */
-	FeatureMap getMixed();
-
 	/**
 	 * Returns the value of the '<em><b>Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -56,7 +38,7 @@ public interface RecipientType extends EObject {
 	 * @return the value of the '<em>Id</em>' attribute.
 	 * @see #setId(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getRecipientType_Id()
-	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true" transient="true" volatile="true" derived="true"
+	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
 	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='id' namespace='##targetNamespace'"
 	 * @generated

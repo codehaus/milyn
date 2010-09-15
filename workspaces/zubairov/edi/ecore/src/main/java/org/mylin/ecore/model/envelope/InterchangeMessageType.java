@@ -70,7 +70,7 @@ public interface InterchangeMessageType extends EObject {
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getInterchangeMessageType_Message()
 	 * @model dataType="org.eclipse.emf.ecore.EFeatureMapEntry" required="true" many="false"
 	 *        annotation="smooks-mapping-data type='group'"
-	 *        extendedMetaData="kind='elementWildcard' wildcards='##any' name=':1' processing='skip'"
+	 *        extendedMetaData="kind='elementWildcard' wildcards='##any' name=':1' processing='lax'"
 	 * @generated
 	 */
 	FeatureMap getMessage();

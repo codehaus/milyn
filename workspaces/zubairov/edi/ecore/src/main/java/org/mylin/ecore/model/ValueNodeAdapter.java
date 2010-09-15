@@ -22,6 +22,8 @@ public class ValueNodeAdapter implements IValueNode {
 	protected EStructuralFeature feature;
 	
 	private DataDecoder decoder;
+	
+	private static final ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
 
 	public ValueNodeAdapter(EStructuralFeature feature) {
 		this.feature = feature;
@@ -51,7 +53,7 @@ public class ValueNodeAdapter implements IValueNode {
 	}
 
 	public String getXmltag() {
-		return EMFHelper.getAnnotationValue(feature, "xmlTag");
+		return metadata.getName(feature);
 	}
 
 	public String getNodeTypeRef() {

@@ -6,9 +6,11 @@
  */
 package org.mylin.ecore.model.envelope.impl;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.EObjectImpl;
@@ -27,7 +29,6 @@ import org.mylin.ecore.model.envelope.EnvelopePackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.DateTimeTypeImpl#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.DateTimeTypeImpl#getDate <em>Date</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.DateTimeTypeImpl#getTime <em>Time</em>}</li>
  * </ul>
@@ -36,16 +37,6 @@ import org.mylin.ecore.model.envelope.EnvelopePackage;
  * @generated
  */
 public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
-	/**
-	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMixed()
-	 * @generated
-	 * @ordered
-	 */
-	protected FeatureMap mixed;
-
 	/**
 	 * The default value of the '{@link #getDate() <em>Date</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -57,6 +48,16 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	protected static final String DATE_EDEFAULT = null;
 
 	/**
+	 * The cached value of the '{@link #getDate() <em>Date</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDate()
+	 * @generated
+	 * @ordered
+	 */
+	protected String date = DATE_EDEFAULT;
+
+	/**
 	 * The default value of the '{@link #getTime() <em>Time</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -65,6 +66,16 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	 * @ordered
 	 */
 	protected static final String TIME_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getTime() <em>Time</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getTime()
+	 * @generated
+	 * @ordered
+	 */
+	protected String time = TIME_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -90,20 +101,8 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FeatureMap getMixed() {
-		if (mixed == null) {
-			mixed = new BasicFeatureMap(this, EnvelopePackage.DATE_TIME_TYPE__MIXED);
-		}
-		return mixed;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public String getDate() {
-		return (String)getMixed().get(EnvelopePackage.Literals.DATE_TIME_TYPE__DATE, true);
+		return date;
 	}
 
 	/**
@@ -112,7 +111,10 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	 * @generated
 	 */
 	public void setDate(String newDate) {
-		((FeatureMap.Internal)getMixed()).set(EnvelopePackage.Literals.DATE_TIME_TYPE__DATE, newDate);
+		String oldDate = date;
+		date = newDate;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.DATE_TIME_TYPE__DATE, oldDate, date));
 	}
 
 	/**
@@ -121,7 +123,7 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	 * @generated
 	 */
 	public String getTime() {
-		return (String)getMixed().get(EnvelopePackage.Literals.DATE_TIME_TYPE__TIME, true);
+		return time;
 	}
 
 	/**
@@ -130,21 +132,10 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	 * @generated
 	 */
 	public void setTime(String newTime) {
-		((FeatureMap.Internal)getMixed()).set(EnvelopePackage.Literals.DATE_TIME_TYPE__TIME, newTime);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case EnvelopePackage.DATE_TIME_TYPE__MIXED:
-				return ((InternalEList<?>)getMixed()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
+		String oldTime = time;
+		time = newTime;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.DATE_TIME_TYPE__TIME, oldTime, time));
 	}
 
 	/**
@@ -155,9 +146,6 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case EnvelopePackage.DATE_TIME_TYPE__MIXED:
-				if (coreType) return getMixed();
-				return ((FeatureMap.Internal)getMixed()).getWrapper();
 			case EnvelopePackage.DATE_TIME_TYPE__DATE:
 				return getDate();
 			case EnvelopePackage.DATE_TIME_TYPE__TIME:
@@ -174,9 +162,6 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case EnvelopePackage.DATE_TIME_TYPE__MIXED:
-				((FeatureMap.Internal)getMixed()).set(newValue);
-				return;
 			case EnvelopePackage.DATE_TIME_TYPE__DATE:
 				setDate((String)newValue);
 				return;
@@ -195,9 +180,6 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.DATE_TIME_TYPE__MIXED:
-				getMixed().clear();
-				return;
 			case EnvelopePackage.DATE_TIME_TYPE__DATE:
 				setDate(DATE_EDEFAULT);
 				return;
@@ -216,12 +198,10 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.DATE_TIME_TYPE__MIXED:
-				return mixed != null && !mixed.isEmpty();
 			case EnvelopePackage.DATE_TIME_TYPE__DATE:
-				return DATE_EDEFAULT == null ? getDate() != null : !DATE_EDEFAULT.equals(getDate());
+				return DATE_EDEFAULT == null ? date != null : !DATE_EDEFAULT.equals(date);
 			case EnvelopePackage.DATE_TIME_TYPE__TIME:
-				return TIME_EDEFAULT == null ? getTime() != null : !TIME_EDEFAULT.equals(getTime());
+				return TIME_EDEFAULT == null ? time != null : !TIME_EDEFAULT.equals(time);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -236,8 +216,10 @@ public class DateTimeTypeImpl extends EObjectImpl implements DateTimeType {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (mixed: ");
-		result.append(mixed);
+		result.append(" (date: ");
+		result.append(date);
+		result.append(", time: ");
+		result.append(time);
 		result.append(')');
 		return result.toString();
 	}

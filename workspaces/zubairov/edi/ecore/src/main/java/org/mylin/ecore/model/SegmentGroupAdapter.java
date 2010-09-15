@@ -26,6 +26,7 @@ public class SegmentGroupAdapter implements ISegmentGroup {
 	protected final EReference ref;
 	private List<ISegmentGroup> segments;
 	protected Pattern pattern;
+	private static final ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
 
 	public SegmentGroupAdapter(EClass clazz) {
 		this.clazz = clazz;
@@ -45,9 +46,9 @@ public class SegmentGroupAdapter implements ISegmentGroup {
 		// because in both common definitions xml and in mapping xml
 		// we have XML tags, but reference should be winning
 		if (ref != null) {
-			return EMFHelper.getAnnotationValue(ref, "xmlTag");
+			return metadata.getName(ref);
 		}
-		return EMFHelper.getAnnotationValue(clazz, "xmlTag");
+		return metadata.getName(clazz);
 	}
 
 	/**

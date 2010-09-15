@@ -6,9 +6,11 @@
  */
 package org.mylin.ecore.model.envelope.impl;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.EObjectImpl;
@@ -27,7 +29,6 @@ import org.mylin.ecore.model.envelope.RecipientType;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.mylin.ecore.model.envelope.impl.RecipientTypeImpl#getMixed <em>Mixed</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.RecipientTypeImpl#getId <em>Id</em>}</li>
  * </ul>
  * </p>
@@ -35,16 +36,6 @@ import org.mylin.ecore.model.envelope.RecipientType;
  * @generated
  */
 public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
-	/**
-	 * The cached value of the '{@link #getMixed() <em>Mixed</em>}' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMixed()
-	 * @generated
-	 * @ordered
-	 */
-	protected FeatureMap mixed;
-
 	/**
 	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -54,6 +45,16 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	 * @ordered
 	 */
 	protected static final String ID_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getId()
+	 * @generated
+	 * @ordered
+	 */
+	protected String id = ID_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -79,20 +80,8 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FeatureMap getMixed() {
-		if (mixed == null) {
-			mixed = new BasicFeatureMap(this, EnvelopePackage.RECIPIENT_TYPE__MIXED);
-		}
-		return mixed;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public String getId() {
-		return (String)getMixed().get(EnvelopePackage.Literals.RECIPIENT_TYPE__ID, true);
+		return id;
 	}
 
 	/**
@@ -101,21 +90,10 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	 * @generated
 	 */
 	public void setId(String newId) {
-		((FeatureMap.Internal)getMixed()).set(EnvelopePackage.Literals.RECIPIENT_TYPE__ID, newId);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case EnvelopePackage.RECIPIENT_TYPE__MIXED:
-				return ((InternalEList<?>)getMixed()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
+		String oldId = id;
+		id = newId;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.RECIPIENT_TYPE__ID, oldId, id));
 	}
 
 	/**
@@ -126,9 +104,6 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case EnvelopePackage.RECIPIENT_TYPE__MIXED:
-				if (coreType) return getMixed();
-				return ((FeatureMap.Internal)getMixed()).getWrapper();
 			case EnvelopePackage.RECIPIENT_TYPE__ID:
 				return getId();
 		}
@@ -143,9 +118,6 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case EnvelopePackage.RECIPIENT_TYPE__MIXED:
-				((FeatureMap.Internal)getMixed()).set(newValue);
-				return;
 			case EnvelopePackage.RECIPIENT_TYPE__ID:
 				setId((String)newValue);
 				return;
@@ -161,9 +133,6 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.RECIPIENT_TYPE__MIXED:
-				getMixed().clear();
-				return;
 			case EnvelopePackage.RECIPIENT_TYPE__ID:
 				setId(ID_EDEFAULT);
 				return;
@@ -179,10 +148,8 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case EnvelopePackage.RECIPIENT_TYPE__MIXED:
-				return mixed != null && !mixed.isEmpty();
 			case EnvelopePackage.RECIPIENT_TYPE__ID:
-				return ID_EDEFAULT == null ? getId() != null : !ID_EDEFAULT.equals(getId());
+				return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -197,8 +164,8 @@ public class RecipientTypeImpl extends EObjectImpl implements RecipientType {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (mixed: ");
-		result.append(mixed);
+		result.append(" (id: ");
+		result.append(id);
 		result.append(')');
 		return result.toString();
 	}

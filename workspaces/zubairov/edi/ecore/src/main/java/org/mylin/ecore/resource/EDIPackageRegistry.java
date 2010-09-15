@@ -36,6 +36,8 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 	
 	private EPackage cuscar;
 
+	private EPackage common;
+
 	public EDIPackageRegistry() {
 		super(EPackage.Registry.INSTANCE);
 		// We need to initialize EnvelopePackage
@@ -44,6 +46,11 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 		EnvelopePackage.eINSTANCE.getNsPrefix();
 		try {
 			cuscar = loadModel("cuscar.ecore");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			common = loadModel("commonDefinitions.ecore");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -78,6 +85,9 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 		if (nsURI != null && nsURI.endsWith("CUSCAR")) {
 			return cuscar;
 		}
+		if (nsURI != null && nsURI.equals("http://smooks.org/UNEDI/local/modelsetDefinitions")) {
+			return common;
+		}
 		return super.getEPackage(nsURI);
 	}
 
@@ -85,6 +95,9 @@ public class EDIPackageRegistry extends EPackageRegistryImpl implements
 	public EFactory getEFactory(String nsURI) {
 		if (nsURI != null && nsURI.endsWith("CUSCAR")) {
 			return cuscar.getEFactoryInstance();
+		}
+		if (nsURI != null && nsURI.equals("http://smooks.org/UNEDI/local/modelsetDefinitions")) {
+			return common.getEFactoryInstance();
 		}
 		return super.getEFactory(nsURI);
 	}

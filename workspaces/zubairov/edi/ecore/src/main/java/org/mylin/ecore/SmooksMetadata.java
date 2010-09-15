@@ -12,14 +12,12 @@ import org.eclipse.emf.ecore.EModelElement;
 public interface SmooksMetadata {
 
 	public static final String ANNOTATION_TYPE = "smooks-mapping-data";
-	public static final String XML_TAG_ANNOTATION_KEY = "xmlTag";
 	public static final String SEGMENT_TYPE = "segment";
 	public static final String SEGMENT_GROUP_TYPE = "group";
 	public static final String FIELD_TYPE = "field";
 	public static final String COMPONENT_TYPE = "component";
 	public static final String ANNOTATION_TYPE_KEY = "type";
 	public static final String SEGCODE = "segcode";
-
 
 	/**
 	 * Returns {@link EAnnotation} or throws {@link IllegalArgumentException}
@@ -44,7 +42,8 @@ public interface SmooksMetadata {
 	 * @param feature
 	 * @return
 	 */
-	public String getSegcode(EModelElement element) throws IllegalArgumentException;
+	public String getSegcode(EModelElement element)
+			throws IllegalArgumentException;
 
 	/**
 	 * Returns true if given {@link EModelElement} has annotation type group
@@ -62,7 +61,6 @@ public interface SmooksMetadata {
 	 */
 	public boolean isField(EModelElement element);
 
-
 	/**
 	 * Returns true of false or throws {@link IllegalArgumentException}
 	 * 
@@ -71,7 +69,6 @@ public interface SmooksMetadata {
 	 */
 	public boolean isComponent(EModelElement feature);
 
-	
 	/**
 	 * SINGLETON instance
 	 * 
@@ -83,7 +80,8 @@ public interface SmooksMetadata {
 		 */
 		public boolean isSegment(EModelElement element) {
 			EAnnotation annotation = getSmooksAnnotation(element);
-			return SEGMENT_TYPE.equals(annotation.getDetails().get(ANNOTATION_TYPE_KEY));
+			return SEGMENT_TYPE.equals(annotation.getDetails().get(
+					ANNOTATION_TYPE_KEY));
 		}
 
 		/**
@@ -107,7 +105,8 @@ public interface SmooksMetadata {
 				throws IllegalArgumentException {
 			EAnnotation annotation = getSmooksAnnotation(element);
 			if (!annotation.getDetails().containsKey(SEGCODE)) {
-				throw new IllegalArgumentException("Can't find segcode on " + element);
+				throw new IllegalArgumentException("Can't find segcode on "
+						+ element);
 			}
 			return annotation.getDetails().get(SEGCODE);
 		}
@@ -117,7 +116,8 @@ public interface SmooksMetadata {
 		 */
 		public boolean isSegmentGroup(EModelElement element) {
 			EAnnotation annotation = getSmooksAnnotation(element);
-			return SEGMENT_GROUP_TYPE.equals(annotation.getDetails().get(ANNOTATION_TYPE_KEY));
+			return SEGMENT_GROUP_TYPE.equals(annotation.getDetails().get(
+					ANNOTATION_TYPE_KEY));
 		}
 
 		/**
@@ -129,7 +129,8 @@ public interface SmooksMetadata {
 			if (annotation == null) {
 				return false;
 			}
-			return FIELD_TYPE.equals(annotation.getDetails().get(ANNOTATION_TYPE_KEY));
+			return FIELD_TYPE.equals(annotation.getDetails().get(
+					ANNOTATION_TYPE_KEY));
 		}
 
 		/**
@@ -140,11 +141,10 @@ public interface SmooksMetadata {
 			if (annotation == null) {
 				return false;
 			}
-			return COMPONENT_TYPE.equals(annotation.getDetails().get(ANNOTATION_TYPE_KEY));
+			return COMPONENT_TYPE.equals(annotation.getDetails().get(
+					ANNOTATION_TYPE_KEY));
 		}
 
 	};
-
-
 
 }

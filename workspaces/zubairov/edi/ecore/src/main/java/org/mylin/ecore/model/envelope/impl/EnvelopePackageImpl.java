@@ -196,7 +196,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDateTimeType_Mixed() {
+	public EAttribute getDateTimeType_Date() {
 		return (EAttribute)dateTimeTypeEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -205,17 +205,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDateTimeType_Date() {
-		return (EAttribute)dateTimeTypeEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EAttribute getDateTimeType_Time() {
-		return (EAttribute)dateTimeTypeEClass.getEStructuralFeatures().get(2);
+		return (EAttribute)dateTimeTypeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -367,17 +358,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getRecipientType_Mixed() {
-		return (EAttribute)recipientTypeEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EAttribute getRecipientType_Id() {
-		return (EAttribute)recipientTypeEClass.getEStructuralFeatures().get(1);
+		return (EAttribute)recipientTypeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -394,17 +376,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSenderType_Mixed() {
-		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EAttribute getSenderType_Id() {
-		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(1);
+		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -634,7 +607,6 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 
 		// Create classes and their features
 		dateTimeTypeEClass = createEClass(DATE_TIME_TYPE);
-		createEAttribute(dateTimeTypeEClass, DATE_TIME_TYPE__MIXED);
 		createEAttribute(dateTimeTypeEClass, DATE_TIME_TYPE__DATE);
 		createEAttribute(dateTimeTypeEClass, DATE_TIME_TYPE__TIME);
 
@@ -657,11 +629,9 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		createEAttribute(messageIdentifierTypeEClass, MESSAGE_IDENTIFIER_TYPE__ASSOCIATION_ASSIGNED_CODE);
 
 		recipientTypeEClass = createEClass(RECIPIENT_TYPE);
-		createEAttribute(recipientTypeEClass, RECIPIENT_TYPE__MIXED);
 		createEAttribute(recipientTypeEClass, RECIPIENT_TYPE__ID);
 
 		senderTypeEClass = createEClass(SENDER_TYPE);
-		createEAttribute(senderTypeEClass, SENDER_TYPE__MIXED);
 		createEAttribute(senderTypeEClass, SENDER_TYPE__ID);
 
 		syntaxIdentifierTypeEClass = createEClass(SYNTAX_IDENTIFIER_TYPE);
@@ -727,9 +697,8 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(dateTimeTypeEClass, DateTimeType.class, "DateTimeType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getDateTimeType_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, DateTimeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDateTimeType_Date(), theXMLTypePackage.getString(), "date", null, 1, 1, DateTimeType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDateTimeType_Time(), theXMLTypePackage.getString(), "time", null, 1, 1, DateTimeType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDateTimeType_Date(), theXMLTypePackage.getString(), "date", null, 1, 1, DateTimeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDateTimeType_Time(), theXMLTypePackage.getString(), "time", null, 1, 1, DateTimeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(documentRootEClass, DocumentRoot.class, "DocumentRoot", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getDocumentRoot_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -750,12 +719,10 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		initEAttribute(getMessageIdentifierType_AssociationAssignedCode(), theXMLTypePackage.getString(), "associationAssignedCode", null, 1, 1, MessageIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(recipientTypeEClass, RecipientType.class, "RecipientType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getRecipientType_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, RecipientType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getRecipientType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, RecipientType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRecipientType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, RecipientType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(senderTypeEClass, SenderType.class, "SenderType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getSenderType_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, SenderType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSenderType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SenderType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSenderType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SenderType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(syntaxIdentifierTypeEClass, SyntaxIdentifierType.class, "SyntaxIdentifierType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getSyntaxIdentifierType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -808,14 +775,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   source, 
 		   new String[] {
 			 "name", "DateTimeType",
-			 "kind", "mixed"
-		   });		
-		addAnnotation
-		  (getDateTimeType_Mixed(), 
-		   source, 
-		   new String[] {
-			 "kind", "elementWildcard",
-			 "name", ":mixed"
+			 "kind", "elementOnly"
 		   });			
 		addAnnotation
 		  (getDateTimeType_Date(), 
@@ -891,7 +851,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "elementWildcard",
 			 "wildcards", "##any",
 			 "name", ":1",
-			 "processing", "skip"
+			 "processing", "lax"
 		   });			
 		addAnnotation
 		  (getInterchangeMessageType_UNT(), 
@@ -953,14 +913,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   source, 
 		   new String[] {
 			 "name", "RecipientType",
-			 "kind", "mixed"
-		   });		
-		addAnnotation
-		  (getRecipientType_Mixed(), 
-		   source, 
-		   new String[] {
-			 "kind", "elementWildcard",
-			 "name", ":mixed"
+			 "kind", "elementOnly"
 		   });			
 		addAnnotation
 		  (getRecipientType_Id(), 
@@ -975,14 +928,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   source, 
 		   new String[] {
 			 "name", "SenderType",
-			 "kind", "mixed"
-		   });		
-		addAnnotation
-		  (getSenderType_Mixed(), 
-		   source, 
-		   new String[] {
-			 "kind", "elementWildcard",
-			 "name", ":mixed"
+			 "kind", "elementOnly"
 		   });			
 		addAnnotation
 		  (getSenderType_Id(), 
@@ -1171,7 +1117,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * @generated
 	 */
 	protected void createSmooksmappingdataAnnotations() {
-		String source = "smooks-mapping-data";				
+		String source = "smooks-mapping-data";			
 		addAnnotation
 		  (getDateTimeType_Date(), 
 		   source, 
@@ -1203,13 +1149,13 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "segcode", "UNT",
 			 "type", "segment"
-		   });											
+		   });										
 		addAnnotation
 		  (getRecipientType_Id(), 
 		   source, 
 		   new String[] {
 			 "type", "component"
-		   });					
+		   });				
 		addAnnotation
 		  (getSenderType_Id(), 
 		   source, 

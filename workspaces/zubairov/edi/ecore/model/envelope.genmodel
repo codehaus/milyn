@@ -8,7 +8,6 @@
   <genPackages prefix="Envelope" basePackage="org.mylin.ecore.model" resource="XML"
       disposableProviderFactory="true" ecorePackage="envelope.ecore#/">
     <genClasses ecoreClass="envelope.ecore#//DateTimeType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//DateTimeType/mixed"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//DateTimeType/date"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//DateTimeType/time"/>
     </genClasses>
@@ -31,11 +30,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//MessageIdentifierType/associationAssignedCode"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//RecipientType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientType/mixed"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientType/id"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//SenderType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/mixed"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/id"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//SyntaxIdentifierType">

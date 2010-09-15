@@ -179,6 +179,9 @@ public class ECoreGenerator {
 			}
 			result.put(clazz.getName(), clazz);
 		}
+		// Adding DocumentRoot
+		EClass droot = ECoreConversionUtils.createDocumentRoot(null);
+		result.put(droot.getName(), droot);
 		return result.values();
 	}
 
