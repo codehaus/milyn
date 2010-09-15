@@ -63,12 +63,12 @@
     -->
     <resource-config selector="exports">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.Exports</param>
+        <param name="resource">org.milyn.payload.Exports</param>
     </resource-config>
     
     <resource-config selector="exports/result">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.Export</param>
+        <param name="resource">org.milyn.payload.Export</param>
     </resource-config>
     
     <resource-config selector="exports/result">

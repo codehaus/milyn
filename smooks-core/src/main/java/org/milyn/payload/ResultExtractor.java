@@ -14,7 +14,6 @@
  */
 package org.milyn.payload;
 
-import org.milyn.Export;
 
 /**
  * An extractor of results produces by Smooks.

@@ -12,7 +12,7 @@
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
-package org.milyn;
+package org.milyn.payload;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,8 +23,7 @@ import java.util.Set;
 import javax.xml.transform.Result;
 
 import org.junit.Test;
-import org.milyn.payload.JavaResult;
-import org.milyn.payload.StringResult;
+import org.milyn.Smooks;
 
 /**
  * Functional test for {@link Exports}.
@@ -37,7 +36,7 @@ public class ExportsFunctionalTest
     @Test
     public void multipleExportTypes() throws Exception
     {
-        Smooks smooks = new Smooks("/org/milyn/exports-01.xml");
+        Smooks smooks = new Smooks("/org/milyn/payload/exports-01.xml");
         smooks.createExecutionContext();
 
         Exports exports = Exports.getExports(smooks.getApplicationContext());
@@ -50,7 +49,7 @@ public class ExportsFunctionalTest
     @Test
     public void multipleNamedExportTypes() throws Exception
     {
-        Smooks smooks = new Smooks("/org/milyn/exports-named.xml");
+        Smooks smooks = new Smooks("/org/milyn/payload/exports-named.xml");
         smooks.createExecutionContext();
 
         Exports exports = Exports.getExports(smooks.getApplicationContext());

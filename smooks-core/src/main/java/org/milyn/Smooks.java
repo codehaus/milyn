@@ -30,6 +30,7 @@ import org.milyn.delivery.*;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
+import org.milyn.payload.Exports;
 import org.milyn.payload.FilterResult;
 import org.milyn.payload.FilterSource;
 import org.milyn.payload.JavaResult;

@@ -17,7 +17,6 @@ package org.milyn.payload;
 
 import com.thoughtworks.xstream.XStream;
 
-import org.milyn.Export;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.javabean.context.StandaloneBeanContext;
 import org.milyn.payload.FilterResult;
