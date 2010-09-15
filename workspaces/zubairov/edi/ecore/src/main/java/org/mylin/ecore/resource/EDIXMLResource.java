@@ -1,14 +1,20 @@
 package org.mylin.ecore.resource;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.xmi.DOMHandler;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser.MappingRegistry;
-import org.xml.sax.InputSource;
+import org.mylin.ecore.EDIWriter;
+import org.mylin.ecore.model.envelope.DocumentRoot;
+import org.w3c.dom.Document;
 
 /**
  * An extension to {@link XMLResourceImpl} that could be used
@@ -21,6 +27,7 @@ public class EDIXMLResource extends XMLResourceImpl {
 
 	private MappingRegistry reg;
 
+	private EDIWriter ediWriter = EDIWriter.INSTANCE;
 
 	public EDIXMLResource() {
 		super();
@@ -36,11 +43,27 @@ public class EDIXMLResource extends XMLResourceImpl {
 	protected XMLLoad createXMLLoad() {
 		return new EDIXMLLoadl(createXMLHelper(), reg);
 	}
-
+	
 	@Override
-	public void doLoad(InputSource inputSource, Map<?, ?> options)
+	public void doSave(OutputStream outputStream, Map<?, ?> options)
 			throws IOException {
-		
-		super.doLoad(inputSource, options);
+		DocumentRoot docRoot = (DocumentRoot) getContents().get(0);
+		OutputStreamWriter out = new OutputStreamWriter(outputStream);
+		ediWriter.write(out, docRoot.getUnEdifact());
+		out.flush();
+		outputStream.flush();
 	}
+	
+	@Override
+	public void doSave(Writer writer, Map<?, ?> options) throws IOException {
+		DocumentRoot docRoot = (DocumentRoot) getContents().get(0);
+		ediWriter.write(writer, docRoot.getUnEdifact());
+		writer.flush();
+	}
+	
+	@Override
+	public Document save(Document doc, Map<?, ?> options, DOMHandler handler) {
+		throw new UnsupportedOperationException("Not supported operation!");
+	}
+
 }

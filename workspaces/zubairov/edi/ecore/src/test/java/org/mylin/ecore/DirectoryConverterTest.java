@@ -12,7 +12,7 @@ public class DirectoryConverterTest extends TestCase {
 
 	public void testConversion() throws Exception {
 		Archive archive = DirectoryConverter.INSTANCE.createArchive(getClass()
-				.getResourceAsStream("/D99B.zip"),
+				.getResourceAsStream("/D99A.zip"),
 				"org.milyn.edi.unedifact.mappings.d99a");
 		archive.toFileSystem(new File("./target/test"));
 		archive.toOutputStream(new ZipOutputStream(new FileOutputStream(new File("target/" + archive.getArchiveName()))));

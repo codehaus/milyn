@@ -3,6 +3,7 @@ package org.mylin.ecore.resource;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
+import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser.MappingRegistry;
 
@@ -15,6 +16,11 @@ import org.milyn.edisax.unedifact.UNEdifactInterchangeParser.MappingRegistry;
 public class EDIFactResourceFactoryImpl extends ResourceFactoryImpl {
 
 	private MappingRegistry reg;
+	
+    public static final String FEATURE_VALIDATE = EDIParser.FEATURE_VALIDATE;
+
+    public static final String FEATURE_IGNORE_NEWLINES = EDIParser.FEATURE_IGNORE_NEWLINES;
+	
 
 	public EDIFactResourceFactoryImpl(UNEdifactInterchangeParser.MappingRegistry registry) {
 		this.reg = registry;

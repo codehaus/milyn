@@ -19,7 +19,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.milyn.archive.Archive;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
-import org.milyn.edisax.util.EDIUtils;
 
 /**
  * Class that converts an UN/EDIFACT directory ZIP file to the JAR file with
@@ -103,9 +102,6 @@ public class DirectoryConverter {
 		archive.addEntry(PLUGIN_XML_ENTRY,
 				pluginBuilder.toString());
 
-		// Add the model set URN to the archive...
-		archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, pluginID);
-		
 		archive.addEntry(MANIFEST, generateManifest(pluginID, qualifier));
 		
 		return archive;
