@@ -12,7 +12,7 @@
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
-package org.milyn;
+package org.milyn.payload;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.xml.transform.Result;
 
+import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.container.ApplicationContext;

@@ -12,7 +12,7 @@
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
-package org.milyn;
+package org.milyn.payload;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.milyn.payload.Export;
+import org.milyn.payload.Exports;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;
 

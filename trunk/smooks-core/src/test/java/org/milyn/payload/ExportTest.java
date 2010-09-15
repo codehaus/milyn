@@ -12,11 +12,12 @@
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
-package org.milyn;
+package org.milyn.payload;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.milyn.payload.Export;
 
 /**
  * Unit test for {@link Export}.

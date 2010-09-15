@@ -31,12 +31,12 @@ import org.apache.camel.Processor;
 import org.apache.camel.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.Exports;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.event.report.HtmlReportGenerator;
+import org.milyn.payload.Exports;
 import org.xml.sax.SAXException;
 
 /**

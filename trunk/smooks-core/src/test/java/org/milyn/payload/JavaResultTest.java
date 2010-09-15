@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.milyn.Export;
 
 /**
  * Unit test for {@link JavaResult}.

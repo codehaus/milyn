@@ -20,8 +20,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
-import org.milyn.Exports;
 import org.milyn.Smooks;
+import org.milyn.payload.Exports;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
 
