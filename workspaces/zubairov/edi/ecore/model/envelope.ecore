@@ -115,6 +115,9 @@
       <details key="kind" value="elementOnly"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="id"/>
@@ -123,6 +126,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="versionNum" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="versionNum"/>
@@ -131,6 +137,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="releaseNum" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="releaseNum"/>
@@ -139,6 +148,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="controllingAgencyCode"
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="controllingAgencyCode"/>
@@ -147,6 +159,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="associationAssignedCode"
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="component"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="associationAssignedCode"/>
@@ -381,6 +396,9 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="controlCount" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Long" unsettable="true">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="controlCount"/>
@@ -389,6 +407,9 @@
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="controlRef" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="smooks-mapping-data">
+        <details key="type" value="field"/>
+      </eAnnotations>
       <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
         <details key="kind" value="element"/>
         <details key="name" value="controlRef"/>

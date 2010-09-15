@@ -41,6 +41,7 @@ public interface MessageIdentifierType extends EObject {
 	 * @see #setId(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getMessageIdentifierType_Id()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='id' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -68,6 +69,7 @@ public interface MessageIdentifierType extends EObject {
 	 * @see #setVersionNum(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getMessageIdentifierType_VersionNum()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='versionNum' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -95,6 +97,7 @@ public interface MessageIdentifierType extends EObject {
 	 * @see #setReleaseNum(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getMessageIdentifierType_ReleaseNum()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='releaseNum' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -122,6 +125,7 @@ public interface MessageIdentifierType extends EObject {
 	 * @see #setControllingAgencyCode(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getMessageIdentifierType_ControllingAgencyCode()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='controllingAgencyCode' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -149,6 +153,7 @@ public interface MessageIdentifierType extends EObject {
 	 * @see #setAssociationAssignedCode(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getMessageIdentifierType_AssociationAssignedCode()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='component'"
 	 *        extendedMetaData="kind='element' name='associationAssignedCode' namespace='##targetNamespace'"
 	 * @generated
 	 */

@@ -67,25 +67,29 @@ public interface EDIWriter {
 										+ ". Segment group could only refer"
 										+ " to segments or another segment groups");
 					}
-					Object obj = group.eGet(feature);
-					if (obj instanceof Collection<?>) {
-						// We have more than one entry
-						Collection<EObject> collection = (Collection<EObject>) obj;
-						for (EObject object : collection) {
+					if (group.eIsSet(feature)) {
+						Object obj = group.eGet(feature);
+						if (obj instanceof Collection<?>) {
+							// We have more than one entry
+							Collection<EObject> collection = (Collection<EObject>) obj;
+							for (EObject object : collection) {
+								if (isSegment) {
+									String segCode = metadata
+											.getSegcode(feature);
+									serializeSegment(object, del, out, segCode);
+								} else {
+									serializeGroup(object, del, out);
+								}
+							}
+						} else {
+							// We have only one entry
 							if (isSegment) {
 								String segCode = metadata.getSegcode(feature);
-								serializeSegment(object, del, out, segCode);
+								serializeSegment((EObject) obj, del, out,
+										segCode);
 							} else {
-								serializeGroup(object, del, out);
+								serializeGroup((EObject) obj, del, out);
 							}
-						}
-					} else {
-						// We have only one entry
-						if (isSegment) {
-							String segCode = metadata.getSegcode(feature);
-							serializeSegment((EObject) obj, del, out, segCode);
-						} else {
-							serializeGroup((EObject) obj, del, out);
 						}
 					}
 				} else {
@@ -98,7 +102,9 @@ public interface EDIWriter {
 							EObject childMsg = (EObject) map.getValue(0);
 							serializeGroup(childMsg, del, out);
 						} else {
-							throw new IllegalArgumentException("Unexpected attribute " + feature.getName() + " in " + clazz.getName());
+							throw new IllegalArgumentException(
+									"Unexpected attribute " + feature.getName()
+											+ " in " + clazz.getName());
 						}
 					}
 				}
@@ -127,7 +133,8 @@ public interface EDIWriter {
 				}
 				if (obj.eIsSet(feature)) {
 					if (compOut) {
-						// TODO Fix required/+ sign issue that non-required fields are
+						// TODO Fix required/+ sign issue that non-required
+						// fields are
 						// not written as filled with empty
 						out.write(del.getField());
 					}
@@ -135,12 +142,13 @@ public interface EDIWriter {
 					compOut = true;
 				}
 			}
-			out.write(del.getComponent());
+			out.write(del.getSegment());
 			// TODO Can we do newline here?
 			out.write("\n");
 		}
 
-		private void serializeField(Object obj, Delimiters del, Writer out) throws IOException {
+		private void serializeField(Object obj, Delimiters del, Writer out)
+				throws IOException {
 			if (obj instanceof EObject) {
 				seiralizeFieldWithComponents((EObject) obj, del, out);
 			} else {
@@ -154,7 +162,7 @@ public interface EDIWriter {
 		 * @param field
 		 * @param del
 		 * @param out
-		 * @throws IOException 
+		 * @throws IOException
 		 */
 		private void seiralizeFieldWithComponents(EObject field,
 				Delimiters del, Writer out) throws IOException {
@@ -162,7 +170,10 @@ public interface EDIWriter {
 			EList<EStructuralFeature> features = clazz.getEStructuralFeatures();
 			boolean featureOut = false;
 			for (EStructuralFeature feature : features) {
-				if (field.eIsSet(feature) && metadata.isComponent(feature)) {
+				if (!metadata.isComponent(feature)) {
+					throw new IllegalArgumentException("Feature " + feature + " is not a component");
+				}
+				if (field.eIsSet(feature)) {
 					if (featureOut) {
 						out.write(del.getComponent());
 					}
@@ -179,9 +190,10 @@ public interface EDIWriter {
 		 * @param obj
 		 * @param del
 		 * @param out
-		 * @throws IOException 
+		 * @throws IOException
 		 */
-		private void serializeValue(Object obj, Delimiters del, Writer out) throws IOException {
+		private void serializeValue(Object obj, Delimiters del, Writer out)
+				throws IOException {
 			out.write(del.escape(String.valueOf(obj)));
 		}
 	};

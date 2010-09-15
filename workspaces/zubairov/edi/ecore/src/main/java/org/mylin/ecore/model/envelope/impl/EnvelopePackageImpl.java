@@ -867,7 +867,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "name", "MessageIdentifierType",
 			 "kind", "elementOnly"
-		   });		
+		   });			
 		addAnnotation
 		  (getMessageIdentifierType_Id(), 
 		   source, 
@@ -875,7 +875,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "id",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getMessageIdentifierType_VersionNum(), 
 		   source, 
@@ -883,7 +883,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "versionNum",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getMessageIdentifierType_ReleaseNum(), 
 		   source, 
@@ -891,7 +891,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "releaseNum",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getMessageIdentifierType_ControllingAgencyCode(), 
 		   source, 
@@ -899,7 +899,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "controllingAgencyCode",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getMessageIdentifierType_AssociationAssignedCode(), 
 		   source, 
@@ -1091,7 +1091,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "name", "UNZType",
 			 "kind", "elementOnly"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNZType_ControlCount(), 
 		   source, 
@@ -1099,7 +1099,7 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "kind", "element",
 			 "name", "controlCount",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });			
 		addAnnotation
 		  (getUNZType_ControlRef(), 
 		   source, 
@@ -1149,7 +1149,37 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "segcode", "UNT",
 			 "type", "segment"
-		   });										
+		   });				
+		addAnnotation
+		  (getMessageIdentifierType_Id(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getMessageIdentifierType_VersionNum(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getMessageIdentifierType_ReleaseNum(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getMessageIdentifierType_ControllingAgencyCode(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getMessageIdentifierType_AssociationAssignedCode(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });				
 		addAnnotation
 		  (getRecipientType_Id(), 
 		   source, 
@@ -1254,6 +1284,18 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "type", "field"
 		   });				
+		addAnnotation
+		  (getUNZType_ControlCount(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNZType_ControlRef(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });	
 	}
 
 } //EnvelopePackageImpl

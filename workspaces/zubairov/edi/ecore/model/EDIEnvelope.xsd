@@ -29,8 +29,8 @@
 
 	<complexType name="UNZType">
 		<sequence>
-			<element name="controlCount" type="long" />
-			<element name="controlRef" type="string" />
+			<element name="controlCount" type="long" smooks:type="field"/>
+			<element name="controlRef" type="string"  smooks:type="field"/>
 		</sequence>
 	</complexType>
 
@@ -79,11 +79,11 @@
 
 	<complexType name="MessageIdentifierType">
 		<sequence>
-			<element name="id" type="string" />
-			<element name="versionNum" type="string" />
-			<element name="releaseNum" type="string" />
-			<element name="controllingAgencyCode" type="string" />
-			<element name="associationAssignedCode" type="string" />
+			<element name="id" type="string" smooks:type="component"/>
+			<element name="versionNum" type="string"  smooks:type="component"/>
+			<element name="releaseNum" type="string"  smooks:type="component"/>
+			<element name="controllingAgencyCode" type="string"  smooks:type="component"/>
+			<element name="associationAssignedCode" type="string"  smooks:type="component"/>
 		</sequence>
 	</complexType>
 

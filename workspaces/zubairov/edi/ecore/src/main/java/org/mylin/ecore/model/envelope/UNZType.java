@@ -40,6 +40,7 @@ public interface UNZType extends EObject {
 	 * @see #setControlCount(long)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNZType_ControlCount()
 	 * @model unsettable="true" dataType="org.eclipse.emf.ecore.xml.type.Long" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='controlCount' namespace='##targetNamespace'"
 	 * @generated
 	 */
@@ -92,6 +93,7 @@ public interface UNZType extends EObject {
 	 * @see #setControlRef(String)
 	 * @see org.mylin.ecore.model.envelope.EnvelopePackage#getUNZType_ControlRef()
 	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        annotation="smooks-mapping-data type='field'"
 	 *        extendedMetaData="kind='element' name='controlRef' namespace='##targetNamespace'"
 	 * @generated
 	 */
