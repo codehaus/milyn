@@ -418,47 +418,6 @@ public class Smooks {
      *
      * @param source           The content Source.
      * @throws SmooksException Failed to filter.
-     * @deprecated Use {@link #filterSource(javax.xml.transform.Source)}
-     */
-    public void filter(Source source) throws SmooksException {
-        filterSource(createExecutionContext(), source, null);
-    }
-
-    /**
-     * Filter the content in the supplied {@link Source} instance, outputing data
-     * to the supplied {@link Result} instances.
-     *
-     * @param source           The filter Source.
-     * @param result           The filter Result.
-     * @throws SmooksException Failed to filter.
-     * @deprecated Use {@link #filterSource(javax.xml.transform.Source, javax.xml.transform.Result...)}.
-     */
-    public void filter(Source source, Result result) throws SmooksException {
-        filterSource(createExecutionContext(), source, result);
-    }
-
-    /**
-     * Filter the content in the supplied {@link Source} instance, outputing data to
-     * the supplied {@link Result} instances.
-     *
-     * @param source           The filter Source.
-     * @param result          The filter Result.
-     * @param executionContext The {@link ExecutionContext} for this filter operation. See
-     *                         {@link #createExecutionContext(String)}.
-     * @throws SmooksException Failed to filter.
-     * @deprecated Use {@link #filterSource(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result...)}.
-     */
-    public void filter(Source source, Result result, ExecutionContext executionContext) throws SmooksException {
-        filterSource(executionContext, source, result);
-    }
-
-    /**
-     * Filter the content in the supplied {@link Source} instance.
-     * <p/>
-     * Not producing a {@link Result}.
-     *
-     * @param source           The content Source.
-     * @throws SmooksException Failed to filter.
      */
     public void filterSource(Source source) throws SmooksException {
         filterSource(createExecutionContext(), source, null);
