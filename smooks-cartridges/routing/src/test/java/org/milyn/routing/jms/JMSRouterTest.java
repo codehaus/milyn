@@ -108,8 +108,8 @@ public class JMSRouterTest
         consumeThread.start();
 
         // wait for the thread to start...
-        while(consumeThread.running) {
-            JMSRouterTest.sleep(500);
+        while(!consumeThread.running) {
+            JMSRouterTest.sleep(100);
         }
 
         // Fire the messages...
@@ -119,7 +119,7 @@ public class JMSRouterTest
 
         // wait for the thread to finish...
         while(consumeThread.running) {
-            JMSRouterTest.sleep(500);
+            JMSRouterTest.sleep(100);
         }
 
         assertEquals(numMessages, consumeThread.numMessagesProcessed);
@@ -219,7 +219,7 @@ public class JMSRouterTest
 
     class ConsumeThread extends Thread {
 
-        private boolean running = false;
+        private volatile boolean running = false;
         private int numMessagesProcessed;
         private int numMessagesToProcesses;
         private MockQueue queue;
@@ -233,7 +233,7 @@ public class JMSRouterTest
             running = true;
 
             while(numMessagesProcessed < numMessagesToProcesses) {
-                JMSRouterTest.sleep(500);
+                JMSRouterTest.sleep(100);
                 if(!queue.isEmpty()) {
                     queue.getMessage();
                     numMessagesProcessed++;
