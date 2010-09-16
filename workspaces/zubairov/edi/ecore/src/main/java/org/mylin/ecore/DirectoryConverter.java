@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 
@@ -42,8 +43,6 @@ public class DirectoryConverter {
 
 	private static final SimpleDateFormat qualifierFormat = new SimpleDateFormat(
 			"yyyyMMdd-HHmm");
-
-	private EcoreXMLSchemaBuilder schemaBuilder = new EcoreXMLSchemaBuilder();
 
 	protected DirectoryConverter() {
 		// noop
@@ -84,10 +83,15 @@ public class DirectoryConverter {
 					+ ".ecore"));
 			resource.getContents().add(pkg);
 			// Creating XSD resource
-			Resource xsd = rs.createResource(URI
-					.createFileURI(message + ".xsd"));
-			xsd.getContents()
-					.add(schemaBuilder.generate(pkg).iterator().next());
+			try {
+				EcoreXMLSchemaBuilder schemaBuilder = new EcoreXMLSchemaBuilder();
+				Collection<EObject> generate = schemaBuilder.generate(pkg);
+				Resource xsd = rs.createResource(URI
+						.createFileURI(message + ".xsd"));
+				xsd.getContents().addAll(generate);
+			} catch (Exception e) {
+				System.err.println("Failed to generate schema for " + pkg.getNsURI());
+			}
 		}
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
