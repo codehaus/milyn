@@ -63,8 +63,11 @@ public class ECoreGenerator {
 		EPackage commonPackage = EcoreFactory.eINSTANCE.createEPackage();
 		commonPackage.setName(COMMON_PACKAGE_NAME);
 		commonPackage.setNsPrefix("common");
-		commonPackage.setNsURI("http://smooks.org/UNEDI/"
-				+ commonModel.getDescription().getVersion().replaceAll(":", "")
+		// We still have an issue that version of common mapping model is local
+		String version = reader
+				.getMappingModel(getNotCommonMappingName(reader))
+				.getDescription().getVersion().replaceAll(":", "");
+		commonPackage.setNsURI("http://smooks.org/UNEDI/" + version
 				+ "/modelsetDefinitions");
 		Collection<EClass> clzz = createCommonClasses(commonModel,
 				commonClasses);
@@ -90,6 +93,20 @@ public class ECoreGenerator {
 		log.debug("Converted EDIFACT Model  into " + result.size()
 				+ " EPackages");
 		return result;
+	}
+
+	private String getNotCommonMappingName(UnEdifactSpecificationReader reader)
+			throws IOException {
+		String commonDefName = reader.getDefinitionModel().getDescription()
+				.getName();
+		Set<String> names = reader.getMessageNames();
+		for (String name : names) {
+			if (!name.equals(commonDefName)) {
+				return name;
+			}
+		}
+		throw new IllegalArgumentException(
+				"Can't find non-common mapping package");
 	}
 
 	/**

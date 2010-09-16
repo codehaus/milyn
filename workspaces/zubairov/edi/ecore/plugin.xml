@@ -22,5 +22,14 @@
             type="envelope"
             class="org.mylin.ecore.model.envelope.util.EnvelopeResourceFactoryImpl"/>
    </extension>
+   <extension
+         point="org.eclipse.wst.xml.core.catalogContributions">
+      <catalogContribution>
+         <uri
+               name="http://smooks.org/EDIFACT/41/Envelope"
+               uri="model/EDIEnvelope.xsd">
+         </uri>
+      </catalogContribution>
+   </extension>
 
 </plugin>
