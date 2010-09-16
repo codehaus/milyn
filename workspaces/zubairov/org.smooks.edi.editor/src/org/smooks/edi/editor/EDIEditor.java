@@ -1,11 +1,11 @@
 package org.smooks.edi.editor;
 
+import org.eclipse.emf.ecore.presentation.EcoreEditor;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.epsilon.dt.exeed.ExeedEditor;
 import org.mylin.ecore.model.envelope.EnvelopeFactory;
 import org.mylin.ecore.resource.EDIFactResourceFactoryImpl;
 
-public class EDIEditor extends ExeedEditor {
+public class EDIEditor extends EcoreEditor {
 
 	public EDIEditor() {
 		super();
