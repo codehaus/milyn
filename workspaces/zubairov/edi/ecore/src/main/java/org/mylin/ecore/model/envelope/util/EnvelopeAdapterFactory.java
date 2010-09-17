@@ -88,6 +88,10 @@ public class EnvelopeAdapterFactory extends AdapterFactoryImpl {
 				return createMessageIdentifierTypeAdapter();
 			}
 			@Override
+			public Adapter caseRecipientRefType(RecipientRefType object) {
+				return createRecipientRefTypeAdapter();
+			}
+			@Override
 			public Adapter caseRecipientType(RecipientType object) {
 				return createRecipientTypeAdapter();
 			}
@@ -192,6 +196,20 @@ public class EnvelopeAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createMessageIdentifierTypeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.mylin.ecore.model.envelope.RecipientRefType <em>Recipient Ref Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.mylin.ecore.model.envelope.RecipientRefType
+	 * @generated
+	 */
+	public Adapter createRecipientRefTypeAdapter() {
 		return null;
 	}
 

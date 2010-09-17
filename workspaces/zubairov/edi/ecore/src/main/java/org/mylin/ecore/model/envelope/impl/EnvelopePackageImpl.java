@@ -18,6 +18,7 @@ import org.mylin.ecore.model.envelope.EnvelopeFactory;
 import org.mylin.ecore.model.envelope.EnvelopePackage;
 import org.mylin.ecore.model.envelope.InterchangeMessageType;
 import org.mylin.ecore.model.envelope.MessageIdentifierType;
+import org.mylin.ecore.model.envelope.RecipientRefType;
 import org.mylin.ecore.model.envelope.RecipientType;
 import org.mylin.ecore.model.envelope.SenderType;
 import org.mylin.ecore.model.envelope.SyntaxIdentifierType;
@@ -61,6 +62,13 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * @generated
 	 */
 	private EClass messageIdentifierTypeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass recipientRefTypeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -349,6 +357,33 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getRecipientRefType() {
+		return recipientRefTypeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getRecipientRefType_Ref() {
+		return (EAttribute)recipientRefTypeEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getRecipientRefType_RefQualifier() {
+		return (EAttribute)recipientRefTypeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getRecipientType() {
 		return recipientTypeEClass;
 	}
@@ -367,6 +402,33 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getRecipientType_CodeQualifier() {
+		return (EAttribute)recipientTypeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getRecipientType_InternalId() {
+		return (EAttribute)recipientTypeEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getRecipientType_InternalSubId() {
+		return (EAttribute)recipientTypeEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getSenderType() {
 		return senderTypeEClass;
 	}
@@ -378,6 +440,33 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 */
 	public EAttribute getSenderType_Id() {
 		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSenderType_CodeQualifier() {
+		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSenderType_InternalId() {
+		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSenderType_InternalSubId() {
+		return (EAttribute)senderTypeEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -405,6 +494,33 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 */
 	public EAttribute getSyntaxIdentifierType_VersionNum() {
 		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSyntaxIdentifierType_ServiceCodeListDirVersion() {
+		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSyntaxIdentifierType_CodedCharacterEncoding() {
+		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSyntaxIdentifierType_ReleaseNum() {
+		return (EAttribute)syntaxIdentifierTypeEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -459,6 +575,60 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 	 */
 	public EAttribute getUNBType_ControlRef() {
 		return (EAttribute)unbTypeEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getUNBType_RecipientRef() {
+		return (EReference)unbTypeEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getUNBType_ApplicationRef() {
+		return (EAttribute)unbTypeEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getUNBType_ProcessingPriorityCode() {
+		return (EAttribute)unbTypeEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getUNBType_AckRequest() {
+		return (EAttribute)unbTypeEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getUNBType_AgreementId() {
+		return (EAttribute)unbTypeEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getUNBType_TestIndicator() {
+		return (EAttribute)unbTypeEClass.getEStructuralFeatures().get(10);
 	}
 
 	/**
@@ -628,15 +798,28 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		createEAttribute(messageIdentifierTypeEClass, MESSAGE_IDENTIFIER_TYPE__CONTROLLING_AGENCY_CODE);
 		createEAttribute(messageIdentifierTypeEClass, MESSAGE_IDENTIFIER_TYPE__ASSOCIATION_ASSIGNED_CODE);
 
+		recipientRefTypeEClass = createEClass(RECIPIENT_REF_TYPE);
+		createEAttribute(recipientRefTypeEClass, RECIPIENT_REF_TYPE__REF);
+		createEAttribute(recipientRefTypeEClass, RECIPIENT_REF_TYPE__REF_QUALIFIER);
+
 		recipientTypeEClass = createEClass(RECIPIENT_TYPE);
 		createEAttribute(recipientTypeEClass, RECIPIENT_TYPE__ID);
+		createEAttribute(recipientTypeEClass, RECIPIENT_TYPE__CODE_QUALIFIER);
+		createEAttribute(recipientTypeEClass, RECIPIENT_TYPE__INTERNAL_ID);
+		createEAttribute(recipientTypeEClass, RECIPIENT_TYPE__INTERNAL_SUB_ID);
 
 		senderTypeEClass = createEClass(SENDER_TYPE);
 		createEAttribute(senderTypeEClass, SENDER_TYPE__ID);
+		createEAttribute(senderTypeEClass, SENDER_TYPE__CODE_QUALIFIER);
+		createEAttribute(senderTypeEClass, SENDER_TYPE__INTERNAL_ID);
+		createEAttribute(senderTypeEClass, SENDER_TYPE__INTERNAL_SUB_ID);
 
 		syntaxIdentifierTypeEClass = createEClass(SYNTAX_IDENTIFIER_TYPE);
 		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__ID);
 		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__VERSION_NUM);
+		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__SERVICE_CODE_LIST_DIR_VERSION);
+		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__CODED_CHARACTER_ENCODING);
+		createEAttribute(syntaxIdentifierTypeEClass, SYNTAX_IDENTIFIER_TYPE__RELEASE_NUM);
 
 		unbTypeEClass = createEClass(UNB_TYPE);
 		createEReference(unbTypeEClass, UNB_TYPE__SYNTAX_IDENTIFIER);
@@ -644,6 +827,12 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		createEReference(unbTypeEClass, UNB_TYPE__RECIPIENT);
 		createEReference(unbTypeEClass, UNB_TYPE__DATE_TIME);
 		createEAttribute(unbTypeEClass, UNB_TYPE__CONTROL_REF);
+		createEReference(unbTypeEClass, UNB_TYPE__RECIPIENT_REF);
+		createEAttribute(unbTypeEClass, UNB_TYPE__APPLICATION_REF);
+		createEAttribute(unbTypeEClass, UNB_TYPE__PROCESSING_PRIORITY_CODE);
+		createEAttribute(unbTypeEClass, UNB_TYPE__ACK_REQUEST);
+		createEAttribute(unbTypeEClass, UNB_TYPE__AGREEMENT_ID);
+		createEAttribute(unbTypeEClass, UNB_TYPE__TEST_INDICATOR);
 
 		unEdifactEClass = createEClass(UN_EDIFACT);
 		createEReference(unEdifactEClass, UN_EDIFACT__UNB);
@@ -718,15 +907,28 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		initEAttribute(getMessageIdentifierType_ControllingAgencyCode(), theXMLTypePackage.getString(), "controllingAgencyCode", null, 1, 1, MessageIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getMessageIdentifierType_AssociationAssignedCode(), theXMLTypePackage.getString(), "associationAssignedCode", null, 1, 1, MessageIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(recipientRefTypeEClass, RecipientRefType.class, "RecipientRefType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getRecipientRefType_Ref(), theXMLTypePackage.getString(), "ref", null, 1, 1, RecipientRefType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRecipientRefType_RefQualifier(), theXMLTypePackage.getString(), "refQualifier", null, 0, 1, RecipientRefType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(recipientTypeEClass, RecipientType.class, "RecipientType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getRecipientType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, RecipientType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRecipientType_CodeQualifier(), theXMLTypePackage.getString(), "codeQualifier", null, 0, 1, RecipientType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRecipientType_InternalId(), theXMLTypePackage.getString(), "internalId", null, 0, 1, RecipientType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRecipientType_InternalSubId(), theXMLTypePackage.getString(), "internalSubId", null, 0, 1, RecipientType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(senderTypeEClass, SenderType.class, "SenderType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getSenderType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SenderType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSenderType_CodeQualifier(), theXMLTypePackage.getString(), "codeQualifier", null, 0, 1, SenderType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSenderType_InternalId(), theXMLTypePackage.getString(), "internalId", null, 0, 1, SenderType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSenderType_InternalSubId(), theXMLTypePackage.getString(), "internalSubId", null, 0, 1, SenderType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(syntaxIdentifierTypeEClass, SyntaxIdentifierType.class, "SyntaxIdentifierType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getSyntaxIdentifierType_Id(), theXMLTypePackage.getString(), "id", null, 1, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSyntaxIdentifierType_VersionNum(), theXMLTypePackage.getString(), "versionNum", null, 1, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSyntaxIdentifierType_ServiceCodeListDirVersion(), theXMLTypePackage.getString(), "serviceCodeListDirVersion", null, 0, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSyntaxIdentifierType_CodedCharacterEncoding(), theXMLTypePackage.getString(), "codedCharacterEncoding", null, 0, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSyntaxIdentifierType_ReleaseNum(), theXMLTypePackage.getString(), "releaseNum", null, 0, 1, SyntaxIdentifierType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(unbTypeEClass, UNBType.class, "UNBType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getUNBType_SyntaxIdentifier(), this.getSyntaxIdentifierType(), null, "syntaxIdentifier", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -734,6 +936,12 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		initEReference(getUNBType_Recipient(), this.getRecipientType(), null, "recipient", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getUNBType_DateTime(), this.getDateTimeType(), null, "dateTime", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getUNBType_ControlRef(), theXMLTypePackage.getString(), "controlRef", null, 1, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getUNBType_RecipientRef(), this.getRecipientRefType(), null, "recipientRef", null, 0, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getUNBType_ApplicationRef(), theXMLTypePackage.getString(), "applicationRef", null, 0, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getUNBType_ProcessingPriorityCode(), theXMLTypePackage.getString(), "processingPriorityCode", null, 0, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getUNBType_AckRequest(), theXMLTypePackage.getString(), "ackRequest", null, 0, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getUNBType_AgreementId(), theXMLTypePackage.getString(), "agreementId", null, 0, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getUNBType_TestIndicator(), theXMLTypePackage.getString(), "testIndicator", null, 0, 1, UNBType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(unEdifactEClass, UNEdifact.class, "UNEdifact", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getUNEdifact_UNB(), this.getUNBType(), null, "uNB", null, 1, 1, UNEdifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -909,6 +1117,29 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
+		  (recipientRefTypeEClass, 
+		   source, 
+		   new String[] {
+			 "name", "RecipientRefType",
+			 "kind", "elementOnly"
+		   });			
+		addAnnotation
+		  (getRecipientRefType_Ref(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "ref",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getRecipientRefType_RefQualifier(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "refQualifier",
+			 "namespace", "##targetNamespace"
+		   });		
+		addAnnotation
 		  (recipientTypeEClass, 
 		   source, 
 		   new String[] {
@@ -921,6 +1152,30 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "element",
 			 "name", "id",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getRecipientType_CodeQualifier(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "codeQualifier",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getRecipientType_InternalId(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "internalId",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getRecipientType_InternalSubId(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "internalSubId",
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
@@ -936,6 +1191,30 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "element",
 			 "name", "id",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getSenderType_CodeQualifier(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "codeQualifier",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getSenderType_InternalId(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "internalId",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getSenderType_InternalSubId(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "internalSubId",
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
@@ -959,6 +1238,30 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "element",
 			 "name", "versionNum",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_ServiceCodeListDirVersion(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "serviceCodeListDirVersion",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_CodedCharacterEncoding(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "codedCharacterEncoding",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_ReleaseNum(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "releaseNum",
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
@@ -1006,6 +1309,54 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   new String[] {
 			 "kind", "element",
 			 "name", "controlRef",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getUNBType_RecipientRef(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "recipientRef",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getUNBType_ApplicationRef(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "applicationRef",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getUNBType_ProcessingPriorityCode(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "processingPriorityCode",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getUNBType_AckRequest(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "ackRequest",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getUNBType_AgreementId(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "agreementId",
+			 "namespace", "##targetNamespace"
+		   });			
+		addAnnotation
+		  (getUNBType_TestIndicator(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "testIndicator",
 			 "namespace", "##targetNamespace"
 		   });			
 		addAnnotation
@@ -1181,13 +1532,61 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 			 "type", "component"
 		   });				
 		addAnnotation
+		  (getRecipientRefType_Ref(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getRecipientRefType_RefQualifier(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });				
+		addAnnotation
 		  (getRecipientType_Id(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getRecipientType_CodeQualifier(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getRecipientType_InternalId(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getRecipientType_InternalSubId(), 
 		   source, 
 		   new String[] {
 			 "type", "component"
 		   });				
 		addAnnotation
 		  (getSenderType_Id(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSenderType_CodeQualifier(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSenderType_InternalId(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSenderType_InternalSubId(), 
 		   source, 
 		   new String[] {
 			 "type", "component"
@@ -1200,6 +1599,24 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   });			
 		addAnnotation
 		  (getSyntaxIdentifierType_VersionNum(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_ServiceCodeListDirVersion(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_CodedCharacterEncoding(), 
+		   source, 
+		   new String[] {
+			 "type", "component"
+		   });			
+		addAnnotation
+		  (getSyntaxIdentifierType_ReleaseNum(), 
 		   source, 
 		   new String[] {
 			 "type", "component"
@@ -1230,6 +1647,42 @@ public class EnvelopePackageImpl extends EPackageImpl implements EnvelopePackage
 		   });			
 		addAnnotation
 		  (getUNBType_ControlRef(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_RecipientRef(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_ApplicationRef(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_ProcessingPriorityCode(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_AckRequest(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_AgreementId(), 
+		   source, 
+		   new String[] {
+			 "type", "field"
+		   });			
+		addAnnotation
+		  (getUNBType_TestIndicator(), 
 		   source, 
 		   new String[] {
 			 "type", "field"

@@ -62,6 +62,15 @@ public interface EnvelopeFactory extends EFactory {
 	MessageIdentifierType createMessageIdentifierType();
 
 	/**
+	 * Returns a new object of class '<em>Recipient Ref Type</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Recipient Ref Type</em>'.
+	 * @generated
+	 */
+	RecipientRefType createRecipientRefType();
+
+	/**
 	 * Returns a new object of class '<em>Recipient Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

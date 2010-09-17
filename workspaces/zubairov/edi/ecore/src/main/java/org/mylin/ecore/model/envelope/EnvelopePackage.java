@@ -262,6 +262,43 @@ public interface EnvelopePackage extends EPackage {
 	int MESSAGE_IDENTIFIER_TYPE_FEATURE_COUNT = 5;
 
 	/**
+	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.RecipientRefTypeImpl <em>Recipient Ref Type</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.mylin.ecore.model.envelope.impl.RecipientRefTypeImpl
+	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getRecipientRefType()
+	 * @generated
+	 */
+	int RECIPIENT_REF_TYPE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RECIPIENT_REF_TYPE__REF = 0;
+
+	/**
+	 * The feature id for the '<em><b>Ref Qualifier</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RECIPIENT_REF_TYPE__REF_QUALIFIER = 1;
+
+	/**
+	 * The number of structural features of the '<em>Recipient Ref Type</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RECIPIENT_REF_TYPE_FEATURE_COUNT = 2;
+
+	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.RecipientTypeImpl <em>Recipient Type</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -269,7 +306,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getRecipientType()
 	 * @generated
 	 */
-	int RECIPIENT_TYPE = 4;
+	int RECIPIENT_TYPE = 5;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -281,13 +318,40 @@ public interface EnvelopePackage extends EPackage {
 	int RECIPIENT_TYPE__ID = 0;
 
 	/**
+	 * The feature id for the '<em><b>Code Qualifier</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RECIPIENT_TYPE__CODE_QUALIFIER = 1;
+
+	/**
+	 * The feature id for the '<em><b>Internal Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RECIPIENT_TYPE__INTERNAL_ID = 2;
+
+	/**
+	 * The feature id for the '<em><b>Internal Sub Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RECIPIENT_TYPE__INTERNAL_SUB_ID = 3;
+
+	/**
 	 * The number of structural features of the '<em>Recipient Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int RECIPIENT_TYPE_FEATURE_COUNT = 1;
+	int RECIPIENT_TYPE_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.SenderTypeImpl <em>Sender Type</em>}' class.
@@ -297,7 +361,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getSenderType()
 	 * @generated
 	 */
-	int SENDER_TYPE = 5;
+	int SENDER_TYPE = 6;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -309,13 +373,40 @@ public interface EnvelopePackage extends EPackage {
 	int SENDER_TYPE__ID = 0;
 
 	/**
+	 * The feature id for the '<em><b>Code Qualifier</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SENDER_TYPE__CODE_QUALIFIER = 1;
+
+	/**
+	 * The feature id for the '<em><b>Internal Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SENDER_TYPE__INTERNAL_ID = 2;
+
+	/**
+	 * The feature id for the '<em><b>Internal Sub Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SENDER_TYPE__INTERNAL_SUB_ID = 3;
+
+	/**
 	 * The number of structural features of the '<em>Sender Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SENDER_TYPE_FEATURE_COUNT = 1;
+	int SENDER_TYPE_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.SyntaxIdentifierTypeImpl <em>Syntax Identifier Type</em>}' class.
@@ -325,7 +416,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getSyntaxIdentifierType()
 	 * @generated
 	 */
-	int SYNTAX_IDENTIFIER_TYPE = 6;
+	int SYNTAX_IDENTIFIER_TYPE = 7;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -346,13 +437,40 @@ public interface EnvelopePackage extends EPackage {
 	int SYNTAX_IDENTIFIER_TYPE__VERSION_NUM = 1;
 
 	/**
+	 * The feature id for the '<em><b>Service Code List Dir Version</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYNTAX_IDENTIFIER_TYPE__SERVICE_CODE_LIST_DIR_VERSION = 2;
+
+	/**
+	 * The feature id for the '<em><b>Coded Character Encoding</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYNTAX_IDENTIFIER_TYPE__CODED_CHARACTER_ENCODING = 3;
+
+	/**
+	 * The feature id for the '<em><b>Release Num</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYNTAX_IDENTIFIER_TYPE__RELEASE_NUM = 4;
+
+	/**
 	 * The number of structural features of the '<em>Syntax Identifier Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SYNTAX_IDENTIFIER_TYPE_FEATURE_COUNT = 2;
+	int SYNTAX_IDENTIFIER_TYPE_FEATURE_COUNT = 5;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl <em>UNB Type</em>}' class.
@@ -362,7 +480,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNBType()
 	 * @generated
 	 */
-	int UNB_TYPE = 7;
+	int UNB_TYPE = 8;
 
 	/**
 	 * The feature id for the '<em><b>Syntax Identifier</b></em>' containment reference.
@@ -410,13 +528,67 @@ public interface EnvelopePackage extends EPackage {
 	int UNB_TYPE__CONTROL_REF = 4;
 
 	/**
+	 * The feature id for the '<em><b>Recipient Ref</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int UNB_TYPE__RECIPIENT_REF = 5;
+
+	/**
+	 * The feature id for the '<em><b>Application Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int UNB_TYPE__APPLICATION_REF = 6;
+
+	/**
+	 * The feature id for the '<em><b>Processing Priority Code</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int UNB_TYPE__PROCESSING_PRIORITY_CODE = 7;
+
+	/**
+	 * The feature id for the '<em><b>Ack Request</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int UNB_TYPE__ACK_REQUEST = 8;
+
+	/**
+	 * The feature id for the '<em><b>Agreement Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int UNB_TYPE__AGREEMENT_ID = 9;
+
+	/**
+	 * The feature id for the '<em><b>Test Indicator</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int UNB_TYPE__TEST_INDICATOR = 10;
+
+	/**
 	 * The number of structural features of the '<em>UNB Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int UNB_TYPE_FEATURE_COUNT = 5;
+	int UNB_TYPE_FEATURE_COUNT = 11;
 
 	/**
 	 * The meta object id for the '{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl <em>UN Edifact</em>}' class.
@@ -426,7 +598,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNEdifact()
 	 * @generated
 	 */
-	int UN_EDIFACT = 8;
+	int UN_EDIFACT = 9;
 
 	/**
 	 * The feature id for the '<em><b>UNB</b></em>' containment reference.
@@ -472,7 +644,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNHType()
 	 * @generated
 	 */
-	int UNH_TYPE = 9;
+	int UNH_TYPE = 10;
 
 	/**
 	 * The feature id for the '<em><b>Message Ref Num</b></em>' attribute.
@@ -509,7 +681,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNTType()
 	 * @generated
 	 */
-	int UNT_TYPE = 10;
+	int UNT_TYPE = 11;
 
 	/**
 	 * The feature id for the '<em><b>Segment Count</b></em>' attribute.
@@ -546,7 +718,7 @@ public interface EnvelopePackage extends EPackage {
 	 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getUNZType()
 	 * @generated
 	 */
-	int UNZ_TYPE = 11;
+	int UNZ_TYPE = 12;
 
 	/**
 	 * The feature id for the '<em><b>Control Count</b></em>' attribute.
@@ -771,6 +943,38 @@ public interface EnvelopePackage extends EPackage {
 	EAttribute getMessageIdentifierType_AssociationAssignedCode();
 
 	/**
+	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.RecipientRefType <em>Recipient Ref Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Recipient Ref Type</em>'.
+	 * @see org.mylin.ecore.model.envelope.RecipientRefType
+	 * @generated
+	 */
+	EClass getRecipientRefType();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.RecipientRefType#getRef <em>Ref</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Ref</em>'.
+	 * @see org.mylin.ecore.model.envelope.RecipientRefType#getRef()
+	 * @see #getRecipientRefType()
+	 * @generated
+	 */
+	EAttribute getRecipientRefType_Ref();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.RecipientRefType#getRefQualifier <em>Ref Qualifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Ref Qualifier</em>'.
+	 * @see org.mylin.ecore.model.envelope.RecipientRefType#getRefQualifier()
+	 * @see #getRecipientRefType()
+	 * @generated
+	 */
+	EAttribute getRecipientRefType_RefQualifier();
+
+	/**
 	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.RecipientType <em>Recipient Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -792,6 +996,39 @@ public interface EnvelopePackage extends EPackage {
 	EAttribute getRecipientType_Id();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.RecipientType#getCodeQualifier <em>Code Qualifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Code Qualifier</em>'.
+	 * @see org.mylin.ecore.model.envelope.RecipientType#getCodeQualifier()
+	 * @see #getRecipientType()
+	 * @generated
+	 */
+	EAttribute getRecipientType_CodeQualifier();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.RecipientType#getInternalId <em>Internal Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Internal Id</em>'.
+	 * @see org.mylin.ecore.model.envelope.RecipientType#getInternalId()
+	 * @see #getRecipientType()
+	 * @generated
+	 */
+	EAttribute getRecipientType_InternalId();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.RecipientType#getInternalSubId <em>Internal Sub Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Internal Sub Id</em>'.
+	 * @see org.mylin.ecore.model.envelope.RecipientType#getInternalSubId()
+	 * @see #getRecipientType()
+	 * @generated
+	 */
+	EAttribute getRecipientType_InternalSubId();
+
+	/**
 	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.SenderType <em>Sender Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -811,6 +1048,39 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getSenderType_Id();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SenderType#getCodeQualifier <em>Code Qualifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Code Qualifier</em>'.
+	 * @see org.mylin.ecore.model.envelope.SenderType#getCodeQualifier()
+	 * @see #getSenderType()
+	 * @generated
+	 */
+	EAttribute getSenderType_CodeQualifier();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SenderType#getInternalId <em>Internal Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Internal Id</em>'.
+	 * @see org.mylin.ecore.model.envelope.SenderType#getInternalId()
+	 * @see #getSenderType()
+	 * @generated
+	 */
+	EAttribute getSenderType_InternalId();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SenderType#getInternalSubId <em>Internal Sub Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Internal Sub Id</em>'.
+	 * @see org.mylin.ecore.model.envelope.SenderType#getInternalSubId()
+	 * @see #getSenderType()
+	 * @generated
+	 */
+	EAttribute getSenderType_InternalSubId();
 
 	/**
 	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.SyntaxIdentifierType <em>Syntax Identifier Type</em>}'.
@@ -843,6 +1113,39 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getSyntaxIdentifierType_VersionNum();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SyntaxIdentifierType#getServiceCodeListDirVersion <em>Service Code List Dir Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Service Code List Dir Version</em>'.
+	 * @see org.mylin.ecore.model.envelope.SyntaxIdentifierType#getServiceCodeListDirVersion()
+	 * @see #getSyntaxIdentifierType()
+	 * @generated
+	 */
+	EAttribute getSyntaxIdentifierType_ServiceCodeListDirVersion();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SyntaxIdentifierType#getCodedCharacterEncoding <em>Coded Character Encoding</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Coded Character Encoding</em>'.
+	 * @see org.mylin.ecore.model.envelope.SyntaxIdentifierType#getCodedCharacterEncoding()
+	 * @see #getSyntaxIdentifierType()
+	 * @generated
+	 */
+	EAttribute getSyntaxIdentifierType_CodedCharacterEncoding();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.SyntaxIdentifierType#getReleaseNum <em>Release Num</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Release Num</em>'.
+	 * @see org.mylin.ecore.model.envelope.SyntaxIdentifierType#getReleaseNum()
+	 * @see #getSyntaxIdentifierType()
+	 * @generated
+	 */
+	EAttribute getSyntaxIdentifierType_ReleaseNum();
 
 	/**
 	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.UNBType <em>UNB Type</em>}'.
@@ -908,6 +1211,72 @@ public interface EnvelopePackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getUNBType_ControlRef();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.mylin.ecore.model.envelope.UNBType#getRecipientRef <em>Recipient Ref</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Recipient Ref</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNBType#getRecipientRef()
+	 * @see #getUNBType()
+	 * @generated
+	 */
+	EReference getUNBType_RecipientRef();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.UNBType#getApplicationRef <em>Application Ref</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Application Ref</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNBType#getApplicationRef()
+	 * @see #getUNBType()
+	 * @generated
+	 */
+	EAttribute getUNBType_ApplicationRef();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.UNBType#getProcessingPriorityCode <em>Processing Priority Code</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Processing Priority Code</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNBType#getProcessingPriorityCode()
+	 * @see #getUNBType()
+	 * @generated
+	 */
+	EAttribute getUNBType_ProcessingPriorityCode();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.UNBType#getAckRequest <em>Ack Request</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Ack Request</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNBType#getAckRequest()
+	 * @see #getUNBType()
+	 * @generated
+	 */
+	EAttribute getUNBType_AckRequest();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.UNBType#getAgreementId <em>Agreement Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Agreement Id</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNBType#getAgreementId()
+	 * @see #getUNBType()
+	 * @generated
+	 */
+	EAttribute getUNBType_AgreementId();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.mylin.ecore.model.envelope.UNBType#getTestIndicator <em>Test Indicator</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Test Indicator</em>'.
+	 * @see org.mylin.ecore.model.envelope.UNBType#getTestIndicator()
+	 * @see #getUNBType()
+	 * @generated
+	 */
+	EAttribute getUNBType_TestIndicator();
 
 	/**
 	 * Returns the meta object for class '{@link org.mylin.ecore.model.envelope.UNEdifact <em>UN Edifact</em>}'.
@@ -1223,6 +1592,32 @@ public interface EnvelopePackage extends EPackage {
 		EAttribute MESSAGE_IDENTIFIER_TYPE__ASSOCIATION_ASSIGNED_CODE = eINSTANCE.getMessageIdentifierType_AssociationAssignedCode();
 
 		/**
+		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.RecipientRefTypeImpl <em>Recipient Ref Type</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.mylin.ecore.model.envelope.impl.RecipientRefTypeImpl
+		 * @see org.mylin.ecore.model.envelope.impl.EnvelopePackageImpl#getRecipientRefType()
+		 * @generated
+		 */
+		EClass RECIPIENT_REF_TYPE = eINSTANCE.getRecipientRefType();
+
+		/**
+		 * The meta object literal for the '<em><b>Ref</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RECIPIENT_REF_TYPE__REF = eINSTANCE.getRecipientRefType_Ref();
+
+		/**
+		 * The meta object literal for the '<em><b>Ref Qualifier</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RECIPIENT_REF_TYPE__REF_QUALIFIER = eINSTANCE.getRecipientRefType_RefQualifier();
+
+		/**
 		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.RecipientTypeImpl <em>Recipient Type</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1241,6 +1636,30 @@ public interface EnvelopePackage extends EPackage {
 		EAttribute RECIPIENT_TYPE__ID = eINSTANCE.getRecipientType_Id();
 
 		/**
+		 * The meta object literal for the '<em><b>Code Qualifier</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RECIPIENT_TYPE__CODE_QUALIFIER = eINSTANCE.getRecipientType_CodeQualifier();
+
+		/**
+		 * The meta object literal for the '<em><b>Internal Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RECIPIENT_TYPE__INTERNAL_ID = eINSTANCE.getRecipientType_InternalId();
+
+		/**
+		 * The meta object literal for the '<em><b>Internal Sub Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RECIPIENT_TYPE__INTERNAL_SUB_ID = eINSTANCE.getRecipientType_InternalSubId();
+
+		/**
 		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.SenderTypeImpl <em>Sender Type</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1257,6 +1676,30 @@ public interface EnvelopePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute SENDER_TYPE__ID = eINSTANCE.getSenderType_Id();
+
+		/**
+		 * The meta object literal for the '<em><b>Code Qualifier</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SENDER_TYPE__CODE_QUALIFIER = eINSTANCE.getSenderType_CodeQualifier();
+
+		/**
+		 * The meta object literal for the '<em><b>Internal Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SENDER_TYPE__INTERNAL_ID = eINSTANCE.getSenderType_InternalId();
+
+		/**
+		 * The meta object literal for the '<em><b>Internal Sub Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SENDER_TYPE__INTERNAL_SUB_ID = eINSTANCE.getSenderType_InternalSubId();
 
 		/**
 		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.SyntaxIdentifierTypeImpl <em>Syntax Identifier Type</em>}' class.
@@ -1283,6 +1726,30 @@ public interface EnvelopePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute SYNTAX_IDENTIFIER_TYPE__VERSION_NUM = eINSTANCE.getSyntaxIdentifierType_VersionNum();
+
+		/**
+		 * The meta object literal for the '<em><b>Service Code List Dir Version</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SYNTAX_IDENTIFIER_TYPE__SERVICE_CODE_LIST_DIR_VERSION = eINSTANCE.getSyntaxIdentifierType_ServiceCodeListDirVersion();
+
+		/**
+		 * The meta object literal for the '<em><b>Coded Character Encoding</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SYNTAX_IDENTIFIER_TYPE__CODED_CHARACTER_ENCODING = eINSTANCE.getSyntaxIdentifierType_CodedCharacterEncoding();
+
+		/**
+		 * The meta object literal for the '<em><b>Release Num</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SYNTAX_IDENTIFIER_TYPE__RELEASE_NUM = eINSTANCE.getSyntaxIdentifierType_ReleaseNum();
 
 		/**
 		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl <em>UNB Type</em>}' class.
@@ -1333,6 +1800,54 @@ public interface EnvelopePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute UNB_TYPE__CONTROL_REF = eINSTANCE.getUNBType_ControlRef();
+
+		/**
+		 * The meta object literal for the '<em><b>Recipient Ref</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference UNB_TYPE__RECIPIENT_REF = eINSTANCE.getUNBType_RecipientRef();
+
+		/**
+		 * The meta object literal for the '<em><b>Application Ref</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute UNB_TYPE__APPLICATION_REF = eINSTANCE.getUNBType_ApplicationRef();
+
+		/**
+		 * The meta object literal for the '<em><b>Processing Priority Code</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute UNB_TYPE__PROCESSING_PRIORITY_CODE = eINSTANCE.getUNBType_ProcessingPriorityCode();
+
+		/**
+		 * The meta object literal for the '<em><b>Ack Request</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute UNB_TYPE__ACK_REQUEST = eINSTANCE.getUNBType_AckRequest();
+
+		/**
+		 * The meta object literal for the '<em><b>Agreement Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute UNB_TYPE__AGREEMENT_ID = eINSTANCE.getUNBType_AgreementId();
+
+		/**
+		 * The meta object literal for the '<em><b>Test Indicator</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute UNB_TYPE__TEST_INDICATOR = eINSTANCE.getUNBType_TestIndicator();
 
 		/**
 		 * The meta object literal for the '{@link org.mylin.ecore.model.envelope.impl.UNEdifactImpl <em>UN Edifact</em>}' class.

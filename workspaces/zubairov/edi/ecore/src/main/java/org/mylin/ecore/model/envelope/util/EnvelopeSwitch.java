@@ -111,6 +111,12 @@ public class EnvelopeSwitch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case EnvelopePackage.RECIPIENT_REF_TYPE: {
+				RecipientRefType recipientRefType = (RecipientRefType)theEObject;
+				T result = caseRecipientRefType(recipientRefType);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case EnvelopePackage.RECIPIENT_TYPE: {
 				RecipientType recipientType = (RecipientType)theEObject;
 				T result = caseRecipientType(recipientType);
@@ -220,6 +226,21 @@ public class EnvelopeSwitch<T> {
 	 * @generated
 	 */
 	public T caseMessageIdentifierType(MessageIdentifierType object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Recipient Ref Type</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Recipient Ref Type</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseRecipientRefType(RecipientRefType object) {
 		return null;
 	}
 

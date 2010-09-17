@@ -29,15 +29,28 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//MessageIdentifierType/controllingAgencyCode"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//MessageIdentifierType/associationAssignedCode"/>
     </genClasses>
+    <genClasses ecoreClass="envelope.ecore#//RecipientRefType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientRefType/ref"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientRefType/refQualifier"/>
+    </genClasses>
     <genClasses ecoreClass="envelope.ecore#//RecipientType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientType/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientType/codeQualifier"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientType/internalId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//RecipientType/internalSubId"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//SenderType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/codeQualifier"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/internalId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SenderType/internalSubId"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//SyntaxIdentifierType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/versionNum"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/serviceCodeListDirVersion"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/codedCharacterEncoding"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//SyntaxIdentifierType/releaseNum"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//UNBType">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNBType/syntaxIdentifier"/>
@@ -45,6 +58,12 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNBType/recipient"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNBType/dateTime"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/controlRef"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNBType/recipientRef"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/applicationRef"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/processingPriorityCode"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/ackRequest"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/agreementId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute envelope.ecore#//UNBType/testIndicator"/>
     </genClasses>
     <genClasses ecoreClass="envelope.ecore#//UNEdifact">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference envelope.ecore#//UNEdifact/uNB"/>

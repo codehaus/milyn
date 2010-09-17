@@ -64,6 +64,7 @@ public class EnvelopeFactoryImpl extends EFactoryImpl implements EnvelopeFactory
 			case EnvelopePackage.DOCUMENT_ROOT: return createDocumentRoot();
 			case EnvelopePackage.INTERCHANGE_MESSAGE_TYPE: return createInterchangeMessageType();
 			case EnvelopePackage.MESSAGE_IDENTIFIER_TYPE: return createMessageIdentifierType();
+			case EnvelopePackage.RECIPIENT_REF_TYPE: return createRecipientRefType();
 			case EnvelopePackage.RECIPIENT_TYPE: return createRecipientType();
 			case EnvelopePackage.SENDER_TYPE: return createSenderType();
 			case EnvelopePackage.SYNTAX_IDENTIFIER_TYPE: return createSyntaxIdentifierType();
@@ -115,6 +116,16 @@ public class EnvelopeFactoryImpl extends EFactoryImpl implements EnvelopeFactory
 	public MessageIdentifierType createMessageIdentifierType() {
 		MessageIdentifierTypeImpl messageIdentifierType = new MessageIdentifierTypeImpl();
 		return messageIdentifierType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public RecipientRefType createRecipientRefType() {
+		RecipientRefTypeImpl recipientRefType = new RecipientRefTypeImpl();
+		return recipientRefType;
 	}
 
 	/**

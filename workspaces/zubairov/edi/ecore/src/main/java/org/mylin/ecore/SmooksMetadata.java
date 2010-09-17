@@ -25,8 +25,7 @@ public interface SmooksMetadata {
 	 * @param element
 	 * @return
 	 */
-	public EAnnotation getSmooksAnnotation(EModelElement element)
-			throws IllegalArgumentException;
+	public EAnnotation getSmooksAnnotation(EModelElement element);
 
 	/**
 	 * Returns true if given {@link EModelElement} annotated as segment
@@ -42,8 +41,7 @@ public interface SmooksMetadata {
 	 * @param feature
 	 * @return
 	 */
-	public String getSegcode(EModelElement element)
-			throws IllegalArgumentException;
+	public String getSegcode(EModelElement element);
 
 	/**
 	 * Returns true if given {@link EModelElement} has annotation type group
@@ -80,6 +78,9 @@ public interface SmooksMetadata {
 		 */
 		public boolean isSegment(EModelElement element) {
 			EAnnotation annotation = getSmooksAnnotation(element);
+			if (annotation == null) {
+				return false;
+			}
 			return SEGMENT_TYPE.equals(annotation.getDetails().get(
 					ANNOTATION_TYPE_KEY));
 		}
@@ -90,11 +91,6 @@ public interface SmooksMetadata {
 		public EAnnotation getSmooksAnnotation(EModelElement element)
 				throws IllegalArgumentException {
 			EAnnotation annotation = element.getEAnnotation(ANNOTATION_TYPE);
-			if (annotation == null) {
-				throw new IllegalArgumentException(
-						"Can't find annotations of type " + ANNOTATION_TYPE
-								+ " on " + element);
-			}
 			return annotation;
 		}
 
@@ -104,9 +100,8 @@ public interface SmooksMetadata {
 		public String getSegcode(EModelElement element)
 				throws IllegalArgumentException {
 			EAnnotation annotation = getSmooksAnnotation(element);
-			if (!annotation.getDetails().containsKey(SEGCODE)) {
-				throw new IllegalArgumentException("Can't find segcode on "
-						+ element);
+			if (annotation == null) {
+				return null;
 			}
 			return annotation.getDetails().get(SEGCODE);
 		}
@@ -116,6 +111,9 @@ public interface SmooksMetadata {
 		 */
 		public boolean isSegmentGroup(EModelElement element) {
 			EAnnotation annotation = getSmooksAnnotation(element);
+			if (annotation == null) {
+				return false;
+			}
 			return SEGMENT_GROUP_TYPE.equals(annotation.getDetails().get(
 					ANNOTATION_TYPE_KEY));
 		}

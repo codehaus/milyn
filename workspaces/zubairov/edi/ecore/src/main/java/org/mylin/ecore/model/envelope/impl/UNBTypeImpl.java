@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.mylin.ecore.model.envelope.DateTimeType;
 import org.mylin.ecore.model.envelope.EnvelopePackage;
+import org.mylin.ecore.model.envelope.RecipientRefType;
 import org.mylin.ecore.model.envelope.RecipientType;
 import org.mylin.ecore.model.envelope.SenderType;
 import org.mylin.ecore.model.envelope.SyntaxIdentifierType;
@@ -34,6 +35,12 @@ import org.mylin.ecore.model.envelope.UNBType;
  *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getRecipient <em>Recipient</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getDateTime <em>Date Time</em>}</li>
  *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getControlRef <em>Control Ref</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getRecipientRef <em>Recipient Ref</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getApplicationRef <em>Application Ref</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getProcessingPriorityCode <em>Processing Priority Code</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getAckRequest <em>Ack Request</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getAgreementId <em>Agreement Id</em>}</li>
+ *   <li>{@link org.mylin.ecore.model.envelope.impl.UNBTypeImpl#getTestIndicator <em>Test Indicator</em>}</li>
  * </ul>
  * </p>
  *
@@ -99,6 +106,116 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 	 * @ordered
 	 */
 	protected String controlRef = CONTROL_REF_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getRecipientRef() <em>Recipient Ref</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getRecipientRef()
+	 * @generated
+	 * @ordered
+	 */
+	protected RecipientRefType recipientRef;
+
+	/**
+	 * The default value of the '{@link #getApplicationRef() <em>Application Ref</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getApplicationRef()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String APPLICATION_REF_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getApplicationRef() <em>Application Ref</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getApplicationRef()
+	 * @generated
+	 * @ordered
+	 */
+	protected String applicationRef = APPLICATION_REF_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getProcessingPriorityCode() <em>Processing Priority Code</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProcessingPriorityCode()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String PROCESSING_PRIORITY_CODE_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getProcessingPriorityCode() <em>Processing Priority Code</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProcessingPriorityCode()
+	 * @generated
+	 * @ordered
+	 */
+	protected String processingPriorityCode = PROCESSING_PRIORITY_CODE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getAckRequest() <em>Ack Request</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAckRequest()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String ACK_REQUEST_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getAckRequest() <em>Ack Request</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAckRequest()
+	 * @generated
+	 * @ordered
+	 */
+	protected String ackRequest = ACK_REQUEST_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getAgreementId() <em>Agreement Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAgreementId()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String AGREEMENT_ID_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getAgreementId() <em>Agreement Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAgreementId()
+	 * @generated
+	 * @ordered
+	 */
+	protected String agreementId = AGREEMENT_ID_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getTestIndicator() <em>Test Indicator</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getTestIndicator()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String TEST_INDICATOR_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getTestIndicator() <em>Test Indicator</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getTestIndicator()
+	 * @generated
+	 * @ordered
+	 */
+	protected String testIndicator = TEST_INDICATOR_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -317,6 +434,154 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public RecipientRefType getRecipientRef() {
+		return recipientRef;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetRecipientRef(RecipientRefType newRecipientRef, NotificationChain msgs) {
+		RecipientRefType oldRecipientRef = recipientRef;
+		recipientRef = newRecipientRef;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__RECIPIENT_REF, oldRecipientRef, newRecipientRef);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setRecipientRef(RecipientRefType newRecipientRef) {
+		if (newRecipientRef != recipientRef) {
+			NotificationChain msgs = null;
+			if (recipientRef != null)
+				msgs = ((InternalEObject)recipientRef).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UNB_TYPE__RECIPIENT_REF, null, msgs);
+			if (newRecipientRef != null)
+				msgs = ((InternalEObject)newRecipientRef).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - EnvelopePackage.UNB_TYPE__RECIPIENT_REF, null, msgs);
+			msgs = basicSetRecipientRef(newRecipientRef, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__RECIPIENT_REF, newRecipientRef, newRecipientRef));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getApplicationRef() {
+		return applicationRef;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setApplicationRef(String newApplicationRef) {
+		String oldApplicationRef = applicationRef;
+		applicationRef = newApplicationRef;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__APPLICATION_REF, oldApplicationRef, applicationRef));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getProcessingPriorityCode() {
+		return processingPriorityCode;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setProcessingPriorityCode(String newProcessingPriorityCode) {
+		String oldProcessingPriorityCode = processingPriorityCode;
+		processingPriorityCode = newProcessingPriorityCode;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__PROCESSING_PRIORITY_CODE, oldProcessingPriorityCode, processingPriorityCode));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getAckRequest() {
+		return ackRequest;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAckRequest(String newAckRequest) {
+		String oldAckRequest = ackRequest;
+		ackRequest = newAckRequest;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__ACK_REQUEST, oldAckRequest, ackRequest));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getAgreementId() {
+		return agreementId;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAgreementId(String newAgreementId) {
+		String oldAgreementId = agreementId;
+		agreementId = newAgreementId;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__AGREEMENT_ID, oldAgreementId, agreementId));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getTestIndicator() {
+		return testIndicator;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setTestIndicator(String newTestIndicator) {
+		String oldTestIndicator = testIndicator;
+		testIndicator = newTestIndicator;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EnvelopePackage.UNB_TYPE__TEST_INDICATOR, oldTestIndicator, testIndicator));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -328,6 +593,8 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 				return basicSetRecipient(null, msgs);
 			case EnvelopePackage.UNB_TYPE__DATE_TIME:
 				return basicSetDateTime(null, msgs);
+			case EnvelopePackage.UNB_TYPE__RECIPIENT_REF:
+				return basicSetRecipientRef(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -350,6 +617,18 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 				return getDateTime();
 			case EnvelopePackage.UNB_TYPE__CONTROL_REF:
 				return getControlRef();
+			case EnvelopePackage.UNB_TYPE__RECIPIENT_REF:
+				return getRecipientRef();
+			case EnvelopePackage.UNB_TYPE__APPLICATION_REF:
+				return getApplicationRef();
+			case EnvelopePackage.UNB_TYPE__PROCESSING_PRIORITY_CODE:
+				return getProcessingPriorityCode();
+			case EnvelopePackage.UNB_TYPE__ACK_REQUEST:
+				return getAckRequest();
+			case EnvelopePackage.UNB_TYPE__AGREEMENT_ID:
+				return getAgreementId();
+			case EnvelopePackage.UNB_TYPE__TEST_INDICATOR:
+				return getTestIndicator();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -376,6 +655,24 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 				return;
 			case EnvelopePackage.UNB_TYPE__CONTROL_REF:
 				setControlRef((String)newValue);
+				return;
+			case EnvelopePackage.UNB_TYPE__RECIPIENT_REF:
+				setRecipientRef((RecipientRefType)newValue);
+				return;
+			case EnvelopePackage.UNB_TYPE__APPLICATION_REF:
+				setApplicationRef((String)newValue);
+				return;
+			case EnvelopePackage.UNB_TYPE__PROCESSING_PRIORITY_CODE:
+				setProcessingPriorityCode((String)newValue);
+				return;
+			case EnvelopePackage.UNB_TYPE__ACK_REQUEST:
+				setAckRequest((String)newValue);
+				return;
+			case EnvelopePackage.UNB_TYPE__AGREEMENT_ID:
+				setAgreementId((String)newValue);
+				return;
+			case EnvelopePackage.UNB_TYPE__TEST_INDICATOR:
+				setTestIndicator((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -404,6 +701,24 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 			case EnvelopePackage.UNB_TYPE__CONTROL_REF:
 				setControlRef(CONTROL_REF_EDEFAULT);
 				return;
+			case EnvelopePackage.UNB_TYPE__RECIPIENT_REF:
+				setRecipientRef((RecipientRefType)null);
+				return;
+			case EnvelopePackage.UNB_TYPE__APPLICATION_REF:
+				setApplicationRef(APPLICATION_REF_EDEFAULT);
+				return;
+			case EnvelopePackage.UNB_TYPE__PROCESSING_PRIORITY_CODE:
+				setProcessingPriorityCode(PROCESSING_PRIORITY_CODE_EDEFAULT);
+				return;
+			case EnvelopePackage.UNB_TYPE__ACK_REQUEST:
+				setAckRequest(ACK_REQUEST_EDEFAULT);
+				return;
+			case EnvelopePackage.UNB_TYPE__AGREEMENT_ID:
+				setAgreementId(AGREEMENT_ID_EDEFAULT);
+				return;
+			case EnvelopePackage.UNB_TYPE__TEST_INDICATOR:
+				setTestIndicator(TEST_INDICATOR_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -426,6 +741,18 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 				return dateTime != null;
 			case EnvelopePackage.UNB_TYPE__CONTROL_REF:
 				return CONTROL_REF_EDEFAULT == null ? controlRef != null : !CONTROL_REF_EDEFAULT.equals(controlRef);
+			case EnvelopePackage.UNB_TYPE__RECIPIENT_REF:
+				return recipientRef != null;
+			case EnvelopePackage.UNB_TYPE__APPLICATION_REF:
+				return APPLICATION_REF_EDEFAULT == null ? applicationRef != null : !APPLICATION_REF_EDEFAULT.equals(applicationRef);
+			case EnvelopePackage.UNB_TYPE__PROCESSING_PRIORITY_CODE:
+				return PROCESSING_PRIORITY_CODE_EDEFAULT == null ? processingPriorityCode != null : !PROCESSING_PRIORITY_CODE_EDEFAULT.equals(processingPriorityCode);
+			case EnvelopePackage.UNB_TYPE__ACK_REQUEST:
+				return ACK_REQUEST_EDEFAULT == null ? ackRequest != null : !ACK_REQUEST_EDEFAULT.equals(ackRequest);
+			case EnvelopePackage.UNB_TYPE__AGREEMENT_ID:
+				return AGREEMENT_ID_EDEFAULT == null ? agreementId != null : !AGREEMENT_ID_EDEFAULT.equals(agreementId);
+			case EnvelopePackage.UNB_TYPE__TEST_INDICATOR:
+				return TEST_INDICATOR_EDEFAULT == null ? testIndicator != null : !TEST_INDICATOR_EDEFAULT.equals(testIndicator);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -442,6 +769,16 @@ public class UNBTypeImpl extends EObjectImpl implements UNBType {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (controlRef: ");
 		result.append(controlRef);
+		result.append(", applicationRef: ");
+		result.append(applicationRef);
+		result.append(", processingPriorityCode: ");
+		result.append(processingPriorityCode);
+		result.append(", ackRequest: ");
+		result.append(ackRequest);
+		result.append(", agreementId: ");
+		result.append(agreementId);
+		result.append(", testIndicator: ");
+		result.append(testIndicator);
 		result.append(')');
 		return result.toString();
 	}
