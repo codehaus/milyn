@@ -19,12 +19,18 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ExecutionContext;
+import org.milyn.container.MockApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.javabean.context.BeanContext;
 
@@ -44,7 +50,40 @@ public class BeanRouterTest extends CamelTestSupport
 	private MyBean myBean = new MyBean("bajja");
 	private BeanContext beanContext;
 	
-	@Before
+	@Test
+    public void visitAfter() throws Exception
+    {
+    	endpoint.setExpectedMessageCount(1);
+    	createBeanRouter(BEAN_ID, END_POINT_URI).visitAfter(null, smooksExecutionContext);
+    	endpoint.assertIsSatisfied();
+    	endpoint.expectedBodiesReceived(myBean);
+    }
+
+    @Test (expected = SmooksException.class)
+    public void visitAfterWithMissingBeanInSmookBeanContext() throws SmooksException, IOException
+    {
+    	when(beanContext.getBean(BEAN_ID)).thenReturn(null);
+    	createBeanRouter(BEAN_ID, END_POINT_URI).visitAfter(null, smooksExecutionContext);
+    }
+
+    @Test
+    public void routeUsingOnlyBeanId() throws Exception
+    {
+    	endpoint.setExpectedMessageCount(1);
+        final Smooks smooks = new Smooks();
+        final ExecutionContext execContext = smooks.createExecutionContext();
+        
+    	BeanRouter beanRouter = createBeanRouter(null, BEAN_ID, END_POINT_URI);
+    	beanRouter.executeExecutionLifecycleInitialize(execContext);
+    	execContext.getBeanContext().addBean(BEAN_ID, myBean);
+    	// Force an END event
+    	execContext.getBeanContext().removeBean(BEAN_ID, null);
+    	
+    	endpoint.assertIsSatisfied();
+    	endpoint.expectedBodiesReceived(myBean);
+    }
+
+    @Before
 	public void setupSmooksExeceutionContext() throws Exception
 	{
 		endpoint = createAndConfigureMockEndpoint(END_POINT_URI);
@@ -93,37 +132,26 @@ public class BeanRouterTest extends CamelTestSupport
 		when(smooksExecutionContext.getBeanContext()).thenReturn(beanContext);
 	}
 	
-	@Test
-	public void visitAfter() throws Exception
-	{
-		endpoint.setExpectedMessageCount(1);
-		BeanRouter beanRouter = createBeanRouter(BEAN_ID, END_POINT_URI);
-		beanRouter.visitAfter(null, smooksExecutionContext);
-		endpoint.assertIsSatisfied();
-		endpoint.expectedBodiesReceived(myBean);
-	}
-	
-	@Test (expected = SmooksException.class)
-	public void visitAfterWithMissingBeanInSmookBeanContext() throws SmooksException, IOException
-	{
-		when(beanContext.getBean(BEAN_ID)).thenReturn(null);
-		BeanRouter beanRouter = createBeanRouter(BEAN_ID, END_POINT_URI);
-		beanRouter.visitAfter(null, smooksExecutionContext);
-	}
-	
-	@Test (expected = SmooksException.class)
-	public void visitAfterWithMissingCamelExchangeInSmooksExecutionContext() throws Exception
-	{
-		when(smooksExecutionContext.getAttribute(Exchange.class)).thenReturn(null);
-		BeanRouter beanRouter = createBeanRouter(BEAN_ID, END_POINT_URI);
-		beanRouter.visitAfter(null, smooksExecutionContext);
-	}
-	
 	private BeanRouter createBeanRouter(String beanId, String endpointUri)
 	{
+	    return createBeanRouter("dummySelector", beanId, endpointUri);
+	}
+	
+	private BeanRouter createBeanRouter(String selector, String beanId, String endpointUri)
+	{
 		BeanRouter beanRouter = new BeanRouter();
-		beanRouter.setBeanId(beanId);
-		beanRouter.setToEndpoint(endpointUri);
+		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration();
+		if (selector != null)
+		{
+			resourceConfig.setSelector(selector);
+		}
+		resourceConfig.setParameter("beanId", beanId);
+		resourceConfig.setParameter("toEndpoint", endpointUri);
+		
+		MockApplicationContext appContext = new MockApplicationContext();
+		appContext.setAttribute(CamelContext.class, context);
+		Configurator.configure(beanRouter, resourceConfig, appContext);
+		
 		return beanRouter;
 	}
 	

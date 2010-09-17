@@ -25,6 +25,8 @@ import java.util.Set;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.CamelContextAware;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -42,11 +44,10 @@ import org.xml.sax.SAXException;
 /**
  * Smooks {@link Processor} for Camel.
  * 
- * @version $Revision$
  * @author Christian Mueller
  * @author Daniel Bevenius
  */
-public class SmooksProcessor implements Processor, Service
+public class SmooksProcessor implements Processor, Service, CamelContextAware
 {
     public static final String SMOOKS_EXECUTION_CONTEXT = "CamelSmooksExecutionContext";
     private final Log log = LogFactory.getLog(SmooksProcessor.class);
@@ -56,28 +57,31 @@ public class SmooksProcessor implements Processor, Service
 
     private Set<VisitorAppender> visitorAppenders = new HashSet<VisitorAppender>();
     private Map<String, Visitor> selectorVisitorMap = new HashMap<String, Visitor>();
+    private CamelContext camelContext;
 
-    public SmooksProcessor(Smooks smooks)
+    public SmooksProcessor(final Smooks smooks, final CamelContext camelContext)
     {
         this.smooks = smooks;
+        this.camelContext = camelContext;
     }
 
-    public SmooksProcessor(String configUri) throws IOException, SAXException
+    public SmooksProcessor(final String configUri, final CamelContext camelContext) throws IOException, SAXException
     {
         this.configUri = configUri;
+        this.camelContext = camelContext;
     }
 
-    public void process(Exchange exchange) throws Exception
+    public void process(final Exchange exchange) throws Exception
     {
-        ExecutionContext executionContext = smooks.createExecutionContext();
+        final ExecutionContext executionContext = smooks.createExecutionContext();
         executionContext.setAttribute(Exchange.class, exchange);
         exchange.getOut().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
         setupSmooksReporting(executionContext);
 
-        Exports exports = Exports.getExports(smooks.getApplicationContext());
+        final Exports exports = Exports.getExports(smooks.getApplicationContext());
         if (exports.hasExports())
         {
-            Result[] results = exports.createResults();
+            final Result[] results = exports.createResults();
 	        smooks.filterSource(executionContext, getSource(exchange), results);
 	        setResultOnBody(exports, results, exchange);
         }
@@ -92,7 +96,7 @@ public class SmooksProcessor implements Processor, Service
     protected void setResultOnBody(final Exports exports, final Result[] results, final Exchange exchange)
     {
         final Message message = exchange.getOut();
-        List<Object> objects = Exports.extractResults(results, exports);
+        final List<Object> objects = Exports.extractResults(results, exports);
         if (objects.size() == 1)
         {
 	        message.setBody(objects.get(0));
@@ -101,24 +105,24 @@ public class SmooksProcessor implements Processor, Service
         {
 	        message.setBody(objects);
         }
-        
     }
     
-    private void setupSmooksReporting(ExecutionContext executionContext)
+    private void setupSmooksReporting(final ExecutionContext executionContext)
     {
         if (reportPath != null)
         {
             try
             {
                 executionContext.setEventListener(new HtmlReportGenerator(reportPath));
-            } catch (IOException e)
+            } 
+            catch (final IOException e)
             {
                 log.info("Could not generate Smooks Report. The reportPath specified was [" + reportPath + "].", e);
             }
         }
     }
 
-    private Source getSource(Exchange exchange)
+    private Source getSource(final Exchange exchange)
     {
         return exchange.getIn().getBody(Source.class);
     }
@@ -128,7 +132,7 @@ public class SmooksProcessor implements Processor, Service
         return configUri;
     }
 
-    public void setSmooksConfig(String smooksConfig)
+    public void setSmooksConfig(final String smooksConfig)
     {
         this.configUri = smooksConfig;
     }
@@ -173,6 +177,7 @@ public class SmooksProcessor implements Processor, Service
         {
             smooks = createSmooks(configUri);
         }
+        smooks.getApplicationContext().setAttribute(CamelContext.class, camelContext);
         addAppenders(smooks, visitorAppenders);
         addVisitors(smooks, selectorVisitorMap);
         log.info(this + " Started");
@@ -212,6 +217,16 @@ public class SmooksProcessor implements Processor, Service
     public String toString()
     {
         return "SmooksProcessor [configUri=" + configUri + "]";
+    }
+
+    public void setCamelContext(CamelContext camelContext)
+    {
+        this.camelContext = camelContext;
+    }
+
+    public CamelContext getCamelContext()
+    {
+        return camelContext;
     }
 
 }

@@ -48,7 +48,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			public void configure() throws Exception
 			{
                 from("direct:a")
-                .process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class)))
+                .process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class)), context)
                 .addVisitor(new Value("x", "/coord/@x", Integer.class)));
 			}
 			
@@ -69,7 +69,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:b").process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class))).
+                from("direct:b").process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class)), context).
                 		addVisitor(new Value("x", "/coord/@x", Integer.class)).
                 		addVisitor(new Value("y", "/coord/@y", Double.class)));
 			}
@@ -93,7 +93,7 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception
 			{
-                from("direct:c").process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class))).
+                from("direct:c").process(new SmooksProcessor(new Smooks().setExports(new Exports(JavaResult.class)), context).
             		addVisitor(new Bean(Coordinate.class, "coordinate").
     				bindTo("x", "/coord/@x").
     				bindTo("y", "/coord/@y")));
