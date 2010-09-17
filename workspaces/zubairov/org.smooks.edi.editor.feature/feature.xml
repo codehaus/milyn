@@ -128,7 +128,7 @@ modification follow.  Pay close attention to the difference between a
 former contains code derived from the library, whereas the latter must
 be combined with the library in order to run.
 
-		GNU LESSER GENERAL PUBLIC LICENSE
+  GNU LESSER GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License Agreement applies to any software library or other
@@ -519,7 +519,6 @@ That&apos;s all there is to it!
       <import feature="org.eclipse.emf.ecore" version="2.5.0" match="greaterOrEqual"/>
       <import feature="org.eclipse.emf.ecore.edit" version="2.5.0" match="greaterOrEqual"/>
       <import feature="org.eclipse.emf.ecore.editor" version="2.5.0" match="greaterOrEqual"/>
-      <import feature="org.eclipse.xsd" version="2.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.apache.commons.logging" version="1.0.4" match="greaterOrEqual"/>
