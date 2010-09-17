@@ -51,7 +51,7 @@ public class SmooksProcessor_File_In_StringResult_Test extends CamelTestSupport 
         return new RouteBuilder() {
             public void configure() {
                 from("file://target/smooks").
-                process(new SmooksProcessor(new Smooks().setExports(new Exports(StringResult.class)))).
+                process(new SmooksProcessor(new Smooks().setExports(new Exports(StringResult.class)), context)).
         		to("mock:a");
             }
         };

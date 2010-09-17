@@ -18,11 +18,18 @@ package org.milyn.smooks.camel.routing;
 import java.io.IOException;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
+import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.ExecutionLifecycleInitializable;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
@@ -31,19 +38,32 @@ import org.milyn.delivery.sax.SAXVisitAfter;
  * Camel bean routing visitor.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
- * @author <a
- *         href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
+ * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
-public class BeanRouter implements SAXVisitAfter, Consumer
-{
-
+public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleInitializable, ExecutionLifecycleCleanable {
+    
     @ConfigParam
     private String beanId;
-
+    
     @ConfigParam
     private String toEndpoint;
+    
+    @AppContext
+    private ApplicationContext applicationContext;
+    
+    @Config
+    SmooksResourceConfiguration routingConfig;
 
     private ProducerTemplate producerTemplate;
+    private BeanRouterObserver camelRouterObserable;
+    private CamelContext camelContext;
+    
+    public BeanRouter() {
+    }
+    
+    public BeanRouter(final CamelContext camelContext) {
+       this.camelContext = camelContext; 
+    }
 
     /**
      * Set the beanId of the bean to be routed.
@@ -52,8 +72,7 @@ public class BeanRouter implements SAXVisitAfter, Consumer
      *            the beanId to set
      * @return This router instance.
      */
-    public BeanRouter setBeanId(String beanId)
-    {
+    public BeanRouter setBeanId(final String beanId) {
         this.beanId = beanId;
         return this;
     }
@@ -65,74 +84,73 @@ public class BeanRouter implements SAXVisitAfter, Consumer
      *            the toEndpoint to set
      * @return This router instance.
      */
-    public BeanRouter setToEndpoint(String toEndpoint)
-    {
+    public BeanRouter setToEndpoint(final String toEndpoint) {
         this.toEndpoint = toEndpoint;
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax
-     * .SAXElement, org.milyn.container.ExecutionContext)
-     */
-    public void visitAfter(SAXElement element, ExecutionContext smooksExecutionContext) throws SmooksException,
-            IOException
+    public void visitAfter(final SAXElement element, final ExecutionContext execContext) throws SmooksException, IOException
     {
-        Object bean = getBeanFromExecutionContext(smooksExecutionContext, beanId);
-        Exchange exchange = getExchange(smooksExecutionContext);
-        try
-        {
-            setProducerTemplateFromContext(exchange.getContext());
+        final Object bean = getBeanFromExecutionContext(execContext, beanId);
+        try {
             producerTemplate.sendBody(toEndpoint, bean);
-        } catch (Exception e)
-        {
+        }  catch (final Exception e) {
             throw new SmooksException("Exception routing beanId '" + beanId + "' to endpoint '" + toEndpoint + "'.", e);
         }
     }
 
-    private Object getBeanFromExecutionContext(ExecutionContext executionContext, String beanId)
-    {
-        Object bean = executionContext.getBeanContext().getBean(beanId);
-        if (bean == null)
+    private Object getBeanFromExecutionContext(final ExecutionContext execContext, final String beanId) {
+        final Object bean = execContext.getBeanContext().getBean(beanId);
+        if (bean == null) {
             throw new SmooksException("Exception routing beanId '" + beanId
                     + "'. The bean was not found in the Smooks ExceutionContext.");
+        }
 
         return bean;
     }
 
-    private Exchange getExchange(ExecutionContext smooksExceutionContext)
-    {
-        Exchange exchange = (Exchange) smooksExceutionContext.getAttribute(Exchange.class);
-        if (exchange == null)
-        {
-            throw new SmooksException("Camel Exchange has not set on Smooks ExecutionContext.");
-        }
-        return exchange;
-    }
-
-    private void setProducerTemplateFromContext(CamelContext camelContext)
-    {
-        if (producerTemplate == null)
-        {
-            this.producerTemplate = camelContext.createProducerTemplate();
+    @Initialize
+    public void initialize() {
+        producerTemplate = getCamelContext().createProducerTemplate();
+        if (isBeanRoutingConfigured()) {
+	        camelRouterObserable = new BeanRouterObserver(producerTemplate, toEndpoint, beanId);
         }
     }
-
-    public void setProducerTempalate(ProducerTemplate producerTemplate)
-    {
-        this.producerTemplate = producerTemplate;
+    
+    private CamelContext getCamelContext() {
+        if (camelContext == null)
+	        return (CamelContext) applicationContext.getAttribute(CamelContext.class);
+        else
+            return camelContext;
+    }
+    
+    private boolean isBeanRoutingConfigured() {
+        return "none".equals(routingConfig.getSelector());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.Object)
-     */
-    public boolean consumes(Object object)
-    {
+    @Uninitialize
+    public void uninitialize() {
+        try {
+            producerTemplate.stop();
+        }  catch (final Exception e) {
+            throw new SmooksException(e.getMessage(), e);
+        }
+    }
+
+    public boolean consumes(final Object object) {
         return beanId.equals(object);
     }
+
+    public void executeExecutionLifecycleInitialize(final ExecutionContext executionContext) {
+        if (isBeanRoutingConfigured()) {
+            executionContext.getBeanContext().addObserver(camelRouterObserable);
+        }
+    }
+    
+    public void executeExecutionLifecycleCleanup(ExecutionContext executionContext) {
+        if (isBeanRoutingConfigured()) {
+            executionContext.getBeanContext().removeObserver(camelRouterObserable);
+        }
+    }
+    
 }

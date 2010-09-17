@@ -38,7 +38,7 @@ public class ExampleRouteBuilder extends RouteBuilder
         // information.
         from("file://" + getWorkingDir() + "?fileName=input-message.edi&noop=true")
         .log("Before unmarshal with SmooksDataFormat:").log("${body}")
-        .unmarshal(new SmooksDataFormat("smooks-config.xml"))
+        .unmarshal(new SmooksDataFormat("smooks-config.xml", getContext()))
         .log("After unmarshal with SmooksDataFormat baja:").log("${body}").to("mock:result");
 
     }

@@ -38,7 +38,7 @@ public class SmooksComponent extends ResourceBasedComponent
 {
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception
     {
-        SmooksProcessor smooksProcessor = new SmooksProcessor(remaining);
+        SmooksProcessor smooksProcessor = new SmooksProcessor(remaining, getCamelContext());
         configureSmooksProcessor(smooksProcessor, uri, remaining, parameters);
         return new SmooksEndpoint(uri, this, smooksProcessor);
     }

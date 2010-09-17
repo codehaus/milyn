@@ -46,7 +46,7 @@ public class SmooksProcessor_Null_Test extends CamelTestSupport {
 	protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("direct:blah").process(new SmooksProcessor(new Smooks()));
+                from("direct:blah").process(new SmooksProcessor(new Smooks(), context));
             }
         };
 	}

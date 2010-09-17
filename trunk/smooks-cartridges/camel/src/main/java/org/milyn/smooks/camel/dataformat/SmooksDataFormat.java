@@ -14,10 +14,15 @@
  */
 package org.milyn.smooks.camel.dataformat;
 
+import static org.milyn.smooks.camel.processor.SmooksProcessor.SMOOKS_EXECUTION_CONTEXT;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.CamelContextAware;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.spi.DataFormat;
 import org.milyn.container.ExecutionContext;
 import org.milyn.smooks.camel.component.SmooksComponent;
@@ -40,42 +45,63 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
  * @author Daniel Bevenius
  * 
  */
-public class SmooksDataFormat implements DataFormat
+public class SmooksDataFormat implements DataFormat, CamelContextAware
 {
     public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
+    private String smooksConfig;
     private String resultBeanId;
     private SmooksProcessor processor;
-
+    private CamelContext camelContext;
+    private AtomicBoolean started = new AtomicBoolean();
+    
     public SmooksDataFormat(String smooksConfig) throws Exception
     {
-        this(smooksConfig, null);
+        this.smooksConfig = smooksConfig;
     }
-
+    
     public SmooksDataFormat(String smooksConfig, String resultBeanId) throws Exception
     {
+        this(smooksConfig);
         this.resultBeanId = resultBeanId;
-        createAndStartSmooksProcessor(smooksConfig);
     }
 
-    private void createAndStartSmooksProcessor(String smooksConfig) throws Exception
+    public SmooksDataFormat(String smooksConfig, final CamelContext camelContext) throws Exception
     {
-        processor = new SmooksProcessor(smooksConfig);
-        processor.start();
+        this(smooksConfig);
+        this.camelContext = camelContext;
+    }
+    
+    public SmooksDataFormat(String smooksConfig, String resultBeanId, final CamelContext camelContext) throws Exception
+    {
+        this(smooksConfig, resultBeanId);
+        this.camelContext = camelContext;
+    }
+
+    private void start() throws Exception
+    {
+        if (started.get() == false)
+        {
+	        processor = new SmooksProcessor(smooksConfig, camelContext);
+	        processor.start();
+	        started.set(true);
+        }
     }
 
     public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception
     {
+        start();
+        
         processor.process(exchange);
-
-        ExecutionContext executionContext = exchange.getOut().getHeader(SmooksProcessor.SMOOKS_EXECUTION_CONTEXT,
-                ExecutionContext.class);
-        stream.write(exchange.getOut().getBody(String.class).getBytes(executionContext.getContentEncoding()));
+        final Message out = exchange.getOut();
+        final ExecutionContext smooksExecContext = out.getHeader(SMOOKS_EXECUTION_CONTEXT, ExecutionContext.class);
+        
+        stream.write(out.getBody(String.class).getBytes(smooksExecContext.getContentEncoding()));
     }
 
     public Object unmarshal(Exchange exchange, InputStream stream) throws Exception
     {
+        start();
         processor.process(exchange);
-
         exchange.setProperty(SMOOKS_DATA_FORMAT_RESULT_KEY, resultBeanId);
         return exchange.getOut().getBody();
     }
@@ -88,6 +114,16 @@ public class SmooksDataFormat implements DataFormat
     public String getSmooksConfig()
     {
         return processor.getSmooksConfig();
+    }
+
+    public void setCamelContext(CamelContext camelContext)
+    {
+        this.camelContext = camelContext;
+    }
+
+    public CamelContext getCamelContext()
+    {
+        return camelContext;
     }
 
 }

@@ -151,7 +151,7 @@ public class SmooksProcessorTest extends CamelTestSupport
         {
             public void configure() throws Exception
             {
-                SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml");
+                SmooksProcessor processor = new SmooksProcessor("edi-to-xml-smooks-config.xml", context);
                 processor.setReportPath("target/smooks-report.html");
 
                 from("file://src/test/data?noop=true").process(processor).convertBodyTo(Node.class).to("mock:result");

@@ -50,7 +50,7 @@ public class SmooksProcessor_StringResult_Test extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
                 from("direct:a")
-                .process(new SmooksProcessor(new Smooks().setExports(new Exports(StringResult.class))))
+                .process(new SmooksProcessor(new Smooks().setExports(new Exports(StringResult.class)), context))
                 .to("direct:b");
                 
                 from("direct:b").convertBodyTo(String.class).process(new DirectBProcessor());
