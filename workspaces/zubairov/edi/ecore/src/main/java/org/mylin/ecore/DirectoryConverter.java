@@ -88,7 +88,7 @@ public class DirectoryConverter {
 				Collection<EObject> generate = schemaBuilder.generate(pkg);
 				Resource xsd = rs.createResource(URI
 						.createFileURI(message + ".xsd"));
-				xsd.getContents().addAll(generate);
+				xsd.getContents().add(generate.iterator().next());
 			} catch (Exception e) {
 				System.err.println("Failed to generate schema for " + pkg.getNsURI());
 			}
