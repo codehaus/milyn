@@ -2,13 +2,21 @@
 <feature
       id="org.smooks.edi.editor"
       label="Smoks EDI Editor Feature"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       os="aix,hpux,linux,macosx,qnx,solaris,win32"
       ws="carbon,cocoa,gtk,motif,photon,win32,wpf"
       arch="ia64,ia64_32,PA_RISC,ppc,sparc,x86,x86_64">
 
    <description url="http://www.example.com/description">
-      Smooks-based EDI Editor
+      Smooks-based EDI Editor.
+Release Notes:
+
+Version 1.0.1:
+- Fixed issue with XML Schema files where two XML Schemas were stored within one XSD file
+
+Version 1.0.0:
+- First release of the EDI Editor
+- Improved visualisation of the Segment Groups and Segments
    </description>
 
    <copyright>
