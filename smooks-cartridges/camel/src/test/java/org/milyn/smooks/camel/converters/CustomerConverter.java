@@ -16,8 +16,11 @@ package org.milyn.smooks.camel.converters;
 
 import java.util.Map;
 
+import javax.xml.transform.Source;
+
 import org.apache.camel.Converter;
 import org.milyn.payload.JavaResult;
+import org.milyn.payload.JavaSource;
 import org.milyn.smooks.camel.dataformat.Customer;
 
 /**
@@ -50,5 +53,12 @@ public class CustomerConverter
 			return resultMap.values().iterator().next();
 		}
 		return null;
+	}
+	
+	@Converter
+	public static Source getSource(final Customer customer)
+	{
+	    JavaSource javaSource = new JavaSource(customer);
+	    return javaSource;
 	}
 }
