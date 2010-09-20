@@ -14,23 +14,30 @@
  */
 package org.milyn.smooks.camel.dataformat;
 
-import static org.milyn.smooks.camel.processor.SmooksProcessor.SMOOKS_EXECUTION_CONTEXT;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.List;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.CamelContextAware;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
+import org.apache.camel.TypeConverter;
+import org.apache.camel.processor.MarshalProcessor;
 import org.apache.camel.spi.DataFormat;
+import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
+import org.milyn.payload.Exports;
+import org.milyn.payload.StringResult;
 import org.milyn.smooks.camel.component.SmooksComponent;
 import org.milyn.smooks.camel.processor.SmooksProcessor;
 
 /**
  * SmooksDataFormat is a Camel data format which is a pluggable transformer
- * capable of transforming from one dataformat to another.
+ * capable of transforming from one dataformat to another and back again.
+ * This means that what is marshaled can be unmarshaled by an instance of this
+ * class.
  * <p/>
  * 
  * A smooks configuration for a SmooksDataFormat should not utilize Smooks
@@ -45,85 +52,69 @@ import org.milyn.smooks.camel.processor.SmooksProcessor;
  * @author Daniel Bevenius
  * 
  */
-public class SmooksDataFormat implements DataFormat, CamelContextAware
+public class SmooksDataFormat implements DataFormat 
 {
-    public static final String SMOOKS_DATA_FORMAT_RESULT_KEY = "SmooksDataFormatKeys";
-    private String smooksConfig;
-    private String resultBeanId;
-    private SmooksProcessor processor;
-    private CamelContext camelContext;
-    private AtomicBoolean started = new AtomicBoolean();
+    private Smooks smooks;
     
-    public SmooksDataFormat(String smooksConfig) throws Exception
+    public SmooksDataFormat(final String smooksConfig) throws Exception
     {
-        this.smooksConfig = smooksConfig;
+        smooks = new Smooks(smooksConfig);
     }
     
-    public SmooksDataFormat(String smooksConfig, String resultBeanId) throws Exception
+    /**
+     * Marshals the Object 'fromBody' to an OutputStream 'toStream'
+     * </p>
+     * 
+     * The Camel framework will call this method from {@link MarshalProcessor#process(Exchange)}
+     * and it will take care of setting the Out Message's body to the bytes written to the toStream
+     * OutputStream.
+     * 
+     * @param exchange The Camel {@link Exchange}.
+     * @param fromBody The object to be marshalled into the output stream.
+     * @param toStream The output stream that will be written to.
+     * 
+     */
+    public void marshal(final Exchange exchange, final Object fromBody, final OutputStream toStream) throws Exception
     {
-        this(smooksConfig);
-        this.resultBeanId = resultBeanId;
+        final ExecutionContext execContext = smooks.createExecutionContext();
+        final TypeConverter typeConverter = exchange.getContext().getTypeConverter();
+        final Source source = typeConverter.mandatoryConvertTo(Source.class, exchange, fromBody);
+        final StringResult stringResult = new StringResult();
+        smooks.filterSource(execContext, source, stringResult);
+        
+        toStream.write(stringResult.getResult().getBytes(execContext.getContentEncoding()));
     }
 
-    public SmooksDataFormat(String smooksConfig, final CamelContext camelContext) throws Exception
+    /**
+     * Unmarshals the fromStream to an Object.
+     * </p>
+     * The Camel framework will call this method from {@link UnMarshalProcessor#process(Exchange)}
+     * and it will take care of setting the returned Object on the Out Message's body.
+     * 
+     * @param exchange The Camel {@link Exchange}.
+     * @param fromStream The InputStream that will be unmarshalled into an Object instance.
+     * 
+     */
+    public Object unmarshal(final Exchange exchange, final InputStream fromStream) throws Exception
     {
-        this(smooksConfig);
-        this.camelContext = camelContext;
+        final ExecutionContext execContext = smooks.createExecutionContext();
+        final Exports exports = Exports.getExports(smooks.getApplicationContext());
+        final Result[] results = exports.createResults();
+        smooks.filterSource(execContext, new StreamSource(fromStream), results);
+        return getResult(exports, results, exchange);
     }
     
-    public SmooksDataFormat(String smooksConfig, String resultBeanId, final CamelContext camelContext) throws Exception
+    protected Object getResult(final Exports exports, final Result[] results, final Exchange exchange)
     {
-        this(smooksConfig, resultBeanId);
-        this.camelContext = camelContext;
-    }
-
-    private void start() throws Exception
-    {
-        if (started.get() == false)
+        final List<Object> objects = Exports.extractResults(results, exports);
+        if (objects.size() == 1)
         {
-	        processor = new SmooksProcessor(smooksConfig, camelContext);
-	        processor.start();
-	        started.set(true);
+            return objects.get(0);
         }
-    }
-
-    public void marshal(Exchange exchange, Object graph, final OutputStream stream) throws Exception
-    {
-        start();
-        
-        processor.process(exchange);
-        final Message out = exchange.getOut();
-        final ExecutionContext smooksExecContext = out.getHeader(SMOOKS_EXECUTION_CONTEXT, ExecutionContext.class);
-        
-        stream.write(out.getBody(String.class).getBytes(smooksExecContext.getContentEncoding()));
-    }
-
-    public Object unmarshal(Exchange exchange, InputStream stream) throws Exception
-    {
-        start();
-        processor.process(exchange);
-        exchange.setProperty(SMOOKS_DATA_FORMAT_RESULT_KEY, resultBeanId);
-        return exchange.getOut().getBody();
-    }
-
-    public String getResultBeanId()
-    {
-        return resultBeanId;
-    }
-
-    public String getSmooksConfig()
-    {
-        return processor.getSmooksConfig();
-    }
-
-    public void setCamelContext(CamelContext camelContext)
-    {
-        this.camelContext = camelContext;
-    }
-
-    public CamelContext getCamelContext()
-    {
-        return camelContext;
+        else
+        {
+	        return objects;
+        }
     }
 
 }

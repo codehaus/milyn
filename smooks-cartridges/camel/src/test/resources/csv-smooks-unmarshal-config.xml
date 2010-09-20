@@ -8,7 +8,7 @@
 	</csv:reader>
 	
     <core:exports>
-        <core:result type="org.milyn.payload.JavaResult"/>
+        <core:result type="org.milyn.payload.JavaResult" extract="result"/>
     </core:exports>
 	
 </smooks-resource-list>

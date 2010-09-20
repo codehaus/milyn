@@ -18,22 +18,24 @@ package org.milyn.smooks.camel.dataformat;
 
 public class Customer {
 	
-	private String FirstName;
-    private String LastName;
-    private Gender Gender;
+	private String firstName;
+    private String lastName;
+    private Gender gender;
+	private int age;
+	private String country;
     
     @Override
 	public int hashCode()
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Age;
-		result = prime * result + ((Country == null) ? 0 : Country.hashCode());
+		result = prime * result + age;
+		result = prime * result + ((country == null) ? 0 : country.hashCode());
 		result = prime * result
-				+ ((FirstName == null) ? 0 : FirstName.hashCode());
-		result = prime * result + ((Gender == null) ? 0 : Gender.hashCode());
+				+ ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
 		result = prime * result
-				+ ((LastName == null) ? 0 : LastName.hashCode());
+				+ ((lastName == null) ? 0 : lastName.hashCode());
 		return result;
 	}
     
@@ -47,67 +49,65 @@ public class Customer {
 		if (getClass() != obj.getClass())
 			return false;
 		Customer other = (Customer) obj;
-		if (Age != other.Age)
+		if (age != other.age)
 			return false;
-		if (Country == null)
+		if (country == null)
 		{
-			if (other.Country != null)
+			if (other.country != null)
 				return false;
-		} else if (!Country.equals(other.Country))
+		} else if (!country.equals(other.country))
 			return false;
-		if (FirstName == null)
+		if (firstName == null)
 		{
-			if (other.FirstName != null)
+			if (other.firstName != null)
 				return false;
-		} else if (!FirstName.equals(other.FirstName))
+		} else if (!firstName.equals(other.firstName))
 			return false;
-		if (Gender != other.Gender)
+		if (gender != other.gender)
 			return false;
-		if (LastName == null)
+		if (lastName == null)
 		{
-			if (other.LastName != null)
+			if (other.lastName != null)
 				return false;
-		} else if (!LastName.equals(other.LastName))
+		} else if (!lastName.equals(other.lastName))
 			return false;
 		return true;
 	}
 
-	private int Age;
-	private String Country;
 	
     public String getCountry() {
-		return Country;
+		return country;
 	}
 	public void setCountry(String country) {
-		Country = country;
+		this.country = country;
 	}
     public String getFirstName() {
-		return FirstName;
+		return firstName;
 	}
 	public void setFirstName(String firstName) {
-		FirstName = firstName;
+		this.firstName = firstName;
 	}
 	public String getLastName() {
-		return LastName;
+		return lastName;
 	}
 	public void setLastName(String lastName) {
-		LastName = lastName;
+		this.lastName = lastName;
 	}
 	public Gender getGender() {
-		return Gender;
+		return gender;
 	}
 	public void setGender(Gender gender) {
-		Gender = gender;
+		this.gender = gender;
 	}
 	public int getAge() {
-		return Age;
+		return age;
 	}
 	public void setAge(int age) {
-		Age = age;
+		this.age = age;
 	}
 
     public String toString() {
-        return "[" + FirstName + ", " + LastName + ", " + Gender + ", " + Age + ", " + Country + "]";
+        return "[" + firstName + ", " + lastName + ", " + gender + ", " + age + ", " + country + "]";
     }
 }
 
