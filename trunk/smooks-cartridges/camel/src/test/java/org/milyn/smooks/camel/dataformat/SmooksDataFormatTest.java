@@ -14,17 +14,20 @@
  */
 package org.milyn.smooks.camel.dataformat;
 
-import static org.junit.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.processor.MarshalProcessor;
 import org.apache.camel.processor.UnmarshalProcessor;
+import org.apache.camel.test.junit4.CamelTestSupport;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +40,7 @@ import org.milyn.payload.JavaSource;
  * @author Daniel Bevenius
  *
  */
-public class SmooksDataFormatTest
+public class SmooksDataFormatTest extends CamelTestSupport
 {
     private static final String SMOOKS_CONFIG = "/org/milyn/smooks/camel/dataformat/smooks-config.xml";
     private static final String CUSTOMER_XML = "/org/milyn/smooks/camel/dataformat/customer.xml";
@@ -52,6 +55,13 @@ public class SmooksDataFormatTest
         dataFormatter = new SmooksDataFormat(SMOOKS_CONFIG);
         XMLUnit.setIgnoreWhitespace(true);
     }
+    
+    @Override
+    public boolean isUseRouteBuilder() {
+        // each unit test include their own route builder
+        return false;
+    }
+    
     
     @Test
     public void unmarshal() throws Exception
@@ -80,6 +90,29 @@ public class SmooksDataFormatTest
         
         marshalProcessor.process(exchange);
         
+        assertXMLEqual(getCustomerXml(CUSTOMER_XML_EXPECTED), exchange.getOut().getBody(String.class));
+    }
+    
+    @Test
+    public void unmarshalMarshalThroughCamel() throws Exception
+    {
+        context.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception
+            {
+                from("direct:a")
+                .unmarshal(dataFormatter)
+                .marshal(dataFormatter);
+            }
+        });
+        
+        context.start();
+        
+        final Exchange exchange = template.request("direct:a", new Processor() {
+            public void process(final Exchange exchange) throws Exception {
+                exchange.getIn().setBody(getCustomerInputStream(CUSTOMER_XML));
+            }
+        });
         assertXMLEqual(getCustomerXml(CUSTOMER_XML_EXPECTED), exchange.getOut().getBody(String.class));
     }
     
