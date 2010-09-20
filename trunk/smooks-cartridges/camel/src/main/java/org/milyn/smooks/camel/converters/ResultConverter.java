@@ -29,7 +29,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;
-import org.milyn.smooks.camel.dataformat.SmooksDataFormat;
 import org.w3c.dom.Node;
 
 /**
@@ -40,6 +39,8 @@ import org.w3c.dom.Node;
 @Converter
 public class ResultConverter
 {
+    public static final String SMOOKS_RESULT_KEY = "SmooksResultKeys";
+    
     private ResultConverter()
     {
     }
@@ -54,7 +55,7 @@ public class ResultConverter
     @Converter
     public static List toList(JavaResult javaResult, Exchange exchange)
     {
-        String resultKey = (String) exchange.getProperty(SmooksDataFormat.SMOOKS_DATA_FORMAT_RESULT_KEY);
+        String resultKey = (String) exchange.getProperty(SMOOKS_RESULT_KEY);
         if (resultKey != null)
         {
             return (List) getResultsFromJavaResult(javaResult, resultKey);

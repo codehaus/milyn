@@ -23,6 +23,7 @@ import java.io.StringReader;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
@@ -79,6 +80,13 @@ public class SmooksComponentTest extends CamelTestSupport
             public void configure() throws Exception
             {
                 from("file://src/test/data?noop=true")
+                .process(new Processor()
+                {
+                    public void process(Exchange exchange) throws Exception
+                    {
+                        System.out.println(exchange.getIn().getBody().getClass().getName());
+                    }
+                })
                 .to("smooks://edi-to-xml-smooks-config.xml")
                 .convertBodyTo(Node.class).to("mock:result");
             }
