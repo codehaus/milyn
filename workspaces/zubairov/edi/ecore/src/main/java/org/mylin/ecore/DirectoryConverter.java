@@ -86,31 +86,32 @@ public class DirectoryConverter {
 			try {
 				EcoreXMLSchemaBuilder schemaBuilder = new EcoreXMLSchemaBuilder();
 				Collection<EObject> generate = schemaBuilder.generate(pkg);
-				Resource xsd = rs.createResource(URI
-						.createFileURI(message + ".xsd"));
-				xsd.getContents().add(generate.iterator().next());
+				Resource xsd = rs.createResource(URI.createFileURI(message
+						+ ".xsd"));
+				if (!xsd.getContents().isEmpty()) {
+					throw new RuntimeException("Duplicate schema "
+							+ xsd.getURI());
+				}
+				XSDSchema schema = (XSDSchema) generate.iterator().next();
+				xsd.getContents().add(schema);
 			} catch (Exception e) {
-				System.err.println("Failed to generate schema for " + pkg.getNsURI());
+				System.err.println("Failed to generate schema for "
+						+ pkg.getNsURI());
 			}
 		}
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		EList<Resource> resources = rs.getResources();
 		for (Resource resource : resources) {
 			EObject obj = resource.getContents().get(0);
 			String fileName = resource.getURI().lastSegment();
 			String ecoreEntryPath = pathPrefix + "/" + fileName;
 			if (obj instanceof EPackage) {
-				ecoreExtension.append(savePackage(archive, ecoreEntryPath, out,
+				ecoreExtension.append(savePackage(archive, ecoreEntryPath,
 						resource, ((EPackage) obj).getNsURI()));
 			} else {
-				xmlExtension.append(saveSchema(archive, ecoreEntryPath, out,
+				xmlExtension.append(saveSchema(archive, ecoreEntryPath,
 						resource, ((XSDSchema) obj).getTargetNamespace()));
-				resource.save(out, null);
-				// Add the generated mapping model to the archive...
-				archive.addEntry(ecoreEntryPath, out.toByteArray());
 			}
-			out.reset();
 		}
 		ecoreExtension.append("\t</extension>\n");
 		xmlExtension.append("\t</catalogContribution></extension>\n");
@@ -125,10 +126,14 @@ public class DirectoryConverter {
 	}
 
 	private Object saveSchema(Archive archive, String entryPath,
-			ByteArrayOutputStream out, Resource resource, String ns) {
+			Resource resource, String ns) {
 		StringBuilder result = new StringBuilder();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			resource.save(out, null);
+			if (archive.getEntries().containsKey(entryPath)) {
+				throw new RuntimeException("Duplicate entry " + entryPath);
+			}
 			archive.addEntry(entryPath, out.toByteArray());
 			result.append("<uri name=\"");
 			result.append(ns);
@@ -143,8 +148,9 @@ public class DirectoryConverter {
 	}
 
 	private String savePackage(Archive archive, String ecoreEntryPath,
-			ByteArrayOutputStream out, Resource resource, String ns) {
+			Resource resource, String ns) {
 		StringBuilder result = new StringBuilder();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			resource.save(out, null);
 			// Add the generated mapping model to the archive...
