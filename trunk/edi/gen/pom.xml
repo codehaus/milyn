@@ -18,52 +18,6 @@
         <d08a.version>1.0-SNAPSHOT</d08a.version>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>all</id>
-            <modules>
-                <!-- UN/EDIFACT D93A... -->
-                <module>unedifact/d93a/mapping</module>
-                <module>unedifact/d93a/binding</module>
-
-                <!-- UN/EDIFACT D01C... -->
-                <module>unedifact/d01c/mapping</module>
-                <module>unedifact/d01c/binding</module>
-
-                <!-- UN/EDIFACT D03B... -->
-                <module>unedifact/d03b/mapping</module>
-                <module>unedifact/d03b/binding</module>
-                <module>unedifact/d03b/test</module>
-
-                <!-- UN/EDIFACT D08A... -->
-                <module>unedifact/d08a/mapping</module>
-                <module>unedifact/d08a/test</module>
-            </modules>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>deploy</id>
-            <modules>
-                <!-- UN/EDIFACT D93A... -->
-                <module>unedifact/d93a/mapping</module>
-                <module>unedifact/d93a/binding</module>
-                
-                <!-- UN/EDIFACT D01C... -->
-                <module>unedifact/d01c/mapping</module>
-                <module>unedifact/d01c/binding</module>
-
-                <!-- UN/EDIFACT D03B... -->
-                <module>unedifact/d03b/mapping</module>
-                <module>unedifact/d03b/binding</module>
-
-                <!-- UN/EDIFACT D08A... -->
-                <module>unedifact/d08a/mapping</module>
-            </modules>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
 			<groupId>org.milyn</groupId>
@@ -140,16 +94,16 @@
         <repository>
             <id>codehaus.maven.repo</id>
             <name>Milyn Central Maven2 Repository</name>
-            <url>https://dav.codehaus.org/repository/milyn/</url>
+            <url>dav:https://dav.codehaus.org/repository/milyn/</url>
         </repository>
         <snapshotRepository>
             <id>codehaus.maven.repo</id>
             <name>Milyn Central Maven2 SNAPSHOT Repository</name>
-            <url>https://dav.codehaus.org/snapshots.repository/milyn/</url>
+            <url>dav:https://dav.codehaus.org/snapshots.repository/milyn/</url>
         </snapshotRepository>
         <site>
             <id>codehaus.maven.repo</id>
-            <url>https://dav.codehaus.org/xfire/</url>
+            <url>dav:https://dav.codehaus.org/xfire/</url>
         </site>
     </distributionManagement>
 
