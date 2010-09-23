@@ -279,6 +279,8 @@ public class EdifactModel {
         //Overwrite all existing fields in segment, but add additional segments to existing segments.
         segment.getFields().addAll(importedSegment.getFields());
 
+        segment.setImportXmlTag(importedSegment.getXmltag());
+
         if (importedSegment.getSegments().size() > 0) {
             segment.getSegments().addAll(importedSegment.getSegments());
         }
