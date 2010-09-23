@@ -57,7 +57,7 @@ public class Main {
                 UNEdifactInterchange41 interchange41 = (UNEdifactInterchange41) interchange;
 
                 System.out.println("\nJava Object Values:");
-                System.out.println("\n\tInterchange Sender ID: " + interchange41.getInterchangeHeader().getSender().getId());
+                System.out.println("\tInterchange Sender ID: " + interchange41.getInterchangeHeader().getSender().getId());
 
                 for (UNEdifactMessage41 messageWithControlSegments : interchange41.getMessages()) {
                     // Process the messages...
