@@ -28,6 +28,7 @@ public class Segment extends SegmentGroup implements ContainerNode {
     private Boolean truncatable;
     private Boolean ignoreUnmappedFields;
     private String description;
+    private String importXmlTag;
 
     public List<Field> getFields() {
         if (fields == null) {
@@ -57,7 +58,11 @@ public class Segment extends SegmentGroup implements ContainerNode {
     @Override
     public String getJavaName() {
         if(getNodeTypeRef() != null) {
-            return getNodeTypeRef();
+            if(importXmlTag != null) {
+                return importXmlTag;
+            } else {
+                return getNodeTypeRef();
+            }
         } else {
             return super.getJavaName();
         }
@@ -85,5 +90,13 @@ public class Segment extends SegmentGroup implements ContainerNode {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImportXmlTag() {
+        return importXmlTag;
+    }
+
+    public void setImportXmlTag(String importXmlTag) {
+        this.importXmlTag = importXmlTag;
     }
 }
