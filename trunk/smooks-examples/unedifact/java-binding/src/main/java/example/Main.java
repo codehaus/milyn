@@ -14,7 +14,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package examples;
+package example;
 
 import org.milyn.SmooksException;
 import org.milyn.edi.unedifact.d93a.D93AInterchangeFactory;
@@ -84,5 +84,7 @@ public class Main {
 
         System.out.println("\n\nSerialized Interchanged:");
         System.out.println("\t" + ediOutStream);
+
+        System.out.println("\n\n**** RUN INSIDE YOUR IDE... Set a breakpoint in the example.Main CLASS... inspect values etc !!");
     }
 }
