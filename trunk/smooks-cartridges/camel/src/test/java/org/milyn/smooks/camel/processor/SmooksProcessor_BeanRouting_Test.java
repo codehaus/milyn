@@ -42,7 +42,6 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
     public void test_dsl_configured() throws Exception {
 		sendTo("direct:a1");        
         assertEquals(2, directBProcessor.coords.size());
-        System.out.println(directBProcessor.coords);
         assertEquals(111, directBProcessor.coords.get(0).getX());
         assertEquals(222, directBProcessor.coords.get(0).getY());
         assertEquals(333, directBProcessor.coords.get(1).getX());
