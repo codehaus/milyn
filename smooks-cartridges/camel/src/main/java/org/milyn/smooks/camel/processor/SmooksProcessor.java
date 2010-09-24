@@ -31,7 +31,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Service;
-import org.apache.camel.TypeConverter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
@@ -39,7 +38,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.payload.Export;
 import org.milyn.payload.Exports;
 import org.xml.sax.SAXException;
 
@@ -77,7 +75,7 @@ public class SmooksProcessor implements Processor, Service, CamelContextAware
     {
         final ExecutionContext executionContext = smooks.createExecutionContext();
         executionContext.setAttribute(Exchange.class, exchange);
-        exchange.getOut().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
+        exchange.getIn().setHeader(SMOOKS_EXECUTION_CONTEXT, executionContext);
         setupSmooksReporting(executionContext);
 
         final Exports exports = Exports.getExports(smooks.getApplicationContext());
@@ -97,16 +95,12 @@ public class SmooksProcessor implements Processor, Service, CamelContextAware
     
     protected void setResultOnBody(final Exports exports, final Result[] results, final Exchange exchange)
     {
-        final Message message = exchange.getOut();
+        final Message message = exchange.getIn();
         final List<Object> objects = Exports.extractResults(results, exports);
-        TypeConverter typeConverter = exchange.getContext().getTypeConverter();
         if (objects.size() == 1)
         {
             Object value = objects.get(0);
             message.setBody(value);
-	        //message.setBody(typeConverter.convertTo(export.getType(), exchange, value));
-            //Export export = exports.getExport(value.getClass());
-	        //message.setBody(typeConverter.convertTo(export.getType(), exchange, value));
         }
         else
         {
