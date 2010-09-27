@@ -43,5 +43,7 @@ exec_mvn .
 
 for directory in unedifact/*
 do
-    build_set $directory
+    if [ -d $directory ]; then
+        build_set $directory
+    fi
 done
