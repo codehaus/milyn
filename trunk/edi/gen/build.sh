@@ -41,6 +41,7 @@ function build_set {
 
 exec_mvn .
 
-build_set unedifact/d93a
-build_set unedifact/d03b
-build_set unedifact/d08a
+for directory in unedifact/*
+do
+    build_set $directory
+done
