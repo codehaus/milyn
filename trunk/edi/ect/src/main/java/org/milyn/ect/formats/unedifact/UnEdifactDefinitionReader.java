@@ -52,7 +52,7 @@ public class UnEdifactDefinitionReader {
      * Group6 = min occurance
      * Group7 = max occurance
      */
-    private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
+    private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile(" *(\\d{3})*[SX\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
 
     /**
      * Extracts information from Data element occuring on one single row in Composite definition.
@@ -61,7 +61,7 @@ public class UnEdifactDefinitionReader {
      * Group2 = id
      * Group3 = name
      */
-    private static final Pattern FIRST_DATA_ELEMENT_PART = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *");
+    private static final Pattern FIRST_DATA_ELEMENT_PART = Pattern.compile(" *(\\d{3})*[SX\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *");
 
     /**
      * Extracts information from Data element occuring on one single row in Composite definition.
@@ -81,8 +81,8 @@ public class UnEdifactDefinitionReader {
      * Group2 = name
      * Group3 = usage (not used today)
      */
-    private static final Pattern ELEMENT_HEADER = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*) *\\[(\\w)\\]");
-    private static final Pattern ELEMENT_HEADER_OLD = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*)");
+    private static final Pattern ELEMENT_HEADER = Pattern.compile("[SX\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*) *\\[(\\w)\\]");
+    private static final Pattern ELEMENT_HEADER_OLD = Pattern.compile("[SX\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*)");
 
     /**
      * Extracts information from Composite header.
@@ -90,7 +90,7 @@ public class UnEdifactDefinitionReader {
      * Group1 = id
      * Group2 = name
      */
-    private static final Pattern COMPOSITE_HEADER = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*)");
+    private static final Pattern COMPOSITE_HEADER = Pattern.compile("[SX\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*)");
 
     /**
      * Extracts information from Segment header.
@@ -98,7 +98,7 @@ public class UnEdifactDefinitionReader {
      * Group1 = id
      * Group2 = name
      */
-    private static final Pattern SEGMENT_HEADER = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{3}) *(.*)");
+    private static final Pattern SEGMENT_HEADER = Pattern.compile("[SX\\|\\+\\-\\*\\# ]*(\\w{3}) *(.*)");
 
     /**
      * Extracts information from SegmentElement. Could be either a Composite or a Data.
@@ -108,7 +108,7 @@ public class UnEdifactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern SEGMENT_ELEMENT = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
+    private static final Pattern SEGMENT_ELEMENT = Pattern.compile(" *\\** *(\\d{3})*[SX\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
 
     /**
      * Extracts information from first SegmentElement when Composite or Data element description exists on several
@@ -120,7 +120,7 @@ public class UnEdifactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile(" *(\\d{3})*[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*)");
+    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile(" *(\\d{3})*[SX\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*)");
 
     /**
      * Extracts information from second SegmentElement when Composite or Data element description exists on several
@@ -190,12 +190,16 @@ public class UnEdifactDefinitionReader {
                 if (matcher.matches()) {
                     String id = matcher.group(2);
                     line = reader.readLine();
+                    if (line == null) {
+                            continue;
+                    }
                     matcher = SECOND_SEGMENT_ELEMENT.matcher(line);
                     if (matcher.matches()) {
                         addFieldToSegment(fields, componens, segment, id, matcher.group(2).trim().equalsIgnoreCase("M"));
-                    } else {
-                        throw new EdiParseException("Unable to match current line in segment description file. Erranous line [" + line + "].");
                     }
+//                    } else {
+//                        throw new EdiParseException("Unable to match current line in segment description file. Erranous line [" + line + "].");
+//                    }
                 }
             }
             line = reader.readLine();
@@ -204,7 +208,7 @@ public class UnEdifactDefinitionReader {
     }
 
     private static void addFieldToSegment(Map<String, Field> fields, Map<String, Component> componens, Segment segment, String id, boolean isMandatory) {
-        if (id.startsWith("C")) {
+        if (id.toUpperCase().startsWith("C")) {
             segment.getFields().add(copyField(fields.get(id), isMandatory));
         } else {
             segment.getFields().add(convertToField(componens.get(id), isMandatory));
@@ -288,6 +292,9 @@ public class UnEdifactDefinitionReader {
             if (linePart != null) {
                 Component component = new Component();
                 component.setRequired(linePart.isMandatory());
+if (components.get(linePart.getId()) == null) {
+    System.out.println("POPULATE COMPONENT - " + linePart.getId() + " : " + line);
+}
                 populateComponent(component, components.get(linePart.getId()));
                 field.getComponents().add(component);
             }
@@ -405,7 +412,7 @@ public class UnEdifactDefinitionReader {
             if (line.startsWith(prefix)) {
                 result.append(line.replace(prefix, ""));
                 line = reader.readLine();
-                while (line != null && line.length() != 0) {
+                while (line != null && line.trim().length() != 0) {
                     result.append(line.trim());
                     line = reader.readLine();
                 }

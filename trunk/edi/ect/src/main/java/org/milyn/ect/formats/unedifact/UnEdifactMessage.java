@@ -33,21 +33,19 @@ public class UnEdifactMessage {
     /**
      * Marks the start of the Message Definition section.
      */
-    private static final String MESSAGE_DEFINITION = "[\\d\\. ]*MESSAGE DEFINITION";
+    private static final String MESSAGE_DEFINITION = "[\\d\\. ]*MESSAGE DEFINITION *";
 
     /**
      * Extracts description from start of segment documentation.
      * Group1 = id
      * Group2 = documentation
      */
-    //private static final String MESSAGE_DEFINITION_START = "^(\\d{4})* *(.*)";
-    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[ \\+\\|X]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
+    private static final String MESSAGE_DEFINITION_START = "^(\\d{4} *| *)[- \\*\\+\\|X]*(([A-Z]{3}),|[S|s]egment [G|g]roup \\d*:)+(.*)";
 
     /**
      * Marks the end of the Message Definition section.
      */
-    //private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment index .*)";
-    private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment index .*) |( *[\\d\\.]+ *[M|m]essage [S|s]tructure.*)";
+    private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment [I|i]ndex.*)|( *[\\d\\.]+ *[M|m]essage [S|s]tructure.*)";
 
     /**
      * Extracts the value for Message type, version, release and agency.
@@ -60,8 +58,9 @@ public class UnEdifactMessage {
     /**
      * Marks the start of the Segment table section.
      */
-    private static final String SEGMENT_TABLE = "[\\d\\. ]*[S|s]egment [T|t]able";
-    private static final String SEGMENT_TABLE_HEADER = "(Pos *Tag *Name *S *R.*)|( *TAG *NAME *S *REPT *S *REPT)";
+    private static final String SEGMENT_TABLE = "[\\d\\. ]*[S|s]egment [T|t]able *";
+    private static final String SEGMENT_TABLE_HEADER = "(Pos *Tag *Name *S *R.*)|( *TAG *NAME *S *REPT *S *REPT)|( *POS *TAG *NAME *S *R *)";
+//"(Pos *Tag *Name *S *R.*)|( *TAG *NAME *S *REPT *S *REPT)";
 
 
     /**
@@ -72,7 +71,7 @@ public class UnEdifactMessage {
      * Group4 = isMandatory
      * Group5 = max occurance
      */                  
-    private static String SEGMENT_REGULAR = "(\\d{4})*[\\+\\* X]*(\\w{3}) *(.*) +(M|C|m|c) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR = "(\\d{4})*[-\\+\\* XS]*(\\w{3}) *(.*) +(M|C|m|c) *(\\d+)[ \\|]*";
 
     /**
      * Extracts information from Regular segment definition.
@@ -80,7 +79,7 @@ public class UnEdifactMessage {
      * Group2 = segcode
      * Group3 = description
      */
-    private static String SEGMENT_REGULAR_START = "(\\d{4})*[\\+\\* X]*(\\w{3}) *(.*) *\\|";
+    private static String SEGMENT_REGULAR_START = "(\\d{4})*[-\\+\\* XS]*(\\w{3}) *(.*) *\\|";
 
     /**
      * Extracts information from Regular segment definition.
@@ -98,7 +97,7 @@ public class UnEdifactMessage {
      * Group4 = isMandatory
      * Group5 = max occurance 
      */
-    private static String SEGMENT_GROUP_START = "(\\d{4})*[\\+\\* X]*-* *([S|s]egment [G|g]roup \\d*) *-* +(C|M|c|m) *(\\d*)[ \\-\\+\\|]*";
+    private static String SEGMENT_GROUP_START = "(\\d{4})*[-\\+\\* XS]*-* *([S|s]egment [G|g]roup \\d*) *-* +(C|M|c|m) *(\\d*)[ \\-\\+\\|]*";
 
     /**
      * Matches and extracts information from segment at end of segment group.
@@ -109,7 +108,12 @@ public class UnEdifactMessage {
      * Group5 = max occurance
      * Group6 = nrOfClosedGroups
      */
-    private static String SEGMENT_GROUP_END = "(\\d{4})*[\\+\\* X]*(\\w{3}) *([\\w /-]*) +(C|M|c|m) *(\\d*) *-+([ |\\+]*)";
+    private static String SEGMENT_GROUP_END = "(\\d{4})*[-\\+\\* XS]*(\\w{3}) *([\\w /-]*) +(C|M|c|m) *(\\d*) *-+([ |\\+]*)";
+
+    /**
+     * Annex - notes after message structure.
+     */
+    private static final String ANNEX = "(Informative annex:.*)";
 
     /**
      * Newline character applied between documentation lines.
@@ -119,8 +123,7 @@ public class UnEdifactMessage {
     /**
      * A message must match the LEGAL_MESSAGE pattern. Otherwise it may be an index file located in the message folder.
      */
-    private static final String LEGAL_MESSAGE = " *UN/EDIFACT";
-
+    private static final String LEGAL_MESSAGE = "\\s*UN/EDIFACT\\s*";
     /**
      * Default settings for UN/EDIFACT.
      */
@@ -128,10 +131,10 @@ public class UnEdifactMessage {
     private static final String DELIMITER_COMPOSITE = "+";
     private static final String DELIMITER_DATA = ":";
     private static final String DELIMITER_NOT_USED = "~";
+
     private static final String ESCAPE = "?";
 
     private static List<String> ignoreSegments = Arrays.asList("UNA", "UNB", "UNG", "UNH", "UNT", "UNZ", "UNE");
-
     private String type;
     private String version;
     private String release;
@@ -220,17 +223,20 @@ public class UnEdifactMessage {
         return result;
     }
 
-    private static void assertLegalMessage(BufferedReader reader) throws EdiParseException {
+    private void assertLegalMessage(BufferedReader reader) throws EdiParseException {
         String line;
 
         try {
             line = reader.readLine();
+            while (line != null && !line.matches(LEGAL_MESSAGE)) {
+                line = reader.readLine();
+            }
         } catch (IOException e) {
             throw new EdiParseException("Error reading first line of UN/EDIFACT message.", e);
         }
 
-        if(!line.matches(LEGAL_MESSAGE)) {
-            throw new EdiParseException("Not a valid UN/EDIFACT message definition.  First line doe not match pattern '" + LEGAL_MESSAGE + "'.");
+        if(line == null) {
+            throw new EdiParseException("Not a valid UN/EDIFACT message definition. First line doe not match pattern '" + LEGAL_MESSAGE + "'.");
         }
     }
 
@@ -334,6 +340,8 @@ public class UnEdifactMessage {
                     Segment segment = createSegment(id, segcode, description, matcher.group(2), matcher.group(3), definitions, isSplitIntoImport, segmentDefinitions);
                     parentGroup.getSegments().add(segment);
                 }
+            } else if (line.matches(ANNEX)) {
+                return 0;
             }
             
             line = reader.readLine();
@@ -356,9 +364,7 @@ public class UnEdifactMessage {
         SegmentGroup group = new SegmentGroup();
         group.setXmltag(XmlTagEncoder.encode(name.trim()));
         String test = definitions.get(id);
-        if (test == null) {
-            System.out.println("");
-        }
+        
         group.setDocumentation(test.trim());
         group.setMinOccurs(mandatory.equals("M") ? 1 : 0);
         group.setMaxOccurs(Integer.valueOf(maxOccurance));
@@ -386,9 +392,7 @@ public class UnEdifactMessage {
         }
         segment.setXmltag(XmlTagEncoder.encode(description.trim()));
         String test = definitions.get(id);
-        if (test == null) {
-            System.out.println("");
-        }
+
         segment.setDocumentation(definitions.get(id).trim());
         segment.setMinOccurs(mandatory.equals("M") ? 1 : 0);
         segment.setMaxOccurs(Integer.valueOf(maxOccurance));
