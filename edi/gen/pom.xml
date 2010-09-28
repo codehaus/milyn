@@ -13,6 +13,10 @@
 
         <!-- UN/EDIFACT versions... -->
         <d93a.version>1.0-SNAPSHOT</d93a.version>
+        <d94a.version>1.0-SNAPSHOT</d94a.version>
+        <d94b.version>1.0-SNAPSHOT</d94b.version>
+        <d95a.version>1.0-SNAPSHOT</d95a.version>
+        <d95b.version>1.0-SNAPSHOT</d95b.version>
         <d96a.version>1.0-SNAPSHOT</d96a.version>
         <d96b.version>1.0-SNAPSHOT</d96b.version>
         <d97a.version>1.0-SNAPSHOT</d97a.version>
