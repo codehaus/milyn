@@ -26,6 +26,7 @@
 	<groupId>org.milyn</groupId>
 	<artifactId>milyn-smooks-all</artifactId>
     <version>${milyn.smooks.core.version}</version>
+	<packaging>bundle</packaging>
 
     <dependencies>
 
@@ -138,6 +139,12 @@
             <artifactId>milyn-scribe-jpa</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-camel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
     </dependencies>
 
@@ -188,6 +195,28 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>1.4.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>org.milyn.smooks.osgi</Bundle-SymbolicName>
+						<Bundle-Name>Smooks OSGi</Bundle-Name>
+						<Bundle-Version>${milyn.smooks.core.version}</Bundle-Version>
+						<Export-Package>
+							org.milyn.*;-split-package:=merge-first;version="${milyn.smooks.core.version}",
+							META-INF.*;-split-package:=merge-first
+						</Export-Package>
+						<Import-Package>
+							org.osgi.framework,
+							org.jaxen.*;version="1.1.1", 
+							*;resolution:=optional
+						</Import-Package>
+					</instructions>
+				</configuration>
+				</plugin>
         </plugins>
     </build>
 
