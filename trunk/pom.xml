@@ -37,6 +37,7 @@
         <milyn.scribe.ibatis.version.base>${milyn.smooks.core.version.base}</milyn.scribe.ibatis.version.base>
         <milyn.scribe.ibatis.version>${milyn.smooks.core.version}</milyn.scribe.ibatis.version>
 
+        <camel.version>2.4.0</camel.version>
         <xerces.version>2.7.1</xerces.version>
         <xalan.version>2.7.1</xalan.version>
         <xml_apis.version>1.3.02</xml_apis.version>
@@ -216,13 +217,6 @@
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
     </build>
 
     <distributionManagement>
