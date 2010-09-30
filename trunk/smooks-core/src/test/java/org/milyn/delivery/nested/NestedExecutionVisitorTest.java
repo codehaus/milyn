@@ -33,7 +33,7 @@ public class NestedExecutionVisitorTest extends TestCase {
 
         executionContext.getBeanContext().addObserver(new BeanContextLifecycleObserver() {
             public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-                if(event.getLifecycle() == BeanLifecycle.END && event.getBeanId().getName().equals("orderItem")) {
+                if(event.getLifecycle() == BeanLifecycle.REMOVE && event.getBeanId().getName().equals("orderItem")) {
                     orderItems.add((String) event.getBean());
                 }
             }

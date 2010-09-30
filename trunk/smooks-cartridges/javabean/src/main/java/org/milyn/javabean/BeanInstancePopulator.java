@@ -436,7 +436,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         if(bean == null) {
 
             if(logger.isDebugEnabled()) {
-                logger.debug("Registering bean BEGIN wiring observer for wiring bean '" + wireBeanId + "' onto target bean '" + beanId.getName() + "'.");
+                logger.debug("Registering bean ADD wiring observer for wiring bean '" + wireBeanId + "' onto target bean '" + beanId.getName() + "'.");
             }
 
             // Register the observer which looks for the creation of the selected bean via its beanIdName...

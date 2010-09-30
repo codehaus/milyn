@@ -65,7 +65,7 @@ public class BeanWiringObserver implements BeanContextLifecycleObserver {
 		BeanId beanId = event.getBeanId();
 		BeanLifecycle lifecycle = event.getLifecycle();		
 		
-		if(lifecycle == BeanLifecycle.BEGIN) {
+		if(lifecycle == BeanLifecycle.ADD) {
 			if(watchedBeanId != null && beanId != watchedBeanId) {
 				return;
 			}
@@ -77,7 +77,7 @@ public class BeanWiringObserver implements BeanContextLifecycleObserver {
 			
 			ExecutionContext executionContext = event.getExecutionContext();
 			populator.populateAndSetPropertyValue(bean, executionContext.getBeanContext(), watchingBeanId, executionContext, event.getSource());
-		} else if(beanId == watchingBeanId && lifecycle == BeanLifecycle.END) {
+		} else if(beanId == watchingBeanId && lifecycle == BeanLifecycle.REMOVE) {
 			BeanContext beanContext = event.getExecutionContext().getBeanContext();
 			
 			beanContext.removeObserver(this);

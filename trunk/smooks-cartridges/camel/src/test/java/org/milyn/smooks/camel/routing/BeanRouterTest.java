@@ -33,6 +33,8 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
 
 /**
  * Unit test for {@link BeanRouter}.
@@ -75,10 +77,12 @@ public class BeanRouterTest extends CamelTestSupport
         
     	BeanRouter beanRouter = createBeanRouter(null, BEAN_ID, END_POINT_URI);
     	beanRouter.executeExecutionLifecycleInitialize(execContext);
-    	execContext.getBeanContext().addBean(BEAN_ID, myBean);
-    	// Force an END event
-    	execContext.getBeanContext().removeBean(BEAN_ID, null);
-    	
+        execContext.getBeanContext().addBean(BEAN_ID, myBean);
+
+        // Force an END event
+        execContext.getBeanContext().notifyObservers(new BeanContextLifecycleEvent(execContext,
+                null, BeanLifecycle.END_FRAGMENT, execContext.getBeanContext().getBeanId(BEAN_ID), myBean));
+
     	endpoint.assertIsSatisfied();
     	endpoint.expectedBodiesReceived(myBean);
     }

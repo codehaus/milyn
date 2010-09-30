@@ -28,7 +28,6 @@
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
-        <!--<module>servlet</module>-->
         <module>db-extract-transform-load</module>
         <module>file-router</module>
         <module>freemarker-huge-transform</module>
@@ -67,6 +66,8 @@
         <milyn.smooks.ejc.version>${milyn.smooks.core.version}</milyn.smooks.ejc.version>
         <milyn.smooks.yaml.version>${milyn.smooks.core.version}</milyn.smooks.yaml.version>
         <milyn.smooks.camel.version>${milyn.smooks.core.version}</milyn.smooks.camel.version>
+        <camel.version>2.4.0</camel.version>
+        <spring.version>2.5.6</spring.version>
     </properties>
 
     <dependencies>

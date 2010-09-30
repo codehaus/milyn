@@ -16,6 +16,7 @@ package org.milyn.smooks.camel.routing;
 
 import org.apache.camel.ProducerTemplate;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
@@ -33,7 +34,8 @@ public class BeanRouterObserver implements BeanContextLifecycleObserver
     private final ProducerTemplate producerTemplate;
     private final String endpointUri;
     private final String beanId;
-    
+    private ExecutionContextExpressionEvaluator conditionEvaluator;
+
     /**
      * Sole contructor.
      * @param producerTemplate The Camel {@link ProducerTemplate} used to route the bean.
@@ -50,22 +52,45 @@ public class BeanRouterObserver implements BeanContextLifecycleObserver
         this.beanId = beanId;
         this.producerTemplate = producerTemplate;
     }
-    
+
     /**
-     * Will route to the endpoint if the BeanLifecycle is of type BeanLifecycle.END and
+     * Set the condition evaluator for performing the routing.
+     * <p/>
+     * Used to test if the routing is to be performed based on the
+     * user configured condition.
+     * @param conditionEvaluator The routing condition evaluator.
+     */
+    public void setConditionEvaluator(ExecutionContextExpressionEvaluator conditionEvaluator) {
+        this.conditionEvaluator = conditionEvaluator;
+    }
+
+    /**
+     * Will route to the endpoint if the BeanLifecycle is of type BeanLifecycle.REMOVE and
      * the beanId is equals to the beanId that was configured for this instance.
      */
     public void onBeanLifecycleEvent(final BeanContextLifecycleEvent event)
     {
-        if (isEndEventAndBeanIdMatches(event))
+        if (endEventAndBeanIdMatch(event) && conditionsMatch(event))
         {
             producerTemplate.sendBody(endpointUri, event.getBean());
         }
     }
-    
-    private boolean isEndEventAndBeanIdMatches(final BeanContextLifecycleEvent event)
+
+    private boolean endEventAndBeanIdMatch(final BeanContextLifecycleEvent event)
     {
-        return event.getLifecycle() == BeanLifecycle.END && event.getBeanId().getName().equals(beanId);
-        
+        return event.getLifecycle() == BeanLifecycle.END_FRAGMENT && event.getBeanId().getName().equals(beanId);
+
+    }
+
+    public boolean conditionsMatch(BeanContextLifecycleEvent event) {
+        if(conditionEvaluator == null) {
+            return true;
+        }
+
+        try {
+            return conditionEvaluator.eval(event.getExecutionContext());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

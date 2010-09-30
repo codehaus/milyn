@@ -45,6 +45,8 @@ import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.ext.BeanConfigUtil;
 import org.milyn.javabean.factory.Factory;
 import org.milyn.javabean.factory.FactoryDefinitionParser.FactoryDefinitionParserFactory;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
@@ -260,6 +262,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
         bean = createBeanInstance(executionContext);
 
+        executionContext.getBeanContext().notifyObservers(new BeanContextLifecycleEvent(executionContext,
+                source, BeanLifecycle.START_FRAGMENT, beanId, bean));
+
         if(initValsExpression != null) {
         	initValsExpression.exec(bean);
         }
@@ -336,8 +341,15 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	 * @see org.milyn.delivery.VisitLifecycleCleanable#executeVisitLifecycleCleanup(org.milyn.container.ExecutionContext)
 	 */
 	public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+        Object bean;
+
 		if(!retain) {
-			executionContext.getBeanContext().removeBean(beanId, null);
-		}
-	}
+            bean = executionContext.getBeanContext().removeBean(beanId, null);
+		} else {
+            bean = executionContext.getBeanContext().getBean(beanId);
+        }
+        
+        executionContext.getBeanContext().notifyObservers(new BeanContextLifecycleEvent(executionContext,
+                null, BeanLifecycle.END_FRAGMENT, beanId, bean));
+    }
 }

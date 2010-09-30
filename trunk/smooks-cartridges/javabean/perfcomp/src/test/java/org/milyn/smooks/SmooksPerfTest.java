@@ -74,7 +74,7 @@ public class SmooksPerfTest extends TestCase {
     	private BeanId beanId = new BeanId((BeanIdStore)null, 0, null);
     	
 		public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-			if(event.getBeanId() == beanId && event.getLifecycle() == BeanLifecycle.BEGIN) {
+			if(event.getBeanId() == beanId && event.getLifecycle() == BeanLifecycle.ADD) {
 				int s = beanId.getIndex();
 				s = s++;
 			}
