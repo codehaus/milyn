@@ -12,10 +12,6 @@
     <artifactId>milyn-smooks-camel</artifactId>
     <version>${milyn.smooks.camel.version}</version>
 
-	<properties>
-        <camel.version>2.4.0</camel.version>
-    </properties>
-
 	<dependencies>
 
 		<dependency>

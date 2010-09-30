@@ -33,6 +33,7 @@ import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
+import org.milyn.expression.ExecutionContextExpressionEvaluator;
 
 /**
  * Camel bean routing visitor.
@@ -114,6 +115,7 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
         producerTemplate = getCamelContext().createProducerTemplate();
         if (isBeanRoutingConfigured()) {
 	        camelRouterObserable = new BeanRouterObserver(producerTemplate, toEndpoint, beanId);
+            camelRouterObserable.setConditionEvaluator((ExecutionContextExpressionEvaluator) routingConfig.getConditionEvaluator());
         }
     }
     

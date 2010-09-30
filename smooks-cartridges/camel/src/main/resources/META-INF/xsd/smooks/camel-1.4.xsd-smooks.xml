@@ -40,8 +40,4 @@
         <param name="mapTo">condition</param>
     </resource-config>
     
-    <resource-config selector="route/to">
-        <resource>org.milyn.smooks.camel.routing.RoutingSelectorLookup</resource>
-    </resource-config>
-    
 </smooks-resource-list>

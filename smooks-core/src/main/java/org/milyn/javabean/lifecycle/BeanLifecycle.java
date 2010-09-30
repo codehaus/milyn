@@ -20,9 +20,11 @@ package org.milyn.javabean.lifecycle;
  *
  */
 public enum BeanLifecycle {
-	
-	BEGIN,
+
+    START_FRAGMENT,
+    ADD,
     POPULATE,
 	CHANGE,
-	END;
+    END_FRAGMENT,
+    REMOVE;
 }

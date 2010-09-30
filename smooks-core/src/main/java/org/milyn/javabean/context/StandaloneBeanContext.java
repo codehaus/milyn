@@ -88,7 +88,7 @@ public class StandaloneBeanContext implements BeanContext {
 		Object currentInstance = getBean(beanId);
 		if (currentInstance != null) {
 			notifyObservers(new BeanContextLifecycleEvent(executionContext,
-					source, BeanLifecycle.END, beanId, bean));
+					source, BeanLifecycle.REMOVE, beanId, currentInstance));
 		}
 
 		// Check if the BeanIdList has new BeanIds and if so then
@@ -104,7 +104,7 @@ public class StandaloneBeanContext implements BeanContext {
 
 		// Add the bean to the context...
 		notifyObservers(new BeanContextLifecycleEvent(executionContext, source,
-				BeanLifecycle.BEGIN, beanId, bean));
+				BeanLifecycle.ADD, beanId, bean));
 	}
 
     public void addBean(String beanId, Object bean) {
@@ -242,7 +242,7 @@ public class StandaloneBeanContext implements BeanContext {
 		repositoryEntry.setValue(null);
 
 		notifyObservers(new BeanContextLifecycleEvent(executionContext, source,
-				BeanLifecycle.END, beanId, getBean(beanId)));
+				BeanLifecycle.REMOVE, beanId, getBean(beanId)));
 
 		return old;
 	}

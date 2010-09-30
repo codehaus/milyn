@@ -15,6 +15,7 @@
 package org.milyn.smooks.camel.processor;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
@@ -125,6 +127,7 @@ public class SmooksProcessor implements Processor, Service, CamelContextAware
 
     private Source getSource(final Exchange exchange)
     {
+//        return new StreamSource(exchange.getIn().getBody(InputStream.class));
         return exchange.getIn().getBody(Source.class);
     }
 

@@ -55,7 +55,7 @@ public class BeanCreateLifecycleObserver implements BeanContextLifecycleObserver
 	public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
 		if(event.getBean() == watchedBean) {
 			switch(event.getLifecycle()) {
-			case BEGIN:
+			case ADD:
 				if (wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION) {
 					// Register an observer which looks for the change that the mutable
 					// list of the selected bean gets converted to an array. We
@@ -65,7 +65,7 @@ public class BeanCreateLifecycleObserver implements BeanContextLifecycleObserver
 				} else {
 					populator.populateAndSetPropertyValue(event.getBean(), event.getExecutionContext());
 				}
-			case END:
+			case REMOVE:
 				try{
 					if(arrayToListChangeObserver != null) {
 						event.getExecutionContext().getBeanContext().removeObserver(arrayToListChangeObserver);

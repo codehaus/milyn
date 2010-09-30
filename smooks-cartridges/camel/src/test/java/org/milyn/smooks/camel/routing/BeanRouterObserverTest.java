@@ -53,7 +53,7 @@ public class BeanRouterObserverTest extends CamelTestSupport
         final BeanContextLifecycleEvent event = mock(BeanContextLifecycleEvent.class);
         
         when(event.getBeanId()).thenReturn(new BeanId(null, 0, beanId));
-        when(event.getLifecycle()).thenReturn(BeanLifecycle.END);
+        when(event.getLifecycle()).thenReturn(BeanLifecycle.END_FRAGMENT);
         when(event.getBean()).thenReturn(sampleBean);
         
         endpoint.setExpectedMessageCount(1);

@@ -43,7 +43,6 @@ import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.payload.JavaResult;
 import org.w3c.dom.*;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -209,7 +208,7 @@ public class ModelBuilder {
         }
 
         public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-			if(event.getLifecycle() == BeanLifecycle.BEGIN || event.getLifecycle() == BeanLifecycle.CHANGE) {
+			if(event.getLifecycle() == BeanLifecycle.ADD || event.getLifecycle() == BeanLifecycle.CHANGE) {
                 Object bean = event.getBean();
                 BeanMetadata beanMetadata = new BeanMetadata(bean);
                 Map<String, BeanWriter> beanWriters = beanWriterMap.get(bean.getClass());
