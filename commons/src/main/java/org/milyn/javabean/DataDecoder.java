@@ -21,6 +21,7 @@ import org.milyn.util.ClassUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ import java.util.Collections;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @see org.milyn.javabean.DataEncoder
  */
-public interface DataDecoder {
+public interface DataDecoder extends Serializable {
     
     /**
      * Decode the supplied String data into a new Object data instance.

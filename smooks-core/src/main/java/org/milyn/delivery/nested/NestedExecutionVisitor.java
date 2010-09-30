@@ -31,6 +31,8 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXHandler;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.CollectionsUtil;
 import org.xml.sax.XMLReader;
@@ -144,8 +146,10 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
 
                     // Add the bean from the nested context onto the parent context and then remove
                     // it again.  This is enough to fire the wiring and end events...
+                    parentBeanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext, null, BeanLifecycle.START_FRAGMENT, beanId, bean));
                     parentBeanContext.addBean(beanId, bean);
                     parentBeanContext.removeBean(beanId, null);
+                    parentBeanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext, null, BeanLifecycle.END_FRAGMENT, beanId, bean));
                 }
             }
         } finally {
