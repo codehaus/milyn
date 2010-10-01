@@ -27,6 +27,7 @@
     <modules>
         <module>to-xml</module>
         <module>java-binding</module>
+        <module>splitting-camel</module>
     </modules>
 
 </project>
