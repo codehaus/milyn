@@ -148,8 +148,8 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
                     // it again.  This is enough to fire the wiring and end events...
                     parentBeanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext, null, BeanLifecycle.START_FRAGMENT, beanId, bean));
                     parentBeanContext.addBean(beanId, bean);
-                    parentBeanContext.removeBean(beanId, null);
                     parentBeanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext, null, BeanLifecycle.END_FRAGMENT, beanId, bean));
+                    parentBeanContext.removeBean(beanId, null);
                 }
             }
         } finally {
