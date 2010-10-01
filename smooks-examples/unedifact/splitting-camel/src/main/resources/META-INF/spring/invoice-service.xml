@@ -30,8 +30,5 @@
 	</bean>
 
 	<bean class="org.smooks.example.processors.InvoiceService" />
-	
-	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
-	</camelContext>
 
 </beans>
