@@ -170,17 +170,21 @@ public class AbstractParser {
     }
 
 	private static Reader systemIdToReader(String systemId, String contentEncoding) {
-		URL resourceURL;
 		try {
-			resourceURL = new URL(systemId);
-		} catch (MalformedURLException e) {
-		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Must be a valid URL.", e);
-		}
-		try {
-			return streamToReader(resourceURL.openStream(), contentEncoding);
+			return streamToReader(systemIdToURL(systemId).openStream(), contentEncoding);
 		} catch (IOException e) {
 		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Unable to open stream to resource.", e);
 		}
+	}
+	
+	private static URL systemIdToURL(final String systemId)
+	{
+		try {
+			return new URL(systemId);
+		} catch (MalformedURLException e) {
+		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Must be a valid URL.", e);
+		}
+	    
 	}
 
 	private static Reader streamToReader(InputStream inputStream, String contentEncoding) {
@@ -213,7 +217,19 @@ public class AbstractParser {
 
         // Also attach the underlying stream to the InputSource...
         if(source instanceof StreamSource) {
-            inputSource.setByteStream(((StreamSource) source).getInputStream());
+            final StreamSource streamSource = (StreamSource) source;
+            final InputStream inputStream = streamSource.getInputStream();
+            final String systemId = streamSource.getSystemId();
+            if (inputStream != null) {
+	            inputSource.setByteStream(((StreamSource) source).getInputStream());
+            } else if (systemId != null) {
+                URL resourceURL = systemIdToURL(systemId);
+                try {
+                    inputSource.setByteStream(resourceURL.openStream());
+                } catch (final IOException e) {
+				    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Unable to open stream to resource.", e);
+                }
+            }
         }
         
         return inputSource;
