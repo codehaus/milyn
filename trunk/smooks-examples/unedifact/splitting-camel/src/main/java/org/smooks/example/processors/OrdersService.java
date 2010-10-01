@@ -16,6 +16,7 @@
 
 package org.smooks.example.processors;
 
+import com.thoughtworks.xstream.XStream;
 import org.apache.camel.Consume;
 import org.milyn.edi.unedifact.d93a.ORDERS.Orders;
 
@@ -28,6 +29,10 @@ public class OrdersService {
 
     @Consume(uri="jms:order")
     public void processOrder(Orders order) {
-        System.out.println("Invoice received...");
+
+        System.out.println("================ Orders Message ================");
+        System.out.println(new XStream().toXML(order.getBeginningOfMessage()));
+        System.out.println(new XStream().toXML(order.getDateTimePeriod()));
+        
     }
 }
