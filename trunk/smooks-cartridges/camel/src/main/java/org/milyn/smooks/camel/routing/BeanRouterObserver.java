@@ -72,6 +72,7 @@ public class BeanRouterObserver implements BeanContextLifecycleObserver
     {
         if (endEventAndBeanIdMatch(event) && conditionsMatch(event))
         {
+            System.out.println("**** routing bean '" + event.getBeanId().getName() + "' to '" + endpointUri + "'.  Type '" + event.getBean().getClass().getName() + "'.");
             producerTemplate.sendBody(endpointUri, event.getBean());
         }
     }

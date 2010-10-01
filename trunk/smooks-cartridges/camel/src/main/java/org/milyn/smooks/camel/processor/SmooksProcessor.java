@@ -16,6 +16,7 @@ package org.milyn.smooks.camel.processor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.CamelContext;
@@ -41,6 +43,7 @@ import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.payload.Exports;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -127,8 +130,19 @@ public class SmooksProcessor implements Processor, Service, CamelContextAware
 
     private Source getSource(final Exchange exchange)
     {
-//        return new StreamSource(exchange.getIn().getBody(InputStream.class));
-        return exchange.getIn().getBody(Source.class);
+        Object payload = exchange.getIn().getBody();
+
+        if(payload instanceof Source) {
+            return (Source) payload;
+        } else if(payload instanceof Node) {
+            return new DOMSource((Node) payload);
+        } else if(payload instanceof InputStream) {
+            return new StreamSource((InputStream) payload);
+        } else if(payload instanceof Reader) {
+            return new StreamSource((Reader) payload);
+        }
+
+        return new StreamSource(exchange.getIn().getBody(InputStream.class));
     }
 
     public String getSmooksConfig()
