@@ -132,17 +132,27 @@ public class SmooksProcessor implements Processor, Service, CamelContextAware
     {
         Object payload = exchange.getIn().getBody();
 
-        if(payload instanceof Source) {
+        if(payload instanceof Source) 
+        {
             return (Source) payload;
-        } else if(payload instanceof Node) {
+        }
+        
+        if(payload instanceof Node) 
+        {
             return new DOMSource((Node) payload);
-        } else if(payload instanceof InputStream) {
+        }
+        
+        if(payload instanceof InputStream) 
+        {
             return new StreamSource((InputStream) payload);
-        } else if(payload instanceof Reader) {
+        }
+        
+        if(payload instanceof Reader) 
+        {
             return new StreamSource((Reader) payload);
         }
 
-        return new StreamSource(exchange.getIn().getBody(InputStream.class));
+        return exchange.getIn().getBody(Source.class);
     }
 
     public String getSmooksConfig()
