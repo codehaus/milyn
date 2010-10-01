@@ -27,10 +27,10 @@
             <activemq:transportConnector name="tcp" uri="tcp://localhost:61616"/>
         </activemq:transportConnectors>
     </activemq:broker>
-
+    
     <bean id="jms" class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="brokerURL" value="tcp://localhost:61616"/>
-    </bean>
+	    <property name="brokerURL" value="tcp://localhost:61616"/>
+	</bean>
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
