@@ -22,6 +22,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.SmooksContentHandler;
 import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
@@ -133,7 +134,7 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
         return smooksInstance;
     }
 
-    public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+    public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
         ExecutionContext nestedExecutionContext = (ExecutionContext) executionContext.getAttribute(NestedExecutionVisitor.class);
 
         try {

@@ -18,7 +18,7 @@ package org.milyn.delivery.lifecyclecleanup;
 import junit.framework.TestCase;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
@@ -45,7 +45,7 @@ public class SaxVisitCleanable implements SAXVisitBefore, SAXVisitAfter, VisitLi
         }
     }
 
-    public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+    public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
         cleaned = true;
     }
 }

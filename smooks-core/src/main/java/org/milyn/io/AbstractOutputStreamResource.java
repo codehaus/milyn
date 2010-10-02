@@ -22,14 +22,12 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.ordering.Consumer;
-import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.expression.MVELExpressionEvaluator;
 import org.w3c.dom.Element;
 
 import java.io.*;
@@ -132,7 +130,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DO
         bind ( executionContext );
     }
 
-    public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+    public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
         if(closeCondition( executionContext )) {
             closeResource( executionContext );
         }

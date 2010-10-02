@@ -783,24 +783,27 @@ public class SmooksDOMFilter extends Filter {
                     String errorMsg = "Failed to apply processing unit [" + visitor.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
                     processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
                 }
-            } else {
+            } else if(visitSequence == VisitSequence.CLEAN) {
                 // Register the targeting event...
                 if (eventListener != null) {
                     eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.CLEAN));
                 }
 
-                VisitLifecycleCleanable visitor = (VisitLifecycleCleanable) configMap.getContentHandler();
-                try {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Cleaning up processing resource [" + config + "] that was targeted to element [" + DomUtils.getXPath(element) + "].");
+                ContentHandler contentHandler = configMap.getContentHandler();
+                if(contentHandler instanceof VisitLifecycleCleanable) {
+                    VisitLifecycleCleanable visitor = (VisitLifecycleCleanable) contentHandler;
+                    try {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Cleaning up processing resource [" + config + "] that was targeted to element [" + DomUtils.getXPath(element) + "].");
+                        }
+                        visitor.executeVisitLifecycleCleanup(new Fragment(element), executionContext);
+                        if (eventListener != null) {
+                            eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.CLEAN));
+                        }
+                    } catch (Throwable e) {
+                        String errorMsg = "Failed to clean up [" + visitor.getClass().getName() + "]. Targeted at [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
+                        processVisitorException(element, e, configMap, VisitSequence.CLEAN, errorMsg);
                     }
-                    visitor.executeVisitLifecycleCleanup(executionContext);
-                    if (eventListener != null) {
-                        eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.CLEAN));
-                    }
-                } catch (Throwable e) {
-                    String errorMsg = "Failed to clean up [" + visitor.getClass().getName() + "]. Targeted at [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-                    processVisitorException(element, e, configMap, VisitSequence.CLEAN, errorMsg);
                 }
             }
         }

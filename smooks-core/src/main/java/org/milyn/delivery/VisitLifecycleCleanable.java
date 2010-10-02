@@ -29,7 +29,8 @@ public interface VisitLifecycleCleanable extends Visitor {
      * <p/>
      * Executes the cleanup at the end of the fragment visit.
      *
+     * @param fragment The fragment.
      * @param executionContext The ExecutionContext.
      */
-    public abstract void executeVisitLifecycleCleanup(ExecutionContext executionContext);
+    public abstract void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext);
 }
