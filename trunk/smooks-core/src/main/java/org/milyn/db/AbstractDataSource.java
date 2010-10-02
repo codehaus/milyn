@@ -16,13 +16,11 @@
 package org.milyn.db;
 
 import org.milyn.SmooksException;
+import org.milyn.delivery.Fragment;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.milyn.delivery.VisitLifecycleCleanable;
@@ -53,7 +51,7 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
         bind(executionContext);
     }
 
-    public final void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+    public final void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
         unbind(executionContext);
     }
 

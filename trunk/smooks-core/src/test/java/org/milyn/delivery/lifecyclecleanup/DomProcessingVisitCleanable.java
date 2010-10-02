@@ -17,6 +17,7 @@ package org.milyn.delivery.lifecyclecleanup;
 
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.dom.Phase;
@@ -45,7 +46,7 @@ public class DomProcessingVisitCleanable implements DOMVisitBefore, DOMVisitAfte
         }
     }
 
-    public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+    public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
         cleaned = true;
     }
 }

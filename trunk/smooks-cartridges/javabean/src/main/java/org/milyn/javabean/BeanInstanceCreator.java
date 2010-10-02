@@ -337,14 +337,11 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.VisitLifecycleCleanable#executeVisitLifecycleCleanup(org.milyn.container.ExecutionContext)
-	 */
-	public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+	public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
         Object bean = executionContext.getBeanContext().getBean(beanId);
 
         executionContext.getBeanContext().notifyObservers(new BeanContextLifecycleEvent(executionContext,
-                null, BeanLifecycle.END_FRAGMENT, beanId, bean));
+                fragment, BeanLifecycle.END_FRAGMENT, beanId, bean));
 
         if(!retain) {
             executionContext.getBeanContext().removeBean(beanId, null);

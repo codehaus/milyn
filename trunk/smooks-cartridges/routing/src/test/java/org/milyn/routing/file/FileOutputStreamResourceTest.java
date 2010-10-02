@@ -36,6 +36,7 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.io.FileUtils;
 import org.milyn.javabean.Bean;
@@ -85,7 +86,7 @@ public class FileOutputStreamResourceTest
 		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream(resource.getResourceName(), executionContext );
 		assertTrue(outputStream instanceof FileOutputStream );
 		
-		resource.executeVisitLifecycleCleanup(executionContext );
+		resource.executeVisitLifecycleCleanup(new Fragment((Element)null), executionContext);
 		
 		assertThatFilesWereGenerated(executionContext);
 	}
