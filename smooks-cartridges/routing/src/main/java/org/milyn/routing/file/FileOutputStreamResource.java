@@ -39,7 +39,7 @@ import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.routing.SmooksRoutingException;
-import org.milyn.templating.freemarker.FreeMarkerUtils;
+import org.milyn.util.FreeMarkerUtils;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.util.FreeMarkerTemplate;
 

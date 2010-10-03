@@ -19,6 +19,18 @@
         <param name="mapTo">selector</param>
     </resource-config>
 
+    <resource-config selector="route">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">correlationIdName</param>
+        <param name="mapTo">correlationIdName</param>
+    </resource-config>
+
+    <resource-config selector="route">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">correlationIdPattern</param>
+        <param name="mapTo">correlationIdPattern</param>
+    </resource-config>
+
     <resource-config selector="route/to">
         <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
     </resource-config>
@@ -39,5 +51,12 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
         <param name="mapTo">condition</param>
     </resource-config>
-    
+
+    <resource-config selector="route/to">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">correlationIdName</param>
+        <param name="mapTo">correlationIdName</param>
+    </resource-config>
+
+
 </smooks-resource-list>

@@ -44,6 +44,7 @@ import org.milyn.io.NullWriter;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.templating.TemplatingConfiguration;
 import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.util.FreeMarkerUtils;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

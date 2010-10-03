@@ -17,9 +17,10 @@ package org.milyn.smooks.camel.routing;
 
 import java.io.IOException;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
@@ -34,6 +35,8 @@ import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
+import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.util.FreeMarkerUtils;
 
 /**
  * Camel bean routing visitor.
@@ -48,6 +51,12 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
     
     @ConfigParam
     private String toEndpoint;
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    private String correlationIdName;
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    private FreeMarkerTemplate correlationIdPattern;
     
     @AppContext
     private ApplicationContext applicationContext;
@@ -66,9 +75,29 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
        this.camelContext = camelContext; 
     }
 
+    @Initialize
+    public void initialize() {
+        if(routingConfig == null) {
+            routingConfig = new SmooksResourceConfiguration();
+        }
+
+        producerTemplate = getCamelContext().createProducerTemplate();
+        if (isBeanRoutingConfigured()) {
+            camelRouterObserable = new BeanRouterObserver(this, beanId);
+            camelRouterObserable.setConditionEvaluator((ExecutionContextExpressionEvaluator) routingConfig.getConditionEvaluator());
+        }
+
+        if(correlationIdName != null && correlationIdPattern == null) {
+            throw new SmooksConfigurationException("Camel router component configured with a 'correlationIdName', but 'correlationIdPattern' is not configured.");
+        }
+        if(correlationIdName == null && correlationIdPattern != null) {
+            throw new SmooksConfigurationException("Camel router component configured with a 'correlationIdPattern', but 'correlationIdName' is not configured.");
+        }
+    }
+
     /**
      * Set the beanId of the bean to be routed.
-     * 
+     *
      * @param beanId
      *            the beanId to set
      * @return This router instance.
@@ -80,7 +109,7 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
 
     /**
      * Set the Camel endpoint to which the bean is to be routed.
-     * 
+     *
      * @param toEndpoint
      *            the toEndpoint to set
      * @return This router instance.
@@ -90,11 +119,54 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
         return this;
     }
 
+    /**
+     * Set the correlationId header name.
+     *
+     * @return This router instance.
+     */
+    public BeanRouter setCorrelationIdName(String correlationIdName) {
+        AssertArgument.isNotNullAndNotEmpty(correlationIdName, "correlationIdName");
+        this.correlationIdName = correlationIdName;
+        return this;
+    }
+
+    /**
+     * Set the correlationId pattern used to generate correlationIds.
+     *
+     * @param correlationIdPattern The pattern generator template.
+     * @return This router instance.
+     */
+    public BeanRouter setCorrelationIdPattern(final String correlationIdPattern) {
+        this.correlationIdPattern = new FreeMarkerTemplate(correlationIdPattern);
+        return this;
+    }
+
     public void visitAfter(final SAXElement element, final ExecutionContext execContext) throws SmooksException, IOException
     {
         final Object bean = getBeanFromExecutionContext(execContext, beanId);
+
+        sendBean(bean, execContext);
+    }
+
+    /**
+     * Send the bean to the target endpoint.
+     * @param bean The bean to be sent.
+     * @param execContext The execution context.
+     */
+    protected void sendBean(final Object bean, final ExecutionContext execContext) {
         try {
-            producerTemplate.sendBody(toEndpoint, bean);
+            if(correlationIdPattern != null) {
+                Processor processor = new Processor() {
+                    public void process(Exchange exchange) {
+                        Message in = exchange.getIn();
+                        in.setBody(bean);
+                        in.setHeader(correlationIdName, correlationIdPattern.apply(FreeMarkerUtils.getMergedModel(execContext)));
+                    }
+                };
+                producerTemplate.send(toEndpoint, processor);
+            }else {
+                producerTemplate.sendBody(toEndpoint, bean);
+            }
         }  catch (final Exception e) {
             throw new SmooksException("Exception routing beanId '" + beanId + "' to endpoint '" + toEndpoint + "'.", e);
         }
@@ -110,15 +182,6 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
         return bean;
     }
 
-    @Initialize
-    public void initialize() {
-        producerTemplate = getCamelContext().createProducerTemplate();
-        if (isBeanRoutingConfigured()) {
-	        camelRouterObserable = new BeanRouterObserver(producerTemplate, toEndpoint, beanId);
-            camelRouterObserable.setConditionEvaluator((ExecutionContextExpressionEvaluator) routingConfig.getConditionEvaluator());
-        }
-    }
-    
     private CamelContext getCamelContext() {
         if (camelContext == null)
 	        return (CamelContext) applicationContext.getAttribute(CamelContext.class);
@@ -154,5 +217,5 @@ public class BeanRouter implements SAXVisitAfter, Consumer, ExecutionLifecycleIn
             executionContext.getBeanContext().removeObserver(camelRouterObserable);
         }
     }
-    
+
 }

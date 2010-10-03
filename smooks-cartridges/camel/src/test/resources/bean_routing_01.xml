@@ -14,7 +14,7 @@
     </jb:bean>
     
     <!-- Route "coordinate" bean instances for processing... -->
-    <camel:route beanId="coordinate">
+    <camel:route beanId="coordinate" correlationIdPattern="${PUUID.execContext}" correlationIdName="correlationId">
         <camel:to endpoint="direct:b"><!-- coordinate.x < 200 --></camel:to> 
         <camel:to endpoint="direct:c" if="coordinate.x > 200" /> 
     </camel:route>

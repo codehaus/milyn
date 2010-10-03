@@ -53,7 +53,7 @@ import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
 import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
-import org.milyn.templating.freemarker.FreeMarkerUtils;
+import org.milyn.util.FreeMarkerUtils;
 import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
 
