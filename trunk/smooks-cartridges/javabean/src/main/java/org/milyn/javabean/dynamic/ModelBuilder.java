@@ -213,29 +213,32 @@ public class ModelBuilder {
                 BeanMetadata beanMetadata = new BeanMetadata(bean);
                 Map<String, BeanWriter> beanWriters = beanWriterMap.get(bean.getClass());
                 Fragment source = event.getSource();
-                String namespaceURI = source.getNamespaceURI();
 
-                beanMetadata.setNamespace(namespaceURI);
-                beanMetadata.setNamespacePrefix(source.getPrefix());
-                beanMetadata.setCreateSource(source);
-                beans.add(beanMetadata);
+                if(source != null) {
+                    String namespaceURI = source.getNamespaceURI();
 
-                if(source.isDOMElement()) {
-                    beanMetadata.setPreText(UnknownElementDataReaper.getPreText(source.getDOMElement(), beans, event));
-                } else {
-                    // SAX pretext is gathered by an instance of the UnknownElementDataReaper
-                }
+                    beanMetadata.setNamespace(namespaceURI);
+                    beanMetadata.setNamespacePrefix(source.getPrefix());
+                    beanMetadata.setCreateSource(source);
+                    beans.add(beanMetadata);
 
-                if(beanWriters != null) {
-                    BeanWriter beanWriter = beanWriters.get(namespaceURI);
-
-                    if(beanWriter != null) {
-                        beanMetadata.setWriter(beanWriter);
-                    } else if(logger.isDebugEnabled()) {
-                        logger.debug("BeanWriters are configured for Object type '" + bean.getClass() + "', but not for namespace '" + namespaceURI + "'.");
+                    if(source.isDOMElement()) {
+                        beanMetadata.setPreText(UnknownElementDataReaper.getPreText(source.getDOMElement(), beans, event));
+                    } else {
+                        // SAX pretext is gathered by an instance of the UnknownElementDataReaper
                     }
-                } else if(logger.isDebugEnabled()) {
-                    logger.debug("No BeanWriters configured for Object type '" + bean.getClass() + "'.");
+
+                    if(beanWriters != null) {
+                        BeanWriter beanWriter = beanWriters.get(namespaceURI);
+
+                        if(beanWriter != null) {
+                            beanMetadata.setWriter(beanWriter);
+                        } else if(logger.isDebugEnabled()) {
+                            logger.debug("BeanWriters are configured for Object type '" + bean.getClass() + "', but not for namespace '" + namespaceURI + "'.");
+                        }
+                    } else if(logger.isDebugEnabled()) {
+                        logger.debug("No BeanWriters configured for Object type '" + bean.getClass() + "'.");
+                    }
                 }
             } else if(event.getLifecycle() == BeanLifecycle.POPULATE) {
                 BeanMetadata beanMetdata = findMetadata(event.getBean());

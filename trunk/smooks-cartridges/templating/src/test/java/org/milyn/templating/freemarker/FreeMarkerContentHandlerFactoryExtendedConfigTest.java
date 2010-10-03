@@ -36,6 +36,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
@@ -236,6 +237,24 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
         smooks.filterSource(context, new StringSource("<a/>"), null);
 
         assertEquals("data to outstream", MockOutStreamResource.outputStream.toString());
+    }
+
+    public void test_PTIME() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-ext-PTIME.cdrl"));
+        StringResult result = new StringResult();
+
+        smooks.filterSource(new StringSource("<doc/>"), result);
+
+        // should be able to convert the result to a Long instance...
+        new Long(result.toString());
+    }
+
+    public void test_PUUID() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-ext-PUUID.cdrl"));
+        StringResult result = new StringResult();
+
+        smooks.filterSource(new StringSource("<doc/>"), result);
+        assertTrue(result.toString().length() > 10);
     }
 
     private void test_ftl(Smooks smooks, String input, String expected) {

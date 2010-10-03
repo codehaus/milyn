@@ -28,6 +28,8 @@ import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
 import org.milyn.smooks.camel.Coordinate;
 
+import java.util.Map;
+
 /**
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -80,10 +82,10 @@ public class SmooksProcessor_JavaResult_Test extends CamelTestSupport {
                 exchange.getIn().setBody(new StringSource("<coord x='1234' y='98765.76' />"));
             }
         });
-        JavaResult javaResult = response.getIn().getBody(JavaResult.class);
-        Integer x = (Integer) javaResult.getBean("x");
+        Map javaResult = response.getIn().getBody(Map.class);
+        Integer x = (Integer) javaResult.get("x");
         assertEquals(1234, (int) x );
-        Double y = (Double) javaResult.getBean("y");
+        Double y = (Double) javaResult.get("y");
         assertEquals(98765.76D, (double) y, 0.01D);
     }
 	

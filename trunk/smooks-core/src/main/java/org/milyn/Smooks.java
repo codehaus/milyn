@@ -21,6 +21,9 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.preinstalled.Time;
+import org.milyn.javabean.context.preinstalled.UniqueID;
 import org.milyn.xml.NamespaceMappings;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
@@ -492,6 +495,11 @@ public class Smooks {
                     FilterSource.setSource(executionContext, source);
                     FilterResult.setResults(executionContext, results);
 
+                    // Add pre installed beans...
+                    BeanContext beanContext = executionContext.getBeanContext();
+                    beanContext.addBean(Time.BEAN_ID, new Time());
+                    beanContext.addBean(UniqueID.BEAN_ID, new UniqueID());
+
                     try {
                         deliveryConfig.executeHandlerInit(executionContext);
                     	messageFilter.doFilter();
@@ -503,6 +511,10 @@ public class Smooks {
                             if(javaResult != null) {
                                 javaResult.getResultMap().putAll(executionContext.getBeanContext().getBeanMap());
                             }
+
+                            // Remove the pre-installed beans...
+                            beanContext.removeBean(Time.BEAN_ID, null);
+                            beanContext.removeBean(UniqueID.BEAN_ID, null);
                         } finally {
                             deliveryConfig.executeHandlerCleanup(executionContext);
                         }

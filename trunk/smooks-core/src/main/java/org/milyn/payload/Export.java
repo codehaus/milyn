@@ -21,6 +21,11 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.payload.JavaResult;
+import org.milyn.util.CollectionsUtil;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -51,10 +56,11 @@ public class Export implements ContentHandler<Export>
     
     @ConfigParam (use = Use.OPTIONAL)
     private String extract;
-    
+    private Set<String> extractSet;
+
     @AppContext
     private ApplicationContext applicationContext;
-    
+
     public Export()
     {
     }
@@ -74,12 +80,20 @@ public class Export implements ContentHandler<Export>
     {
         this(type, name);
         this.extract = extract;
+        initExtractSet();
     }
     
     @Initialize
     public void addToExportsInApplicationContext()
     {
+        initExtractSet();
         Exports.addExport(applicationContext, this);
+    }
+
+    private void initExtractSet() {
+        if(extract != null) {
+            extractSet = CollectionsUtil.toSet(extract.split(","));
+        }
     }
 
     public String getName()
@@ -96,7 +110,11 @@ public class Export implements ContentHandler<Export>
     {
         return extract;
     }
-    
+
+    public Set<String> getExtractSet() {
+        return extractSet;
+    }
+
     @Override
     public int hashCode()
     {
