@@ -17,7 +17,6 @@ package org.milyn.smooks.camel.routing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
@@ -46,10 +45,15 @@ public class BeanRouterObserverTest extends CamelTestSupport
     @Test 
     public void onBeanLifecycleEventCreated() throws Exception
     {
-        final ProducerTemplate producerTemplate = context.createProducerTemplate();
         final String sampleBean = "testOrder";
         final String beanId = "orderId";
-        final BeanRouterObserver beanRouterObserver = new BeanRouterObserver(producerTemplate, ENDPOINT_URI, beanId);
+        final BeanRouter beanRouter = new BeanRouter(context);
+
+        beanRouter.setBeanId(beanId);
+        beanRouter.setToEndpoint(ENDPOINT_URI);
+        beanRouter.initialize();
+
+        final BeanRouterObserver beanRouterObserver = new BeanRouterObserver(beanRouter, beanId);
         final BeanContextLifecycleEvent event = mock(BeanContextLifecycleEvent.class);
         
         when(event.getBeanId()).thenReturn(new BeanId(null, 0, beanId));

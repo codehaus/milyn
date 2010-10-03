@@ -13,13 +13,12 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.templating.freemarker;
+package org.milyn.util;
 
 import freemarker.ext.dom.NodeModel;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.DOMModel;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
 import java.util.HashMap;

@@ -46,6 +46,8 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
         assertEquals(222, directBProcessor.coords.get(0).getY());
         assertEquals(333, directBProcessor.coords.get(1).getX());
         assertEquals(444, directBProcessor.coords.get(1).getY());
+
+        assertNotNull(directBProcessor.correlationId);
     }
 
 	@Test
@@ -57,6 +59,9 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
         assertEquals(1, directCProcessor.coords.size());
         assertEquals(333, directCProcessor.coords.get(0).getX());
         assertEquals(444, directCProcessor.coords.get(0).getY());
+
+        assertNotNull(directBProcessor.correlationId);
+        assertEquals(directBProcessor.correlationId, directCProcessor.correlationId);
     }
 
 	public void sendTo(String fromEndpoint) throws Exception {
@@ -77,7 +82,10 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
         				bindTo("x", "coords/coord/@x").
         				bindTo("y", "coords/coord/@y"));
             	
-        		smooks.addVisitor(new BeanRouter(context).setBeanId("coordinate").setToEndpoint("direct:b"), "coords/coord");
+        		smooks.addVisitor(new BeanRouter(context).setBeanId("coordinate").setToEndpoint("direct:b")
+                                       .setCorrelationIdPattern("${PUUID.execContext}")
+                                       .setCorrelationIdName("correlationId"), 
+                                  "coords/coord");
             	
                 from("direct:a1").process(new SmooksProcessor(smooks, context));
                 from("direct:a2").to("smooks://bean_routing_01.xml");
@@ -93,9 +101,11 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
 	private class DirectProcessor implements Processor {
 
 		private List<Coordinate> coords = new ArrayList<Coordinate>();
+        private String correlationId;
 		
 		public void process(Exchange exchange) throws Exception {
 			coords.add((Coordinate) exchange.getIn().getBody());
+            correlationId = (String) exchange.getIn().getHeader("correlationId");
 		}		
 	}
 }

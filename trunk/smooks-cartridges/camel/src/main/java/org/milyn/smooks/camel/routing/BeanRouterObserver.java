@@ -14,13 +14,13 @@
  */
 package org.milyn.smooks.camel.routing;
 
-import org.apache.camel.ProducerTemplate;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.util.FreeMarkerTemplate;
 
 /**
  * BeanRouterObserver is a {@link BeanContextLifecycleObserver} that will route 
@@ -31,26 +31,22 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
  */
 public class BeanRouterObserver implements BeanContextLifecycleObserver
 {
-    private final ProducerTemplate producerTemplate;
-    private final String endpointUri;
+    private BeanRouter beanRouter;
     private final String beanId;
     private ExecutionContextExpressionEvaluator conditionEvaluator;
 
     /**
      * Sole contructor.
-     * @param producerTemplate The Camel {@link ProducerTemplate} used to route the bean.
-     * @param endpointUri The endpoint uri that the bean should be routed to.
+     * @param beanRouter The bean router instance to be used for routing beans.
      * @param beanId The beanId which is the beanId in the Smooks {@link BeanContext}.
      */
-    public BeanRouterObserver(final ProducerTemplate producerTemplate, final String endpointUri, final String beanId)
+    public BeanRouterObserver(final BeanRouter beanRouter, final String beanId)
     {
-        AssertArgument.isNotNull(producerTemplate, "producerTemplate");
-        AssertArgument.isNotNull(endpointUri, "endpointUri");
+        AssertArgument.isNotNull(beanRouter, "beanRouter");
         AssertArgument.isNotNull(beanId, "beanId");
         
-        this.endpointUri = endpointUri;
+        this.beanRouter = beanRouter;
         this.beanId = beanId;
-        this.producerTemplate = producerTemplate;
     }
 
     /**
@@ -72,7 +68,7 @@ public class BeanRouterObserver implements BeanContextLifecycleObserver
     {
         if (endEventAndBeanIdMatch(event) && conditionsMatch(event))
         {
-            producerTemplate.sendBody(endpointUri, event.getBean());
+            beanRouter.sendBean(event.getBean(), event.getExecutionContext());
         }
     }
 
