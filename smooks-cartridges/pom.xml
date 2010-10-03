@@ -73,8 +73,8 @@
         <module>css</module>
         <module>csv</module>
         <module>dtd</module>
-        <module>edi</module>
         <module>javabean</module>
+        <module>edi</module>
         <module>json</module>
         <module>misc</module>
         <module>scripting</module>

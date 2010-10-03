@@ -26,7 +26,9 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
+import org.apache.camel.FallbackConverter;
 import org.apache.camel.Message;
+import org.apache.camel.spi.TypeConverterRegistry;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;
 import org.w3c.dom.Node;
@@ -53,7 +55,7 @@ public class ResultConverter
 
     @SuppressWarnings("rawtypes")
     @Converter
-    public static List toList(JavaResult javaResult, Exchange exchange)
+    public static List toList(JavaResult.ResultMap javaResult, Exchange exchange)
     {
         String resultKey = (String) exchange.getProperty(SMOOKS_RESULT_KEY);
         if (resultKey != null)
@@ -66,13 +68,13 @@ public class ResultConverter
     }
 
     @Converter
-    public static Integer toInteger(JavaResult result)
+    public static Integer toInteger(JavaResult.ResultMap result)
     {
         return (Integer) getSingleObjectFromJavaResult(result);
     }
 
     @Converter
-    public static Double toDouble(JavaResult result)
+    public static Double toDouble(JavaResult.ResultMap result)
     {
         return (Double) getSingleObjectFromJavaResult(result);
     }
@@ -85,10 +87,9 @@ public class ResultConverter
 
     @SuppressWarnings("rawtypes")
     @Converter
-    public static Map toMap(JavaResult result, Exchange exchange)
+    public static Map toMap(JavaResult.ResultMap resultBeans, Exchange exchange)
     {
         Message outMessage = exchange.getOut();
-        Map<String, Object> resultBeans = result.getResultMap();
         outMessage.setBody(resultBeans);
 
         Set<Entry<String, Object>> entrySet = resultBeans.entrySet();
@@ -99,15 +100,13 @@ public class ResultConverter
         return resultBeans;
     }
 
-    private static Object getResultsFromJavaResult(JavaResult result, String resultKey)
+    private static Object getResultsFromJavaResult(JavaResult.ResultMap resultMap, String resultKey)
     {
-        Map<String, Object> resultMap = result.getResultMap();
         return resultMap.get(resultKey);
     }
 
-    private static Object getSingleObjectFromJavaResult(JavaResult result)
+    private static Object getSingleObjectFromJavaResult(JavaResult.ResultMap resultMap)
     {
-        Map<String, Object> resultMap = result.getResultMap();
         if (resultMap.size() == 1)
         {
             return resultMap.values().iterator().next();
@@ -125,6 +124,19 @@ public class ResultConverter
             return new StreamSource(stringReader);
         }
         
+        return null;
+    }
+
+    @FallbackConverter
+    public static <T> T convertTo(Class<T> type, Exchange exchange, Object value, TypeConverterRegistry registry) {
+        if(value instanceof JavaResult.ResultMap) {
+            for(Object mapValue : ((Map) value).values()) {
+                if(type.isInstance(mapValue)) {
+                    return type.cast(mapValue);
+                }
+            }
+        }
+
         return null;
     }
 }

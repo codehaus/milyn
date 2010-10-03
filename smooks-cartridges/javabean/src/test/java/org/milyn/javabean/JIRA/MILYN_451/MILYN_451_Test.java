@@ -40,6 +40,6 @@ public class MILYN_451_Test extends TestCase {
 		JavaResult jResult = new JavaResult();
 		
 		smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("message.xml")), jResult);
-		assertEquals(1, jResult.getResultMap().size());
+		assertEquals(3, jResult.getResultMap().size());
 	}
 }

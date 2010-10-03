@@ -26,7 +26,7 @@
     <unedifact:reader mappingModel="urn:org.milyn.edi.unedifact:d93a-mapping:1.0-SNAPSHOT" />
 
     <!--
-    Add the binding config for the d93a message set...
+    Add the binding configs  for the d93a message set...
     -->
     <import file="/org/milyn/edi/unedifact/d93a/message-bindingconfig.xml" />
 

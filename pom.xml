@@ -58,53 +58,25 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>all</id>
-            <modules>
-                <module>testres</module>
-                <module>commons</module>
-                <module>smooks-core</module>
-                <module>magger</module>
-                <module>tinak</module>
-                <module>scribe</module>
-                <module>edi/edisax</module> <!-- Purposely building ECT and EJC after Smooks components... -->
-                <module>smooks-cartridges</module>
-                <module>smooks-all</module>
+    <modules>
+        <module>testres</module>
+        <module>commons</module>
+        <module>smooks-core</module>
+        <module>magger</module>
+        <module>tinak</module>
+        <module>scribe</module>
+        <module>edi/edisax</module> <!-- Purposely building ECT and EJC after Smooks components... -->
+        <module>smooks-cartridges</module>
+        <module>smooks-all</module>
 
-                <!-- Purposely not building EDI Gen... -->
-                <module>edi/ect</module>
-                <module>edi/ect/maven-ect-plugin</module>
-                <module>edi/ejc</module>
-                <module>edi/ejc/maven-ejc-plugin</module>
+        <!-- Purposely not building EDI Gen... -->
+        <module>edi/ect</module>
+        <module>edi/ect/maven-ect-plugin</module>
+        <module>edi/ejc</module>
+        <module>edi/ejc/maven-ejc-plugin</module>
 
-                <module>smooks-examples</module>
-            </modules>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>deploy</id>
-            <modules>
-                <module>testres</module>
-                <module>commons</module>
-                <module>smooks-core</module>
-                <module>magger</module>
-                <module>tinak</module>
-                <module>scribe</module>
-                <module>edi/edisax</module> <!-- Purposely building ECT and EJC after Smooks components... -->
-                <module>smooks-cartridges</module>
-                <module>smooks-all</module>
-                
-                <!-- Purposely not building EDI Gen... -->
-                <module>edi/ect</module>
-                <module>edi/ect/maven-ect-plugin</module>
-                <module>edi/ejc</module>
-                <module>edi/ejc/maven-ejc-plugin</module>
-            </modules>
-        </profile>
-    </profiles>
+        <module>smooks-examples</module>
+    </modules>
 
     <dependencies>
 

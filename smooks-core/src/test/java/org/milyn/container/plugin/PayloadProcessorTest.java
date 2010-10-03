@@ -102,7 +102,7 @@ public class PayloadProcessorTest
         PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.JAVA);
 		Object object = processor.process( "<testing/>", smooks.createExecutionContext() );
 
-        TestCase.assertEquals("{theBean=Hi there!}", object.toString());
+        TestCase.assertEquals("{PTIME=<noop>, theBean=Hi there!, PUUID=<noop>}", object.toString());
 	}
 
     @Test

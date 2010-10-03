@@ -17,7 +17,9 @@ package org.milyn.payload;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +39,7 @@ public class JavaResultTest
         beans = new HashMap<String, Object>();
         beans.put("first", "bean1");
         beans.put("second", "bean2");
+        beans.put("third", "bean3");
     }
     
     @Test
@@ -46,13 +49,14 @@ public class JavaResultTest
         Object result = javaResult.extractFromResult(javaResult, new Export(JavaResult.class, null, "second"));
         assertEquals("bean2", result);
     }
-    
+
     @Test
-    public void extractNoExtractParameterSpecified()
+    public void extractSpecificBeans()
     {
         JavaResult javaResult = new JavaResult(beans);
-        Object result = javaResult.extractFromResult(javaResult, new Export(JavaResult.class));
-        assertEquals(javaResult, result);
+        Map<String, Object> result = (Map<String, Object>) javaResult.extractFromResult(javaResult, new Export(JavaResult.class, null, "second,first"));
+        Assert.assertTrue(result.containsKey("first"));
+        Assert.assertTrue(result.containsKey("second"));
+        Assert.assertFalse(result.containsKey("third"));
     }
-
 }

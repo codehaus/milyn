@@ -23,17 +23,14 @@ import org.milyn.payload.FilterResult;
 
 import javax.xml.transform.Result;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Java filtration/transformation result.
  * <p/>
  * Used to extract a Java "{@link Result result}" Map from the transformation.
  * Simply set an instance of this class as the {@link Result} arg in the call
- * to {@link org.milyn.Smooks#filterSource(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result[])}.
+ * to {@link org.milyn.Smooks#filterSource(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result...)} .
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -133,10 +130,32 @@ public class JavaResult extends FilterResult implements ResultExtractor<JavaResu
 
     public Object extractFromResult(JavaResult result, Export export)
     {
-        String extract = export.getExtract();
-        if (extract == null)
-            return result;
-        
-        return result.getBean(export.getExtract());
+        Set<String> extractSet = export.getExtractSet();
+
+        if (extractSet == null) {
+            return extractBeans(result, result.getResultMap().keySet());
+        }
+
+        if(extractSet.size() == 1) {
+            return result.getBean(extractSet.iterator().next());
+        } else {
+            return extractBeans(result, extractSet);
+        }
+    }
+
+    private Object extractBeans(JavaResult result, Collection<String> extractSet) {
+        Map<String, Object> extractedObjects = new ResultMap<String, Object>();
+
+        for(String extract : extractSet) {
+            Object bean = result.getBean(extract);
+            if(bean != null) {
+                extractedObjects.put(extract, bean);
+            }
+        }
+
+        return extractedObjects;
+    }
+
+    public static class ResultMap<K,V> extends HashMap<K,V> {        
     }
 }
