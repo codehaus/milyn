@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Unit test for PayloadProcessor. 
@@ -100,9 +101,14 @@ public class PayloadProcessorTest
 	public void process_String2Java_01()
 	{
         PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.JAVA);
-		Object object = processor.process( "<testing/>", smooks.createExecutionContext() );
+		Map<String, Object> map = (Map<String, Object>) processor.process( "<testing/>", smooks.createExecutionContext() );
 
-        TestCase.assertEquals("{PTIME=<noop>, theBean=Hi there!, PUUID=<noop>}", object.toString());
+        TestCase.assertEquals(3, map.size());
+        TestCase.assertNotNull(map.get("PTIME"));
+        TestCase.assertNotNull(map.get("PUUID"));
+        TestCase.assertEquals("Hi there!", map.get("theBean"));
+
+        TestCase.assertEquals("{PTIME=<noop>, theBean=Hi there!, PUUID=<noop>}", map.toString());
 	}
 
     @Test
