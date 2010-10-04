@@ -15,20 +15,28 @@
 
 package org.milyn.container.plugin;
 
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.milyn.Smooks;
-import org.xml.sax.SAXException;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static org.hamcrest.collection.IsMapContaining.hasKey;
+import static org.hamcrest.text.StringContains.containsString;
 
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Map;
+
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.milyn.Smooks;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test for PayloadProcessor. 
@@ -97,19 +105,22 @@ public class PayloadProcessorTest
         TestCase.assertTrue(Arrays.equals("<testing />".getBytes(), ((byte[])object)));
 	}
 
+    @SuppressWarnings("unchecked")
     @Test
-	public void process_String2Java_01()
-	{
-        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.JAVA);
-		Map<String, Object> map = (Map<String, Object>) processor.process( "<testing/>", smooks.createExecutionContext() );
-
-        TestCase.assertEquals(3, map.size());
-        TestCase.assertNotNull(map.get("PTIME"));
-        TestCase.assertNotNull(map.get("PUUID"));
-        TestCase.assertEquals("Hi there!", map.get("theBean"));
-
-        TestCase.assertEquals("{PTIME=<noop>, theBean=Hi there!, PUUID=<noop>}", map.toString());
-	}
+    public void process_String2Java_01()
+    {
+        final PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.JAVA);
+        Map<String, Object> map = (Map<String, Object>) processor.process( "<testing/>", smooks.createExecutionContext() );
+        
+        assertThat(map, hasKey("PTIME"));
+        assertThat(map, hasKey("PUUID"));
+        assertThat(map, hasEntry("theBean", (Object) "Hi there!"));
+        
+        assertThat(map.toString(), allOf(
+                containsString("theBean=Hi there!"), 
+                containsString("PTIME=<noop>"), 
+                containsString("PUUID=<noop>")));
+     }
 
     @Test
 	public void process_String2Java_02()
