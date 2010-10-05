@@ -15,12 +15,17 @@
 */
 package org.milyn.smooks.camel.processor;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionContaining.hasItems;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
+import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.milyn.Smooks;
@@ -30,82 +35,86 @@ import org.milyn.smooks.camel.Coordinate;
 import org.milyn.smooks.camel.routing.BeanRouter;
 
 /**
+ * Functional test for {@link SmooksProcessor} which test bean routing configured
+ * via Smooks XML and Smooks programmatic configuration.
+ * </p>
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
-	
-	protected DirectProcessor directBProcessor;
-	protected DirectProcessor directCProcessor;
+    
+    private static final String CORRELATION_ID = "correlationId";
 	
 	@Test
-    public void test_dsl_configured() throws Exception {
-		sendTo("direct:a1");        
-        assertEquals(2, directBProcessor.coords.size());
-        assertEquals(111, directBProcessor.coords.get(0).getX());
-        assertEquals(222, directBProcessor.coords.get(0).getY());
-        assertEquals(333, directBProcessor.coords.get(1).getX());
-        assertEquals(444, directBProcessor.coords.get(1).getY());
-
-        assertNotNull(directBProcessor.correlationId);
-    }
-
-	@Test
-    public void test_xml_configured() throws Exception {
-		sendTo("direct:a2");
-        assertEquals(1, directBProcessor.coords.size());
-        assertEquals(111, directBProcessor.coords.get(0).getX());
-        assertEquals(222, directBProcessor.coords.get(0).getY());
-        assertEquals(1, directCProcessor.coords.size());
-        assertEquals(333, directCProcessor.coords.get(0).getX());
-        assertEquals(444, directCProcessor.coords.get(0).getY());
-
-        assertNotNull(directBProcessor.correlationId);
-        assertEquals(directBProcessor.correlationId, directCProcessor.correlationId);
-    }
-
-	public void sendTo(String fromEndpoint) throws Exception {
-		sendBody(fromEndpoint, new StringSource("<coords><coord x='111' y='222' /><coord x='333' y='444' /></coords>"));
-    }
-
-	/* (non-Javadoc)
-	 * @see org.apache.camel.test.junit4.CamelTestSupport#createRouteBuilder()
-	 */
-	@Override
-	protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            public void configure() throws Exception {
-                
-            	// Create a Coordinate bean for each coord element and route it to "direct:b"...
-            	Smooks smooks = new Smooks();
-            	smooks.addVisitor(new Bean(Coordinate.class, "coordinate", "coords/coord").
-        				bindTo("x", "coords/coord/@x").
-        				bindTo("y", "coords/coord/@y"));
+    public void processSmooksProgrammaticConfigure() throws Exception {
+	    final String fromEndpoint = "direct:a";
+	    final String toEndpoint = "mock:to";
+	    context.addRoutes(new RouteBuilder() {
+	        public void configure() {
+            	final Smooks smooks = new Smooks();
             	
-        		smooks.addVisitor(new BeanRouter(context).setBeanId("coordinate").setToEndpoint("direct:b")
-                                       .setCorrelationIdPattern("${PUUID.execContext}")
-                                       .setCorrelationIdName("correlationId"), 
-                                  "coords/coord");
+            	// Smooks JavaBean programmatic configuration
+            	final String beanId = "coordinate";
+            	final String selector = "coords/coord";
+            	final Bean beanConfig = new Bean(Coordinate.class, beanId, selector);
+            	beanConfig.bindTo("x", "coords/coord/@x").bindTo("y", "coords/coord/@y");
+            	smooks.addVisitor(beanConfig);
             	
-                from("direct:a1").process(new SmooksProcessor(smooks, context));
-                from("direct:a2").to("smooks://bean_routing_01.xml");
-                
-                directBProcessor = new DirectProcessor();
-                from("direct:b").process(directBProcessor);            	
-                directCProcessor = new DirectProcessor();
-                from("direct:c").process(directCProcessor);            	
+            	// Smooks Camel BeanRouter programmatic configuration
+        		final BeanRouter camelBeanRouter = new BeanRouter(context);
+        		camelBeanRouter.setBeanId(beanId).setToEndpoint(toEndpoint)
+        		.setCorrelationIdName(CORRELATION_ID).setCorrelationIdPattern("${PUUID.execContext}");
+        		smooks.addVisitor(camelBeanRouter, selector);
+            	
+                from(fromEndpoint).process(new SmooksProcessor(smooks, context));
             }
-        };
-	}
-	
-	private class DirectProcessor implements Processor {
-
-		private List<Coordinate> coords = new ArrayList<Coordinate>();
-        private String correlationId;
+        });
+		context.start();
+		sendBody(fromEndpoint, new StringSource("<coords><coord x='1' y='2' /><coord x='3' y='4' /></coords>"));
 		
-		public void process(Exchange exchange) throws Exception {
-			coords.add((Coordinate) exchange.getIn().getBody());
-            correlationId = (String) exchange.getIn().getHeader("correlationId");
-		}		
+		final List<Coordinate> bodies = getBodies(getMockEndpoint(toEndpoint).getExchanges());
+		assertThat(bodies, hasItems(new Coordinate(1, 2), new Coordinate(3, 4)));
+    }
+	
+	@Test
+    public void processSmooksXmlConfigured() throws Exception {
+	    final String fromEndpoint = "direct:a2";
+	    context.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                from(fromEndpoint).to("smooks://bean_routing_01.xml");
+            }
+	    });
+	    context.start();
+		sendBody(fromEndpoint, new StringSource("<coords><coord x='1' y='2' /><coord x='300' y='400' /></coords>"));
+		
+		final Message messageB = getExchange(getMockEndpoint("mock:b"));
+		assertThat((Coordinate) messageB.getBody(), is(new Coordinate(1, 2)));
+		
+		final Message messageC = getExchange(getMockEndpoint("mock:c"));
+		assertThat((Coordinate) messageC.getBody(), is(new Coordinate(300, 400)));
+		assertThat(messageB.getHeader(CORRELATION_ID), is(equalTo(messageC.getHeader(CORRELATION_ID))));
+    }
+	
+	private Message getExchange(final MockEndpoint mockEndpoint)
+	{
+	    return mockEndpoint.getExchanges().get(0).getIn();
 	}
+
+    private List<Coordinate> getBodies(final List<Exchange> exchanges)
+    {
+        List<Coordinate> bodies = new ArrayList<Coordinate>();
+        for (Exchange exchange : exchanges)
+        {
+            bodies.add((Coordinate) exchange.getIn().getBody());
+        }
+        return bodies;
+    }
+
+    @Override
+    public boolean isUseRouteBuilder() {
+        return false;
+    }
+    
 }

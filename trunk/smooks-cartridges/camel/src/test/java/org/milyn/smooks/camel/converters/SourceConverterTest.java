@@ -14,7 +14,8 @@
  */
 package org.milyn.smooks.camel.converters;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Map;
 
@@ -25,32 +26,31 @@ import org.junit.Test;
 import org.milyn.payload.JavaSourceWithoutEventStream;
 
 /**
- * Unit test for {@link SourceConverter}.
- * </p>
+ * Unit test for {@link SourceConverter}. </p>
  * 
  * @author Daniel Bevenius
- *
+ * 
  */
 public class SourceConverterTest
 {
     private TypeConverter typeConverter;
-    
+
     @Before
     public void getTypeConverter()
     {
         DefaultCamelContext camelContext = new DefaultCamelContext();
         typeConverter = camelContext.getTypeConverter();
     }
-	
-	@Test
-	public void toJavaSourceWithoutEventStream()
-	{
-		JavaSourceWithoutEventStream javaSource = typeConverter.convertTo(JavaSourceWithoutEventStream.class, "dummyPayload");
-		assertFalse(javaSource.isEventStreamRequired());
-		Map<String, Object> beans = javaSource.getBeans();
-		String payload = (String) beans.get("string");
-		assertEquals("dummyPayload", payload);
-	}
 
+    @Test
+    public void convertStringToJavaSourceWithoutEventStream()
+    {
+        final String payload = "dummyPayload";
+        final JavaSourceWithoutEventStream javaSource = typeConverter.convertTo(JavaSourceWithoutEventStream.class, payload);
+        final Map<String, Object> beans = javaSource.getBeans();
+        final String actualPayload = (String) beans.get("string");
+
+        assertThat(payload, is(actualPayload));
+    }
+    
 }
-
