@@ -16,7 +16,8 @@
   -->
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
                       xmlns:unedifact="http://www.milyn.org/xsd/smooks/unedifact-1.4.xsd"
-                      xmlns:camel="http://www.milyn.org/xsd/smooks/camel-1.4.xsd">
+                      xmlns:camel="http://www.milyn.org/xsd/smooks/camel-1.4.xsd"
+                      xmlns:frag="http://www.milyn.org/xsd/smooks/fragment-routing-1.2.xsd">
 
     <!--
     Configure the EDI Reader to parse the UN/EDIFACT d93a message set.
@@ -26,18 +27,30 @@
     <unedifact:reader mappingModel="urn:org.milyn.edi.unedifact:d93a-mapping:1.0-SNAPSHOT" />
 
     <!--
-    Add the binding configs  for the d93a message set...
+    Add the binding configs for the d93a message set.  These configs will build
+    Java Object models for any d93a messages encountered in the incoming UN/EDIFACT
+    Interchanges...
     -->
     <import file="/org/milyn/edi/unedifact/d93a/message-bindingconfig.xml" />
 
     <!--
-    Add the Camel Routes...
+    Explicitly capture DESADV (Dispatch Advice) message events from the stream and bind the
+    XML fragments into the BeanContext under beanId "DESADV_frag". Can route the XML fragments
+    using Camel...
+    -->
+    <frag:serialize fragment="interchangeMessage/DESADV" bindTo="DESADV_frag"/>
+
+    <!--
+    Add the Camel Routes for the 3 messages we're interested in...
     -->
     <camel:route beanId="INVOIC">
         <camel:to endpoint="jms:invoice"/>
     </camel:route>
     <camel:route beanId="ORDERS">
         <camel:to endpoint="jms:order"/>
+    </camel:route>
+    <camel:route beanId="DESADV_frag">
+        <camel:to endpoint="file:./target/DESADVs"/>
     </camel:route>
 
 </smooks-resource-list>

@@ -33,6 +33,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -58,7 +59,9 @@ public class FragmentSerializerTest extends TestCase {
         smooks.filterSource(source, result);
 
         XMLUnit.setIgnoreWhitespace( true );
-        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("children-only.xml")), new StringReader(result.getBean("soapBody").toString().trim()));
+        InputStream stream = getClass().getResourceAsStream("children-only.xml");
+        Object bean = result.getBean("soapBody");
+        XMLAssert.assertXMLEqual(new InputStreamReader(stream), new StringReader(bean.toString().trim()));
     }
 
     public void test_all_SAX() throws IOException, SAXException {

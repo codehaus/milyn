@@ -16,9 +16,15 @@
 package org.milyn.routing.basic;
 
 import org.milyn.delivery.Fragment;
+import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.dom.DOMVisitAfter;
+import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.*;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.XmlUtil;
@@ -44,11 +50,12 @@ import javax.xml.namespace.QName;
  * 
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVisitAfter, Producer {
+public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, DOMVisitAfter, Producer, VisitLifecycleCleanable {
 
     private String bindTo;
     private boolean omitXMLDeclaration;
 	private boolean childContentOnly;
+    private boolean retain;
     
     /**
      * Set the bind-to beanId for the serialized fragment.
@@ -87,7 +94,21 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
 		return this;
 	}
 
-	public Set<? extends Object> getProducts() {
+    /**
+     * Retain the fragment bean in the {@link BeanContext} after it's creating fragment
+     * has been processed.
+     *
+	 * @param retain True if the fragment bean is to be retained in the {@link org.milyn.javabean.context.BeanContext},
+     * otherwise false.
+	 * @return this instance.
+	 */
+    @ConfigParam(defaultVal = "false")
+    public FragmentSerializer setRetain(boolean retain) {
+        this.retain = retain;
+        return this;
+    }
+
+    public Set<? extends Object> getProducts() {
 		return CollectionsUtil.toSet(bindTo);
 	}
 
@@ -109,6 +130,8 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
     	
     	// Now add a dynamic visitor...
         DynamicSAXElementVisitorList.addDynamicVisitor(serializer, executionContext);
+
+        notifyStartBean(new Fragment(saxElement), executionContext);
     }
 
     @SuppressWarnings("unchecked")
@@ -123,23 +146,45 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
     	}
     }
 
-	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+        notifyStartBean(new Fragment(element), executionContext);
+    }
+
+    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
 		String serializedFragment;
-		
+
         if(childContentOnly) {
         	serializedFragment = XmlUtil.serialize(element.getChildNodes(), false);
         } else {
         	serializedFragment = XmlUtil.serialize(element, true);
         }
-        
+
         if(!omitXMLDeclaration) {
         	serializedFragment = "<?xml version=\"1.0\"?>\n" + serializedFragment;
         }
 
         executionContext.getBeanContext().addBean(bindTo, serializedFragment, new Fragment(element));
 	}
-	
-	private class SAXSerializer implements SAXElementVisitor {
+
+    private void notifyStartBean(Fragment source, ExecutionContext executionContext) {
+        BeanContext beanContext = executionContext.getBeanContext();
+
+        beanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext,
+                source, BeanLifecycle.START_FRAGMENT, beanContext.getBeanId(bindTo), ""));
+    }
+
+    public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
+        BeanContext beanContext = executionContext.getBeanContext();
+        BeanId beanId = beanContext.getBeanId(bindTo);
+        Object bean = beanContext.getBean(beanId);
+
+        beanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext, fragment, BeanLifecycle.END_FRAGMENT, beanId, bean));
+        if(!retain) {
+            executionContext.getBeanContext().removeBean(beanId, null);
+        }
+    }
+
+    private class SAXSerializer implements SAXElementVisitor {
 		
     	int depth = 0;
     	StringWriter fragmentWriter = new StringWriter();
@@ -218,7 +263,13 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
 		}
 
 		private void addNamespace(String prefix, String namespaceURI, SAXElement element) {
-			if(declaredPrefixes.contains(prefix)) {
+            if (prefix == null || namespaceURI == null) {
+                // No namespace.  Ignore...
+                return;
+            } else  if(prefix.equals(XMLConstants.DEFAULT_NS_PREFIX) && namespaceURI.equals(XMLConstants.NULL_NS_URI)) {
+                // No namespace.  Ignore...
+                return;
+            } else if(declaredPrefixes.contains(prefix)) {
 				// Already declared (earlier)...
 				return;
 			} else {

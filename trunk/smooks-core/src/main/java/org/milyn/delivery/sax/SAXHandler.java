@@ -80,13 +80,6 @@ public class SAXHandler extends SmooksContentHandler {
     public SAXHandler(ExecutionContext executionContext, Writer writer, SmooksContentHandler parentContentHandler) {
         super(executionContext, parentContentHandler);
 
-//        SmooksContentHandler parentHandler = getParentContentHandler();
-//        if(parentHandler != null && parentHandler instanceof SAXHandler) {
-//            SAXHandler parentSAXHandler = (SAXHandler) parentHandler;
-//            currentProcessor = new ElementProcessor();
-//            currentProcessor.element = parentSAXHandler.currentProcessor.element;
-//        }
-
         this.execContext = executionContext;
         this.writer = writer;
         eventListener = executionContext.getEventListener();
@@ -121,7 +114,10 @@ public class SAXHandler extends SmooksContentHandler {
             terminateOnVisitorException = false;
         }
 
-        dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext);
+        dynamicVisitorList = DynamicSAXElementVisitorList.getList(executionContext);
+        if(dynamicVisitorList == null) {
+            dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext);
+        }
     }
 
     public void cleanup() {

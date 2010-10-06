@@ -338,13 +338,14 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	}
 
 	public void executeVisitLifecycleCleanup(Fragment fragment, ExecutionContext executionContext) {
-        Object bean = executionContext.getBeanContext().getBean(beanId);
+        BeanContext beanContext = executionContext.getBeanContext();
+        Object bean = beanContext.getBean(beanId);
 
-        executionContext.getBeanContext().notifyObservers(new BeanContextLifecycleEvent(executionContext,
+        beanContext.notifyObservers(new BeanContextLifecycleEvent(executionContext,
                 fragment, BeanLifecycle.END_FRAGMENT, beanId, bean));
 
         if(!retain) {
-            executionContext.getBeanContext().removeBean(beanId, null);
+            beanContext.removeBean(beanId, null);
         }
     }
 }
