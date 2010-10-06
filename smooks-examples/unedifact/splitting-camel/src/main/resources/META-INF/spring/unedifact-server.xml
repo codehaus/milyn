@@ -39,7 +39,7 @@
             will split the EDI messages and route them to the appropriate services...
             -->
             <from uri="file:./edi-in?delete=true"/>
-            <to uri="smooks://smooks-config.xml"/>
+            <to uri="smooks://smooks-unedifact-split.xml"/>
         </route>
     </camelContext>
 

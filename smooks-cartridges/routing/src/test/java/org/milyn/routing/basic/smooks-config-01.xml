@@ -5,6 +5,7 @@
         <resource>org.milyn.routing.basic.FragmentSerializer</resource>
         <param name="bindTo">soapBody</param>
         <param name="childContentOnly">true</param>
+        <param name="retain">true</param>
         <param name="omitXMLDeclaration">true</param>
     </resource-config>
 

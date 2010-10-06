@@ -16,6 +16,7 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.SmooksContentHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,16 +53,38 @@ public class DynamicSAXElementVisitorList {
     }
 
     public static void addDynamicVisitor(SAXVisitor visitor, ExecutionContext executionContext) {
-        DynamicSAXElementVisitorList list = getList(executionContext);
+        SmooksContentHandler contentHandler = SmooksContentHandler.getHandler(executionContext);
+        SmooksContentHandler nestedContentHandler = contentHandler.getNestedContentHandler();
 
-        if(visitor instanceof SAXVisitBefore) {
-            list.visitBefores.add((SAXVisitBefore) visitor);
+        if(nestedContentHandler == null) {
+            DynamicSAXElementVisitorList list = getList(executionContext);
+
+            if(visitor instanceof SAXVisitBefore) {
+                list.visitBefores.add((SAXVisitBefore) visitor);
+            }
+            if(visitor instanceof SAXVisitChildren) {
+                list.childVisitors.add((SAXVisitChildren) visitor);
+            }
+            if(visitor instanceof SAXVisitAfter) {
+                list.visitAfters.add((SAXVisitAfter) visitor);
+            }
+        } else {
+            addDynamicVisitor(visitor, nestedContentHandler.getExecutionContext());
         }
-        if(visitor instanceof SAXVisitChildren) {
-            list.childVisitors.add((SAXVisitChildren) visitor);
-        }
-        if(visitor instanceof SAXVisitAfter) {
-            list.visitAfters.add((SAXVisitAfter) visitor);
+    }
+
+    public static void propogateDynamicVisitors(ExecutionContext parentExecutionContext, ExecutionContext childExecutionContext) {
+        DynamicSAXElementVisitorList parentList = getList(parentExecutionContext);
+
+        if(parentList != null) {
+            DynamicSAXElementVisitorList childList = getList(childExecutionContext);
+
+            if(childList ==  null) {
+                childList = new DynamicSAXElementVisitorList(childExecutionContext);
+            }
+            childList.visitBefores.addAll(parentList.visitBefores);
+            childList.childVisitors.addAll(parentList.childVisitors);
+            childList.visitAfters.addAll(parentList.visitAfters);
         }
     }
 

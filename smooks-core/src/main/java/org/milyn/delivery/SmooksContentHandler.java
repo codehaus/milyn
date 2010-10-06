@@ -117,6 +117,10 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
         executionContext.removeAttribute(DefaultHandler2.class);
     }
 
+    public ExecutionContext getExecutionContext() {
+        return executionContext;
+    }
+
     public SmooksContentHandler getParentContentHandler() {
         return parentContentHandler;
     }

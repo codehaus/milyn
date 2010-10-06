@@ -28,6 +28,7 @@ import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.delivery.ordering.Producer;
+import org.milyn.delivery.sax.DynamicSAXElementVisitorList;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXHandler;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -101,6 +102,8 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
         }
 
         SmooksContentHandler nestedContentHandler = new SAXHandler(nestedExecutionContext, element.getWriter(this), parentContentHandler);
+
+        DynamicSAXElementVisitorList.propogateDynamicVisitors(executionContext, nestedExecutionContext);
 
         // Attach the XMLReader instance to the nested ExecutionContext and then swap the content handler on
         // the XMLReader to be the nested handler created here.  All events wll be forwarded to the ..
