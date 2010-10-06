@@ -17,7 +17,7 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
                       xmlns:unedifact="http://www.milyn.org/xsd/smooks/unedifact-1.4.xsd"
                       xmlns:camel="http://www.milyn.org/xsd/smooks/camel-1.4.xsd"
-                      xmlns:frag="http://www.milyn.org/xsd/smooks/fragment-routing-1.2.xsd">
+                      xmlns:frag="http://www.milyn.org/xsd/smooks/fragment-routing-1.4.xsd">
 
     <!--
     Configure the EDI Reader to parse the UN/EDIFACT d93a message set.

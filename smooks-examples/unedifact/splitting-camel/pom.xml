@@ -121,6 +121,13 @@
                 <target.cmd.args>-ac META-INF/spring/invoice-service.xml</target.cmd.args>
             </properties>
         </profile>
+        <profile>
+            <id>DispatchAdviceService</id>
+            <properties>
+                <target.main.class>org.apache.camel.spring.Main</target.main.class>
+                <target.cmd.args>-ac META-INF/spring/desadv-service.xml</target.cmd.args>
+            </properties>
+        </profile>
     </profiles>
 
     <build>
