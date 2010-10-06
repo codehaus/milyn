@@ -43,19 +43,27 @@ How to Run?
 
         2.  Open another terminal window (Window 2)....
             Start the "OrdersService" Service.  This Service will process UN/EDIFACT ORDERS
-            message that have been bound into Orders Object model instances.
+            messages that have been split out and bound into Orders Object model instances.
 
                  "mvn exec:java -POrdersService"
 
         3.  Open another terminal window (Window 3)....
             Start the "InvoiceService" Service.  This Service will process UN/EDIFACT INVOIC
-            message that have been bound into Invoic Object model instances.
+            messages that have been split out and bound into Invoic Object model instances.
 
                  "mvn exec:java -PInvoiceService"
 
-        4.  Copy files from the "sample-data" folder into the "edi-in" folder.  Then watch
-            the Orders and Invoic message being processed by the OrdersService (Window 2)
-            and InvoiceService (Window 3).  Note that these messages are bound to the Java
-            object models (Orders and Invoic) and routed to the Services as the UN/EDIFACT
-            message is being filtered/streamed i.e. not as a batch operation at the end.
-            This allows huge messages to be processed, if needed.
+        4.  Open another terminal window (Window 4)....
+            Start the "DispatchAdviceService" Service.  This Service will process UN/EDIFACT DESADV
+            (Dispatch Advice) messages that have been split out of the UN/EDIFACT interchange messages
+            and routed to file, from where this Service picks up and processes the files.
+
+                 "mvn exec:java -PDispatchAdviceService"
+
+        5.  Copy files from the "sample-data" folder into the "edi-in" folder.  Then watch
+            the Orders (Java), Invoic (Java) and DESADV (XML) messages being processed by
+            the OrdersService (Window 2), the InvoiceService (Window 3) and the
+            DispatchAdviceService (Windows 4).  Note that these messages are split out and
+            routed to the Services as the UN/EDIFACT message is being filtered/streamed
+            i.e. not as a batch operation at the end.  This allows huge messages to be
+            processed, if needed.
