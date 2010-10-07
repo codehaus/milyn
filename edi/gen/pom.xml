@@ -11,40 +11,42 @@
     <properties>
         <smooks.version>1.4-SNAPSHOT</smooks.version> <!-- ## Smooks Version ## -->
 
+        <edi.gen.version>1.0</edi.gen.version>
+
         <!-- UN/EDIFACT versions... -->
-        <d93a.version>1.0-SNAPSHOT</d93a.version>
-        <d94a.version>1.0-SNAPSHOT</d94a.version>
-        <d94b.version>1.0-SNAPSHOT</d94b.version>
-        <d95a.version>1.0-SNAPSHOT</d95a.version>
-        <d95b.version>1.0-SNAPSHOT</d95b.version>
-        <d96a.version>1.0-SNAPSHOT</d96a.version>
-        <d96b.version>1.0-SNAPSHOT</d96b.version>
-        <d97a.version>1.0-SNAPSHOT</d97a.version>
-        <d97b.version>1.0-SNAPSHOT</d97b.version>
-        <d98a.version>1.0-SNAPSHOT</d98a.version>
-        <d98b.version>1.0-SNAPSHOT</d98b.version>
-        <d99a.version>1.0-SNAPSHOT</d99a.version>
-        <d99b.version>1.0-SNAPSHOT</d99b.version>
-        <d00a.version>1.0-SNAPSHOT</d00a.version>
-        <d00b.version>1.0-SNAPSHOT</d00b.version>
-        <d01b.version>1.0-SNAPSHOT</d01b.version>
-        <d01c.version>1.0-SNAPSHOT</d01c.version>
-        <d02a.version>1.0-SNAPSHOT</d02a.version>
-        <d02b.version>1.0-SNAPSHOT</d02b.version>
-        <d03a.version>1.0-SNAPSHOT</d03a.version>
-        <d03b.version>1.0-SNAPSHOT</d03b.version>
-        <d04a.version>1.0-SNAPSHOT</d04a.version>
-        <d04b.version>1.0-SNAPSHOT</d04b.version>
-        <d05a.version>1.0-SNAPSHOT</d05a.version>
-        <d05b.version>1.0-SNAPSHOT</d05b.version>
-        <d06a.version>1.0-SNAPSHOT</d06a.version>
-        <d06b.version>1.0-SNAPSHOT</d06b.version>
-        <d07a.version>1.0-SNAPSHOT</d07a.version>
-        <d07b.version>1.0-SNAPSHOT</d07b.version>
-        <d08a.version>1.0-SNAPSHOT</d08a.version>
-        <d08b.version>1.0-SNAPSHOT</d08b.version>
-        <d09a.version>1.0-SNAPSHOT</d09a.version>
-        <d09b.version>1.0-SNAPSHOT</d09b.version>
+        <d93a.version>${edi.gen.version}</d93a.version>
+        <d94a.version>${edi.gen.version}</d94a.version>
+        <d94b.version>${edi.gen.version}</d94b.version>
+        <d95a.version>${edi.gen.version}</d95a.version>
+        <d95b.version>${edi.gen.version}</d95b.version>
+        <d96a.version>${edi.gen.version}</d96a.version>
+        <d96b.version>${edi.gen.version}</d96b.version>
+        <d97a.version>${edi.gen.version}</d97a.version>
+        <d97b.version>${edi.gen.version}</d97b.version>
+        <d98a.version>${edi.gen.version}</d98a.version>
+        <d98b.version>${edi.gen.version}</d98b.version>
+        <d99a.version>${edi.gen.version}</d99a.version>
+        <d99b.version>${edi.gen.version}</d99b.version>
+        <d00a.version>${edi.gen.version}</d00a.version>
+        <d00b.version>${edi.gen.version}</d00b.version>
+        <d01b.version>${edi.gen.version}</d01b.version>
+        <d01c.version>${edi.gen.version}</d01c.version>
+        <d02a.version>${edi.gen.version}</d02a.version>
+        <d02b.version>${edi.gen.version}</d02b.version>
+        <d03a.version>${edi.gen.version}</d03a.version>
+        <d03b.version>${edi.gen.version}</d03b.version>
+        <d04a.version>${edi.gen.version}</d04a.version>
+        <d04b.version>${edi.gen.version}</d04b.version>
+        <d05a.version>${edi.gen.version}</d05a.version>
+        <d05b.version>${edi.gen.version}</d05b.version>
+        <d06a.version>${edi.gen.version}</d06a.version>
+        <d06b.version>${edi.gen.version}</d06b.version>
+        <d07a.version>${edi.gen.version}</d07a.version>
+        <d07b.version>${edi.gen.version}</d07b.version>
+        <d08a.version>${edi.gen.version}</d08a.version>
+        <d08b.version>${edi.gen.version}</d08b.version>
+        <d09a.version>${edi.gen.version}</d09a.version>
+        <d09b.version>${edi.gen.version}</d09b.version>
     </properties>
 
     <dependencies>
