@@ -50,7 +50,10 @@ public class UNEdifactReader extends UNEdifactInterchangeParser implements Smook
     @AppContext
     private ApplicationContext applicationContext;
     
-	public void setExecutionContext(ExecutionContext executionContext) {		
+    private ExecutionContext executionContext;
+
+    public void setExecutionContext(ExecutionContext executionContext) {
+        this.executionContext = executionContext;
 	}
 
 	@Override
@@ -68,5 +71,8 @@ public class UNEdifactReader extends UNEdifactInterchangeParser implements Smook
 		validate(validate);
 		
 		super.parse(unedifactInterchange);
+
+        // Bind the delimiters into the bean context.  Will then get auto-wired into interchanges...
+        executionContext.getBeanContext().addBean("interchangeDelimiters", getInterchangeContext().getSegmentReader().getDelimiters());
 	}
 }

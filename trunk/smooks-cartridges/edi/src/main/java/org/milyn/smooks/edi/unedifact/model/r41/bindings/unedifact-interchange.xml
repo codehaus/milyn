@@ -3,7 +3,8 @@
                       xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.4.xsd">
 
     <jb:bean beanId="unEdifactInterchange" class="org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41" createOnElement="#document" retain="true">
-    	<jb:wiring property="interchangeHeader" beanIdRef="unbSegment" />
+    	<jb:wiring property="interchangeDelimiters" beanIdRef="interchangeDelimiters" />
+        <jb:wiring property="interchangeHeader" beanIdRef="unbSegment" />
     	<jb:wiring property="interchangeTrailer" beanIdRef="unzSegment" />
     	<jb:wiring property="messages" beanIdRef="unEdifactMessages" />
     </jb:bean>
