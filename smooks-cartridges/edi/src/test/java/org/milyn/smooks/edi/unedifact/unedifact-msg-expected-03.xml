@@ -1,4 +1,18 @@
 <org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41>
+    <interchangeDelimiters>
+      <segment>&apos;</segment>
+      <field>+</field>
+      <component>:</component>
+      <escape>?</escape>
+      <segmentDelimiter>&apos;</segmentDelimiter>
+      <ignoreCRLF>false</ignoreCRLF>
+      <delimiterChars>
+        <char>&apos;</char>
+        <char>:</char>
+        <char>+</char>
+        <char>?</char>
+      </delimiterChars>
+    </interchangeDelimiters>
   <interchangeHeader>
     <syntaxIdentifier>
       <serviceCodeListDirVersion>serviceCode</serviceCodeListDirVersion>

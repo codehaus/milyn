@@ -62,6 +62,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 	private Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
 	private ContentHandler contentHandler;
     private HierarchyChangeListener hierarchyChangeListener;
+    private InterchangeContext interchangeContext;
 
     public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
 		AssertArgument.isNotNull(unedifactInterchange, "unedifactInterchange");
@@ -89,7 +90,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 		        segCode = segmentReader.peek(3);
 		        if(segCode.length() == 3) {
                     ControlBlockHandlerFactory controlBlockHandlerFactory = new UNEdifact41ControlBlockHandlerFactory(hierarchyChangeListener);
-		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
+		        	interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
 
                     ControlBlockHandler handler = controlBlockHandlerFactory.getControlBlockHandler(segCode);
 
@@ -109,7 +110,11 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
         }
 	}
 
-	/**
+    public InterchangeContext getInterchangeContext() {
+        return interchangeContext;
+    }
+
+    /**
 	 * Set the EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
 	 * The model can be generated through a call to the {@link EDIParser}.

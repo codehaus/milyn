@@ -22,7 +22,6 @@ import org.milyn.smooks.edi.EDIWritable;
 import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.List;
 
@@ -35,11 +34,28 @@ public class UNEdifactInterchange41 implements UNEdifactInterchange {
 
 	private static final long serialVersionUID = 1L;
 	
+    private Delimiters interchangeDelimiters;
 	private UNB41 interchangeHeader;
 	private UNZ41 interchangeTrailer;
 	private List<UNEdifactMessage41> messages;
-	
-	/**
+
+    /**
+     * Get the interchange delimiters.
+     * @return Interchange delimiters.
+     */
+    public Delimiters getInterchangeDelimiters() {
+        return interchangeDelimiters;
+    }
+
+    /**
+     * Set the interchange delimiters.
+     * @param interchangeDelimiters Interchange delimiters.
+     */
+    public void setInterchangeDelimiters(Delimiters interchangeDelimiters) {
+        this.interchangeDelimiters = interchangeDelimiters;
+    }
+
+    /**
 	 * Get the interchange header object.
 	 * @return The interchange header instance.
 	 */
@@ -102,7 +118,7 @@ public class UNEdifactInterchange41 implements UNEdifactInterchange {
      * @throws IOException Error writing interchange.
      */
     public void write(Writer writer) throws IOException {
-        write(writer, null);
+        write(writer, interchangeDelimiters);
     }
 
     /**
@@ -114,7 +130,7 @@ public class UNEdifactInterchange41 implements UNEdifactInterchange {
     public void write(Writer writer, Delimiters delimiters) throws IOException {
         AssertArgument.isNotNull(writer, "writer");
 
-        if(delimiters != null) {
+        if(delimiters != null && delimiters != UNEdifactInterchangeParser.defaultUNEdifactDelimiters) {
             // Write a UNA segment definition...
             writer.append("UNA");
             writer.append(delimiters.getComponent());
