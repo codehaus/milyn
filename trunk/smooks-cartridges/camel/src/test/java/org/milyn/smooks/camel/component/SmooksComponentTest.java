@@ -80,13 +80,6 @@ public class SmooksComponentTest extends CamelTestSupport
             public void configure() throws Exception
             {
                 from("file://src/test/data?noop=true")
-                .process(new Processor()
-                {
-                    public void process(Exchange exchange) throws Exception
-                    {
-                        System.out.println(exchange.getIn().getBody().getClass().getName());
-                    }
-                })
                 .to("smooks://edi-to-xml-smooks-config.xml")
                 .convertBodyTo(Node.class).to("mock:result");
             }
