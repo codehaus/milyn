@@ -100,7 +100,7 @@ public class SmooksProcessor implements Processor, Service, CamelContextAware
     
     protected void setResultOnBody(final Exports exports, final Result[] results, final Exchange exchange)
     {
-        final Message message = exchange.getIn();
+        final Message message = exchange.getOut();
         final List<Object> objects = Exports.extractResults(results, exports);
         if (objects.size() == 1)
         {
