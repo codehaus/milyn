@@ -16,7 +16,7 @@
 
 package org.milyn.edisax.model.internal;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Delimiters {
@@ -29,7 +29,7 @@ public class Delimiters {
     private String escape;
     private volatile char[] segmentDelimiter;
     private boolean ignoreCRLF;
-    private Set<Character> delimiterChars = new HashSet<Character>();
+    private Set<Character> delimiterChars = new LinkedHashSet<Character>();
 
     public String getSegment() {
         return segment;
