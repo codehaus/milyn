@@ -19,6 +19,11 @@ package org.smooks.example.processors;
 import com.thoughtworks.xstream.XStream;
 import org.apache.camel.Consume;
 import org.milyn.edi.unedifact.d93a.ORDERS.Orders;
+import org.milyn.edi.unedifact.d93a.ORDRSP.Ordrsp;
+import org.milyn.edi.unedifact.d93a.common.BeginningOfMessage;
+import org.milyn.edi.unedifact.d93a.common.PaymentInstructions;
+import org.milyn.edi.unedifact.d93a.common.field.DocumentMessageNameC002;
+import org.milyn.edi.unedifact.d93a.common.field.PaymentInstructionDetailsC534;
 
 /**
  * Orders Processing Service.
@@ -27,12 +32,27 @@ import org.milyn.edi.unedifact.d93a.ORDERS.Orders;
  */
 public class OrdersService {
 
-    @Consume(uri="jms:order")
-    public void processOrder(Orders order) {
+    public Ordrsp processOrder(Orders order) {
 
         System.out.println("================ Orders Message ================");
         System.out.println(new XStream().toXML(order.getBeginningOfMessage()));
         System.out.println(new XStream().toXML(order.getDateTimePeriod()));
-        
+
+        // Now lets create a Purchase Order Response and return it...
+        Ordrsp orderResponse = new Ordrsp();
+
+        orderResponse.setBeginningOfMessage(
+                new BeginningOfMessage().
+                        setDocumentMessageName(new DocumentMessageNameC002().setDocumentMessageName("ORDRSP")).
+                        setDocumentMessageNumber(order.getBeginningOfMessage().getDocumentMessageNumber())
+        );
+        orderResponse.setDateTimePeriod(order.getDateTimePeriod());
+        orderResponse.setPaymentInstructions(
+                new PaymentInstructions().
+                        setPaymentInstructionDetails(new PaymentInstructionDetailsC534().
+                                setPaymentChannelCoded("2")) // Automatic clearing house debit
+        );
+
+        return orderResponse;
     }
 }

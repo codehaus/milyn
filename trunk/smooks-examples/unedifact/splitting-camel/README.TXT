@@ -44,6 +44,9 @@ How to Run?
         2.  Open another terminal window (Window 2)....
             Start the "OrdersService" Service.  This Service will process UN/EDIFACT ORDERS
             messages that have been split out and bound into Orders Object model instances.
+            The OrderService returns an Ordrsp (UN/EDIFACT ORDRSP - Purchase Order Response)
+            Object, which gets serialized to a UN/EDIFACT stream (by the Camel Type Conversions
+            mechanism) and routed to the target/edi-out folder.
 
                  "mvn exec:java -POrdersService"
 

@@ -19,7 +19,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring" />
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from uri="jms:order"/>
+            <to uri="bean:orderService"/>
+            <to uri="file:./target/edi-out"/>
+        </route>
+    </camelContext>
 
 	<bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
 		<property name="connectionFactory">
@@ -29,6 +35,6 @@
 	    </property>
 	</bean>
 
-    <bean class="org.smooks.example.processors.OrdersService" />
+    <bean id="orderService" class="org.smooks.example.processors.OrdersService" />
 
 </beans>

@@ -47,11 +47,11 @@
             <version>${milyn.smooks.javabean.version}</version>
         </dependency>
 
-		<dependency>
+        <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-edi</artifactId>
             <version>${milyn.smooks.edi.version}</version>
-			<scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
 		<dependency>

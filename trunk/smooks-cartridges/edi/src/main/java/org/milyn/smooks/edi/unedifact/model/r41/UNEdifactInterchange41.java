@@ -148,49 +148,51 @@ public class UNEdifactInterchange41 implements UNEdifactInterchange {
         }
 
         UNEdifactMessage41 previousMessage = null;
-        for(UNEdifactMessage41 message : messages) {
+        if(messages != null) {
+            for(UNEdifactMessage41 message : messages) {
 
-            Object messageObject = message.getMessage();
-            if(messageObject == null) {
-                throw new IOException("Cannot write null EDI message object.");
-            } else if(!(messageObject instanceof EDIWritable)) {
-                throw new IOException("Cannot write EDI message object type '" + messageObject.getClass().getName() + "'.  Type must implement '" + EDIWritable.class.getName() + "'.");
-            }
-
-            // Write group info...
-            if(message.getGroupHeader() != null) {
-                if(previousMessage == null) {
-                    // Start new group..
-                    message.getGroupHeader().write(writer, delimiters);
-                } else if(message.getGroupHeader() != previousMessage.getGroupHeader()) {
-                    if(previousMessage.getGroupHeader() != null) {
-                        // Close out previous group...
-                        previousMessage.getGroupTrailer().write(writer, delimiters);
-                    }
-                    // Start new group..
-                    message.getGroupHeader().write(writer, delimiters);
-                } else {
-                    // The message is part of the same group as the previous message...
+                Object messageObject = message.getMessage();
+                if(messageObject == null) {
+                    throw new IOException("Cannot write null EDI message object.");
+                } else if(!(messageObject instanceof EDIWritable)) {
+                    throw new IOException("Cannot write EDI message object type '" + messageObject.getClass().getName() + "'.  Type must implement '" + EDIWritable.class.getName() + "'.");
                 }
-            } else if(previousMessage != null && previousMessage.getGroupHeader() != null) {
-                // Close out previous group...
-                previousMessage.getGroupTrailer().write(writer, delimiters);
-            }
 
-            // Write the message...
-            if(message.getMessageHeader() != null) {
-                message.getMessageHeader().write(writer, delimiters);
-            }
-            ((EDIWritable)messageObject).write(writer, delimiters);
-            if(message.getMessageTrailer() != null) {
-                message.getMessageTrailer().write(writer, delimiters);
-            }
+                // Write group info...
+                if(message.getGroupHeader() != null) {
+                    if(previousMessage == null) {
+                        // Start new group..
+                        message.getGroupHeader().write(writer, delimiters);
+                    } else if(message.getGroupHeader() != previousMessage.getGroupHeader()) {
+                        if(previousMessage.getGroupHeader() != null) {
+                            // Close out previous group...
+                            previousMessage.getGroupTrailer().write(writer, delimiters);
+                        }
+                        // Start new group..
+                        message.getGroupHeader().write(writer, delimiters);
+                    } else {
+                        // The message is part of the same group as the previous message...
+                    }
+                } else if(previousMessage != null && previousMessage.getGroupHeader() != null) {
+                    // Close out previous group...
+                    previousMessage.getGroupTrailer().write(writer, delimiters);
+                }
 
-            // Capture a ref to the message so its group info can be checked
-            // against the next message, or closed if it's the last message...
-            previousMessage = message;
+                // Write the message...
+                if(message.getMessageHeader() != null) {
+                    message.getMessageHeader().write(writer, delimiters);
+                }
+                ((EDIWritable)messageObject).write(writer, delimiters);
+                if(message.getMessageTrailer() != null) {
+                    message.getMessageTrailer().write(writer, delimiters);
+                }
+
+                // Capture a ref to the message so its group info can be checked
+                // against the next message, or closed if it's the last message...
+                previousMessage = message;
+            }
         }
-
+        
         // Close out the group of the last message in the interchange (if it's in a group)...
         if(previousMessage != null && previousMessage.getGroupTrailer() != null) {
             // Close out previous group...
