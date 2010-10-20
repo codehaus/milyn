@@ -42,21 +42,21 @@ public class URLRewriterTest extends TestCase {
     public void test_internal_object_01() throws IOException, SAXException {
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<x><a href='a/b.html#internal_objectx'>Internal Ojbect</a><p id='internal_objectx' /></x>"), result, execContext);
+        smooks.filterSource(execContext, new StringSource("<x><a href='a/b.html#internal_objectx'>Internal Ojbect</a><p id='internal_objectx' /></x>"), result);
         assertEquals("<x><a href=\"#internal_objectx\">Internal Ojbect</a><p id=\"internal_objectx\"></p></x>", result.getResult());
     }
 
     public void test_internal_object_02() throws IOException, SAXException {
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<x><a href='#internal_objectx'>Internal Ojbect</a><p id='internal_objectx' /></x>"), result, execContext);
+        smooks.filterSource(execContext, new StringSource("<x><a href='#internal_objectx'>Internal Ojbect</a><p id='internal_objectx' /></x>"), result);
         assertEquals("<x><a href=\"#internal_objectx\">Internal Ojbect</a><p id=\"internal_objectx\"></p></x>", result.getResult());
     }
 
     public void test_relative_path() throws IOException, SAXException {
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a href='a/b.html'>Internal Ojbect</a>"), result, execContext);
+        smooks.filterSource(execContext, new StringSource("<a href='a/b.html'>Internal Ojbect</a>"), result);
         assertEquals("<a href=\"http://x/a/b.html\">Internal Ojbect</a>", result.getResult());
     }
 }
