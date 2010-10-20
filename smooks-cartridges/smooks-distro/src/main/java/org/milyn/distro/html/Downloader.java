@@ -78,7 +78,7 @@ public class Downloader {
                 setStartTime(execContext);
 
                 //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
-                smooks.filter(new StreamSource(srcStream), new StreamResult(destPageOutputStream), execContext);
+                smooks.filterSource(execContext, new StreamSource(srcStream), new StreamResult(destPageOutputStream));
             } finally {
                 destPageOutputStream.close();
             }
