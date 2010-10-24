@@ -1,6 +1,6 @@
 About This Example:
 ===================
-    This is a example of how to use Smooks to process a UN/EDIFACT message
+    This is an example of how to use Smooks to process a UN/EDIFACT message
     Interchange using EJC generated Java Object models.
 
     See:
