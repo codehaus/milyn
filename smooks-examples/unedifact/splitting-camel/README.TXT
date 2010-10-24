@@ -1,6 +1,6 @@
 About This Example:
 ===================
-    This is an example of how to use Smooks to process a UN/EDIFACT message
+    This is an example of how to use Smooks and Apache Camel to process a UN/EDIFACT message
     Interchange, splitting the individual interchange messages out by
     binding them to their EJC generated object models and routing the
     objects to separate POJO services (over JMS) for processing.
