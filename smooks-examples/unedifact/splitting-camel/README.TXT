@@ -21,6 +21,7 @@ About This Example:
             copied into the "edi-in" folder when running the example.  See below.
         5.  See the User Guide:
             http://www.smooks.org/mediawiki/index.php?title=V1.4:Smooks_v1.4_User_Guide#UNEdifactReader_Reader_Configuration
+        6.  Screencast: http://www.screencast.com/t/Pm3eAIR8DSd
 
 How to Run?
 ===========
