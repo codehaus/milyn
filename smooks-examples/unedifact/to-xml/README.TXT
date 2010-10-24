@@ -1,6 +1,6 @@
 About This Example:
 ===================
-    This is a example of how to use Smooks to process a UN/EDIFACT message
+    This is an example of how to use Smooks to process a UN/EDIFACT message
     Interchange and from it generate an XML stream that can then be processed
     by standard XML tools (XSLT, XQuery etc) or by other Smooks components.
 
