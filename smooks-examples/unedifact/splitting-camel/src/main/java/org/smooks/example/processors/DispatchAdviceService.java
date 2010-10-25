@@ -16,13 +16,11 @@
 
 package org.smooks.example.processors;
 
-import com.thoughtworks.xstream.XStream;
-import org.apache.camel.Consume;
-import org.milyn.edi.unedifact.d93a.INVOIC.Invoic;
-import org.milyn.io.StreamUtils;
-
 import java.io.IOException;
 import java.io.Reader;
+
+import org.apache.camel.Consume;
+import org.milyn.io.StreamUtils;
 
 /**
  * Dispatch Advice Processing Service.

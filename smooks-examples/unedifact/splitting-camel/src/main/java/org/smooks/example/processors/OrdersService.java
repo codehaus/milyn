@@ -17,7 +17,6 @@
 package org.smooks.example.processors;
 
 import com.thoughtworks.xstream.XStream;
-import org.apache.camel.Consume;
 import org.milyn.edi.unedifact.d93a.ORDERS.Orders;
 import org.milyn.edi.unedifact.d93a.ORDRSP.Ordrsp;
 import org.milyn.edi.unedifact.d93a.common.BeginningOfMessage;
