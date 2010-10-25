@@ -19,7 +19,6 @@ package example;
 import org.milyn.SmooksException;
 import org.milyn.edi.unedifact.d93a.D93AInterchangeFactory;
 import org.milyn.edi.unedifact.d93a.INVOIC.Invoic;
-import org.milyn.edi.unedifact.d93a.common.BeginningOfMessage;
 import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
 import org.milyn.smooks.edi.unedifact.model.r41.UNEdifactInterchange41;
 import org.milyn.smooks.edi.unedifact.model.r41.UNEdifactMessage41;
