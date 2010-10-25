@@ -20,7 +20,6 @@ import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.util.FreeMarkerTemplate;
 
 /**
  * BeanRouterObserver is a {@link BeanContextLifecycleObserver} that will route 
