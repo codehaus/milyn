@@ -91,7 +91,7 @@ public class Main
         CamelContext camelContext;
         if ("SpringDSL".equals(type))
         {
-            ApplicationContext springContext = new ClassPathXmlApplicationContext("META-INF/spring/camel-context.xml");
+            ApplicationContext springContext = new ClassPathXmlApplicationContext("camel-context-test.xml");
             camelContext = (CamelContext) springContext.getBean("camelContext");
         } else
         {

@@ -218,7 +218,7 @@ public class SmooksResourceConfigurationStore {
             throw new IllegalArgumentException("null 'resourceConfigStream' arg in method call.");
         }
 
-        configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI);
+        configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI, applicationContext.getClassLoader());
         addSmooksResourceConfigurationList(configList);
         
         return configList;

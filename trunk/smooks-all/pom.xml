@@ -148,8 +148,33 @@
             <artifactId>milyn-smooks-camel</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-    </dependencies>
+		<dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_core</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_compendium</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap</groupId>
+			<artifactId>shrinkwrap-api</artifactId>
+			<version>1.0.0-alpha-11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap</groupId>
+			<artifactId>shrinkwrap-impl-base</artifactId>
+			<scope>test</scope> 
+			<version>1.0.0-alpha-11</version>
+		</dependency>
+	</dependencies>
 
     <build>
         <plugins>
@@ -208,15 +233,21 @@
 						<Bundle-SymbolicName>org.milyn.smooks.osgi</Bundle-SymbolicName>
 						<Bundle-Name>Smooks OSGi</Bundle-Name>
 						<Bundle-Version>${milyn.smooks.core.version}</Bundle-Version>
+						<Bundle-Activator>org.milyn.SmooksActivator</Bundle-Activator>
 						<Export-Package>
 							org.milyn.*;-split-package:=merge-first;version="${milyn.smooks.core.version}",
+							META-INF.xsd.smooks.*;-split-package:=merge-first,
+							!META-INF.services.*,
+							!META-INF.maven.*,
 							META-INF.*;-split-package:=merge-first
 						</Export-Package>
 						<Import-Package>
 							org.osgi.framework,
 							org.jaxen.*;version="1.1.1", 
-							*;resolution:=optional
+							org.apache.commons.*, 
+							!META-INF.services.javax.xml.parsers.*,*;resolution:=optional
 						</Import-Package>
+						<!--Embed-Dependency>jaxen</Embed-Dependency-->
 						<_failok>true</_failok>
 					</instructions>
 				</configuration>
