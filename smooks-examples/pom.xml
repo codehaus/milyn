@@ -44,8 +44,8 @@
                 <module>yaml-to-java</module>
                 <module>dynamic-model-builder</module>
                 <module>camel</module>
-
                 <module>unedifact</module>
+                <module>osgi</module>
             </modules>
             <activation>
                 <activeByDefault>true</activeByDefault>
