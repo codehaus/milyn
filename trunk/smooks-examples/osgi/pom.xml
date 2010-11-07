@@ -14,6 +14,7 @@
 		<module>blueprint</module>
 		<module>bundle-activator</module>
 		<module>service-tracker</module>
+		<module>peaberry</module>
 	</modules>
 
     <dependencies>
