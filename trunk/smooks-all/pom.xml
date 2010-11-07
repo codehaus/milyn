@@ -174,6 +174,20 @@
 			<scope>test</scope> 
 			<version>1.0.0-alpha-11</version>
 		</dependency>
+
+		<!-- Bundles -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope> 
+		</dependency>
+		<dependency>
+			<groupId>org.jaxen</groupId>
+			<artifactId>com.springsource.org.jaxen</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope> 
+		</dependency>
 	</dependencies>
 
     <build>
@@ -251,7 +265,13 @@
 						<_failok>true</_failok>
 					</instructions>
 				</configuration>
-				</plugin>
+			</plugin>
+			<plugin>
+                <groupId>org.ops4j</groupId>
+                <artifactId>maven-pax-plugin</artifactId>
+                <version>1.4</version>
+                <extensions>true</extensions>
+			</plugin>
         </plugins>
     </build>
 
@@ -263,6 +283,17 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
+		<repository>
+			<id>com.springsource.repository.bundles.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
+
+		<repository>
+			<id>com.springsource.repository.bundles.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/external</url>
+		</repository>
     </repositories>
 
 </project>
