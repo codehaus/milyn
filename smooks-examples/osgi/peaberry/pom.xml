@@ -38,7 +38,14 @@
             <artifactId>milyn-smooks-all</artifactId>
             <version>${milyn.smooks.core.version}</version>
         </dependency>
-        
+
+		<dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.aopalliance-1.0</artifactId>
+            <version>1.0.0-rc1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.ops4j</groupId>
             <artifactId>peaberry</artifactId>
