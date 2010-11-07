@@ -13,6 +13,7 @@
 	<modules>
 		<module>blueprint</module>
 		<module>bundle-activator</module>
+		<module>service-tracker</module>
 	</modules>
 
     <dependencies>
