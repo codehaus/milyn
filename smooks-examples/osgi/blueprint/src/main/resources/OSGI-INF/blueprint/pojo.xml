@@ -11,14 +11,13 @@
         </argument>
     </bean>
     
-    <bean id="smooks" class="org.milyn.Smooks" factory-ref="smooksOsgiFactory" factory-method="createSmooksInstance"/>
-    
-    <bean id="smooksOsgiFactory" class="org.milyn.SmooksOSGIFactory">
+    <bean id="smooks" class="org.milyn.Smooks" factory-ref="smooksOsgiFactory" factory-method="create">
 	    <argument>
 	       <ref component-id="blueprintBundle"/>
         </argument>
     </bean>
     
+    <bean id="smooksOsgiFactory" class="org.milyn.SmooksOSGIFactoryImpl"/>
     
 </blueprint>
 
