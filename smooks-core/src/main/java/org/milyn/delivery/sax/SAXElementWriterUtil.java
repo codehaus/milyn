@@ -132,7 +132,7 @@ public class SAXElementWriterUtil {
                 String attValue = attributes.getValue(i);
 
                 writer.write(' ');
-                if(attQName != null) {
+                if(attQName != null && attQName.length() > 0) {
                     writer.write(attQName);
                 } else {
                     writer.write(attributes.getLocalName(i));

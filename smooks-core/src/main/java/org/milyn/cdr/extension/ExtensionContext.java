@@ -132,6 +132,14 @@ public class ExtensionContext {
     	return xmlConfigDigester.getResourceList();
     }
 
+    public SmooksResourceConfiguration getCurrentConfig() {
+        if(resourceStack.isEmpty()) {
+            return null;
+        } else {
+            return resourceStack.peek();
+        }
+    }
+
     public XMLConfigDigester getXmlConfigDigester() {
         return xmlConfigDigester;
     }
@@ -160,7 +168,7 @@ public class ExtensionContext {
 				return config;
 			}
 		}
-		
+
 		return null;
 	}
 
