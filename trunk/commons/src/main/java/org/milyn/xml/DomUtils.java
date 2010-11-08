@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 /**
@@ -215,21 +216,43 @@ public abstract class DomUtils {
         }
 	}
 
+    /**
+     * Rename element.
+     * @param element The element to be renamed.
+     * @param replacementElement The tag name of the replacement element.
+     * @param keepChildContent <code>true</code> if the target element's child content
+     * is to be copied to the replacement element, false if not. Default <code>true</code>.
+     * @param keepAttributes <code>true</code> if the target element's attributes
+     * are to be copied to the replacement element, false if not. Default <code>true</code>.
+     * @return The renamed element.
+     */
+    public static Element renameElement(Element element, String replacementElement, boolean keepChildContent, boolean keepAttributes) {
+        return renameElementNS(element, replacementElement, null, keepChildContent, keepAttributes);
+    }
+
 	/**
 	 * Rename element.
 	 * @param element The element to be renamed.
-	 * @param replacementElement The tag name of the replacement element.
+	 * @param replacementElement The tag name of the replacement element.  Can be a prefix qualified
+     * name if the namespace is not the null namepsace ({@link javax.xml.XMLConstants#NULL_NS_URI}).
+     * @param namespace The element namespace.
 	 * @param keepChildContent <code>true</code> if the target element's child content
 	 * is to be copied to the replacement element, false if not. Default <code>true</code>.
 	 * @param keepAttributes <code>true</code> if the target element's attributes
 	 * are to be copied to the replacement element, false if not. Default <code>true</code>.
 	 * @return The renamed element.
 	 */
-	public static Element renameElement(Element element, String replacementElement, boolean keepChildContent, boolean keepAttributes) {
+    public static Element renameElementNS(Element element, String replacementElement, String namespace, boolean keepChildContent, boolean keepAttributes) {
 		AssertArgument.isNotNull(element, "element");
 		AssertArgument.isNotNull(replacementElement, "replacementElement");
-		
-		Element replacement = element.getOwnerDocument().createElement(replacementElement);
+
+        Element replacement;
+        if(namespace != null && !XMLConstants.NULL_NS_URI.equals(namespace)) {
+            replacement = element.getOwnerDocument().createElementNS(namespace, replacementElement);
+        } else {
+            replacement = element.getOwnerDocument().createElement(replacementElement);
+        }
+
 		if(keepChildContent) {
 			DomUtils.copyChildNodes(element, replacement);
 		}

@@ -50,6 +50,14 @@ public class Fragment {
         return saxFragment;
     }
 
+    public Object getElement() {
+        if(saxFragment != null) {
+            return saxFragment;
+        } else {
+            return domFragment;
+        }
+    }
+
     public boolean isDOMElement() {
         return (domFragment != null);
     }

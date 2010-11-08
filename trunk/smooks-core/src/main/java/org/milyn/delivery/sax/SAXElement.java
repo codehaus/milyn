@@ -395,19 +395,46 @@ public class SAXElement {
     /**
      * Set the named attribute on this element.
      * @param namespaceURI The attribute namespace URI.
-     * @param attribute The attribute name.
+     * @param name The attribute name.
      * @param value The attribute value.
      */
-    public void setAttributeNS(String namespaceURI, String attribute, String value) {
-        int attribCount = attributes.getLength();
+    public void setAttributeNS(String namespaceURI, String name, String value) {
+        removeAttributeNS(namespaceURI, name);
 
+        int prefixIndex = name.indexOf(":");
+        if(prefixIndex != -1) {
+            attributes.addAttribute(namespaceURI, name.substring(prefixIndex + 1), name, "CDATA", value);
+        } else {
+            attributes.addAttribute(namespaceURI, name, "", "CDATA", value);
+        }
+    }
+
+    /**
+     * Remove the named attribute.
+     * @param name Attribute name.
+     */
+    public void removeAttribute(String name) {
+        removeAttributeNS(XMLConstants.NULL_NS_URI, name);
+    }
+
+    /**
+     * Remove the named attribute, having the specified namespace.
+     * @param namespaceURI The attribute namespace.
+     * @param name The attribute name.
+     */
+    public void removeAttributeNS(String namespaceURI, String name) {
+        int attribCount = attributes.getLength();
         for(int i = 0; i < attribCount; i++) {
-            if(namespaceURI.equals(attributes.getURI(i)) && attribute.equals(attributes.getLocalName(i))) {
-                attributes.removeAttribute(i);
+            if(namespaceURI.equals(attributes.getURI(i))) {
+                boolean isQName = (name.indexOf(":") != -1);
+                
+                if(isQName && name.equals(attributes.getQName(i))) {
+                    attributes.removeAttribute(i);
+                } else if(!isQName && name.equals(attributes.getLocalName(i))) {
+                    attributes.removeAttribute(i);
+                }
             }
         }
-
-        attributes.addAttribute(namespaceURI, attribute, "", "CDATA", value);
     }
 
 
