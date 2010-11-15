@@ -593,8 +593,8 @@ public class EDIParser implements XMLReader {
                 throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedField, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
 
-            contentHandler.characters(fieldMessageVal.toCharArray(), 0, fieldMessageVal.length());
-	        endElement(expectedField.getXmltag(), false);
+            writeToContentHandler(fieldMessageVal);
+            endElement(expectedField.getXmltag(), false);
 		}
 	}
 
@@ -625,7 +625,7 @@ public class EDIParser implements XMLReader {
                 }
 
 				startElement(expectedSubComponents.get(i).getXmltag(), true);
-				contentHandler.characters(currentComponentSubComponents[i].toCharArray(), 0, currentComponentSubComponents[i].length());
+                writeToContentHandler(currentComponentSubComponents[i]);
 				endElement(expectedSubComponents.get(i).getXmltag(), false);
 			}
 			endElement(expectedComponent.getXmltag(), true);
@@ -633,8 +633,8 @@ public class EDIParser implements XMLReader {
             if(expectedComponent.isRequired() && componentMessageVal.length() == 0) {
                 throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedComponent, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
-
-			contentHandler.characters(componentMessageVal.toCharArray(), 0, componentMessageVal.length());
+			
+            writeToContentHandler(componentMessageVal);
 			endElement(expectedComponent.getXmltag(), false);
 		}
 	}
@@ -833,6 +833,14 @@ public class EDIParser implements XMLReader {
 
     public ContentHandler getContentHandler() {
         return contentHandler;
+    }
+
+    private void writeToContentHandler(String messageVal) throws SAXException {
+        if (edifactModel.getDelimiters() != null && edifactModel.getDelimiters().getEscape() != null) {
+            String escapeDelimiter = edifactModel.getDelimiters().getEscape();
+            messageVal = messageVal.replace(escapeDelimiter+escapeDelimiter, escapeDelimiter);
+        }
+        contentHandler.characters(messageVal.toCharArray(), 0, messageVal.length());
     }
 
     private Map<String, Boolean> getFeatures() {

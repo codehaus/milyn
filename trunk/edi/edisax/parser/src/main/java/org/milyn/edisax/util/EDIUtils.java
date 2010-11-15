@@ -66,7 +66,7 @@ public class EDIUtils {
      *
      * @param value the string to split, may be null.
      * @param delimiter the delimiter sequence. A null delimiter splits on whitespace.
-     * @param escape the escape sequence. A null escape is allowed,  and result will be consistent with the splitPreserveAllTokens method.   
+     * @param escape the escape sequence. A null escape is allowed,  and result will be consistent with the splitPreserveAllTokens method.
      * @return an array of split edi-sequences, null if null string input.
      */
     public static String[] split(String value, String delimiter, String escape) {
@@ -86,93 +86,10 @@ public class EDIUtils {
             delimiter = " ";
         }
 
-        List<String> tokens = new ArrayList<String>();
+        List<CharSequence> charSequences = new ArrayList<CharSequence>();
+        readSequenceStructure(value, delimiter, escape, charSequences);
 
-        int escapeIndex = 0;
-        int delimiterIndex = 0;
-        boolean foundEscape = false;
-        StringBuilder escapeContent = new StringBuilder();
-        StringBuilder delimiterContent = new StringBuilder();
-        StringBuilder token = new StringBuilder();
-
-        for (int i = 0; i < value.length(); i++) {
-            char tmp = value.charAt(i);
-
-            // If character equals current escape character or start of a new escape sequence.
-            if (escape != null && ( tmp == escape.charAt(0) || tmp == escape.charAt(escapeIndex) )) {
-
-                // If starting from the beginning of a new escape sequence.
-                if (tmp == escape.charAt(0)) {
-                    token.append(escapeContent);
-                    escapeIndex = 0;
-                    escapeContent = new StringBuilder();
-                }
-
-                // If we haven't found the whole escape seguence.
-                if ( escapeIndex < escape.length() -1 ) {
-                    escapeIndex++;
-                    if (foundEscape) {
-                        token.append(escapeContent);
-                        escapeContent = new StringBuilder();
-                    }
-                    foundEscape = false;
-
-                    // If we have found the whole escape seguence.
-                } else {
-                    if (foundEscape) {
-                        token.append(escapeContent);
-                    }
-                    foundEscape = true;
-                    escapeIndex = 0;
-                }
-
-                escapeContent.append(tmp);
-
-                // If character equals current delimiter or start of a new delimiter sequence.
-            } else if (tmp == delimiter.charAt(delimiterIndex) || tmp == delimiter.charAt(0)) {
-
-                // If starting from the beginning of a new delimiter sequence.
-                if ( tmp == delimiter.charAt(0) ) {
-                    token.append(delimiterContent);
-                    delimiterIndex = 0;
-                    delimiterContent = new StringBuilder();
-                }
-
-                delimiterContent.append(tmp);
-                // If we haven't found the whole delimiter sequence.
-                if ( delimiterIndex < delimiter.length() -1 ) {
-                    delimiterIndex++;
-                    // If we have found the whole delimiter sequence.
-                } else {
-                    if (foundEscape) {
-                        token.append(delimiterContent);
-                        escapeContent = new StringBuilder();
-                    } else {
-                        tokens.add(token.toString());
-                        token = new StringBuilder();
-                    }
-                    delimiterIndex = 0;
-                    delimiterContent = new StringBuilder();
-                }
-                // If Character doesn't match current delimiter or escape character.
-            } else {
-                // Append and reset escape sequence if it exists.
-                token.append(escapeContent);
-                foundEscape = false;
-                escapeContent = new StringBuilder();
-
-                // Append and reset delimiter sequence if it exists.
-                token.append(delimiterContent);
-                delimiterContent = new StringBuilder();
-
-                // Append the current character.
-                token.append(value.charAt(i));
-            }
-        }
-
-        tokens.add(token.toString());
-
-        return tokens.toArray(new String[tokens.size()]);
+        return putCharacterSequenceIntoResult(charSequences);
     }
     
     public static void loadMappingModels(String mappingModelFiles, Map<Description, EdifactModel> mappingModels, URI baseURI) throws EDIConfigurationException, IOException, SAXException {
@@ -413,4 +330,124 @@ public class EDIUtils {
 			return null;
 		}
 	}
+
+    /**
+     * Loops through all CharSequences and decides whether to write out value or split.
+     * @param charSequences a list of CharSequence
+     * @return a String[] containing the split values.
+     */
+    private static String[] putCharacterSequenceIntoResult(List<CharSequence> charSequences) {
+        List<String> result = new ArrayList<String>();
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean escapeNextSequence = false;
+        boolean delimiterLastSequence = false;
+        CharSequence previousSequence = null;
+        for (CharSequence sequence : charSequences) {
+            delimiterLastSequence = false;
+
+            if (previousSequence != null && (sequence.getType() != CharSequenceTypeEnum.DELIMITER) && escapeNextSequence) {
+                stringBuilder.append(previousSequence.getValue());
+            }
+            previousSequence = sequence;
+
+            if (sequence.getType() == CharSequenceTypeEnum.PLAIN) {
+                stringBuilder.append(sequence.getValue());
+            } else if (sequence.getType() == CharSequenceTypeEnum.DELIMITER) {
+                if (escapeNextSequence) {
+                    stringBuilder.append(sequence.getValue());
+                } else {
+                    result.add(stringBuilder.toString());
+                    stringBuilder = new StringBuilder();
+                    delimiterLastSequence = true;
+                }
+            } else if (sequence.getType() == CharSequenceTypeEnum.ESCAPE) {
+                if (escapeNextSequence) {
+                    stringBuilder.append(sequence.getValue());
+                } else {
+                    escapeNextSequence = true;
+                    continue;
+                }
+            }
+
+            escapeNextSequence = false;
+        }
+
+        if (stringBuilder.length() > 0 || delimiterLastSequence) {
+            result.add(stringBuilder.toString());
+        }
+
+        return result.toArray(new String[result.size()]);
+    }
+
+    /**
+     * Reads value and put the different parts into a list of CharSequence for easier handling of escape- and
+     * delimiter-sequences when splitting value.
+     * @param value the string to split
+     * @param delimiter the characters defining the delimiter
+     * @param escape the characters defining the escape
+     * @param result a lis CharSequence.
+     */
+    private static void readSequenceStructure(String value, String delimiter, String escape, List<CharSequence> result) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int j = 0; j < value.length(); j++) {
+            char theChar = value.charAt(j);
+            stringBuilder.append(theChar);
+
+            int escapeLength = escape == null ? 0 : escape.length();
+            int delimiterLength = delimiter == null ? 0 : delimiter.length();
+            int readLength = stringBuilder.length();
+
+            if (readLength >= delimiterLength) {
+                if (stringBuilder.substring(readLength-delimiterLength, readLength).equals(delimiter)) {
+                    stringBuilder.replace(readLength-delimiterLength, readLength, "");
+                    if (stringBuilder.length() > 0) {
+                        result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
+                        stringBuilder = new StringBuilder();
+                    }
+                    result.add(new CharSequence(delimiter, CharSequenceTypeEnum.DELIMITER));
+                    continue;
+                }
+            }
+
+            if (readLength >= escapeLength) {
+                if (stringBuilder.substring(readLength-escapeLength, readLength).equals(escape)) {
+                    stringBuilder.replace(readLength-escapeLength, readLength, "");
+                    if (stringBuilder.length() > 0) {
+                        result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
+                        stringBuilder = new StringBuilder();
+                    }
+                    result.add(new CharSequence(escape, CharSequenceTypeEnum.ESCAPE));
+                    continue;
+                }
+            }
+        }
+
+        if (stringBuilder.length() > 0) {
+            result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
+        }
+    }
+
+    private static class CharSequence {
+        String value;
+        CharSequenceTypeEnum type;
+
+        public CharSequence(String value, CharSequenceTypeEnum type) {
+            this.value = value;
+            this.type = type;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public CharSequenceTypeEnum getType() {
+            return type;
+        }
+    }
+
+    private enum CharSequenceTypeEnum {
+        PLAIN,
+        ESCAPE,
+        DELIMITER
+    }
 }
