@@ -17,22 +17,24 @@ import org.xml.sax.SAXException;
 public class EDIUtilsTest extends TestCase {
 
 	public void test_with_escape() throws IOException, SAXException {
+        String[] test = EDIUtils.split("first?::second??:third", ":", "?");
+        String[] expected = new String[]{"first:", "second??", "third"};
+        assertTrue("Result is [" + output(test) + "] should be [" + output(expected) + "] ", equal(test, expected));
 
-
-        String[] test = EDIUtils.split("ATS+hep:iee+hai??+kai=haikai+slut", "+", "?");
-        String[] expected = new String[]{"ATS", "hep:iee", "hai?+kai=haikai", "slut"};
+        test = EDIUtils.split("ATS+hep:iee+hai??+kai=haikai+slut", "+", "?");
+        expected = new String[]{"ATS", "hep:iee", "hai??", "kai=haikai", "slut"};
         assertTrue("Result is [" + output(test) + "] should be [" + output(expected) + "] ", equal(test, expected));
 
         test = EDIUtils.split("ATS+hep:iee+hai?#?#+kai=haikai+slut", "+", "?#");
-        expected = new String[]{"ATS", "hep:iee", "hai?#+kai=haikai", "slut"};
+        expected = new String[]{"ATS", "hep:iee", "hai?#?#", "kai=haikai", "slut"};
         assertTrue("Result is [" + output(test) + "] should be [" + output(expected) + "] ", equal(test, expected));
 
         test = EDIUtils.split("ATS+#hep:iee+#hai?#?#+#kai=haikai+#slut", "+#", "?#");
-        expected = new String[]{"ATS", "hep:iee", "hai?#+#kai=haikai", "slut"};
+        expected = new String[]{"ATS", "hep:iee", "hai?#?#", "kai=haikai", "slut"};
         assertTrue("Result is [" + output(test) + "] should be [" + output(expected) + "] ", equal(test, expected));
 
         test = EDIUtils.split("ATS+#hep:iee+#hai??+#kai=haikai+#slut", "+#", "?");
-        expected = new String[]{"ATS", "hep:iee", "hai?+#kai=haikai", "slut"};
+        expected = new String[]{"ATS", "hep:iee", "hai??", "kai=haikai", "slut"};
         assertTrue("Result is [" + output(test) + "] should be [" + output(expected) + "] ", equal(test, expected));
 
         test = EDIUtils.split("ATS+#hep:iee+#hai??+#kai=haikai+#slut", "+#", null);
