@@ -166,6 +166,10 @@ public class SmooksResourceConfiguration {
      */
     public static final String XML_DEF_PREFIX = "xmldef:".toLowerCase();
     /**
+     *
+     */
+    public static final String SELECTOR_NONE = "none";
+    /**
      * URI resource locator.
      */
     private static URIResourceLocator uriResourceLocator = new URIResourceLocator();
@@ -275,7 +279,7 @@ public class SmooksResourceConfiguration {
      * @see #setParameter(String, String)
      */
     public SmooksResourceConfiguration() {
-        setSelector("none");
+        setSelector(SELECTOR_NONE);
         setTargetProfile(Profile.DEFAULT_PROFILE);
     }
 

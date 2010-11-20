@@ -36,6 +36,16 @@ import java.util.Properties;
  */
 public class SelectorStepBuilder {
 
+    private static SelectorStep[] SELECTOR_NONE_STEP;
+
+    static {
+        try {
+            SELECTOR_NONE_STEP = _buildSteps(SmooksResourceConfiguration.SELECTOR_NONE);
+        } catch (SAXPathException e) {
+            throw new IllegalStateException("Unexpected exception while constructing the 'none' SelectorStep array.");
+        }
+    }
+
     /**
      * Construct a set of selector steps from the specified selector (ala XPath expresssion steps).
      * <p/>
@@ -47,6 +57,24 @@ public class SelectorStepBuilder {
      * @throws SAXPathException Error parsing expression.
      */
     public static SelectorStep[] buildSteps(String selectorExpression) throws SAXPathException {
+        if(selectorExpression == SmooksResourceConfiguration.SELECTOR_NONE) {
+            return SELECTOR_NONE_STEP;
+        }
+
+        return _buildSteps(selectorExpression);
+    }
+
+    /**
+     * Construct a set of selector steps from the specified selector (ala XPath expresssion steps).
+     * <p/>
+     * This process does not configure the namespaces on the steps.  The {@link SelectorStep#setNamespaces(SelectorStep[],java.util.Properties)}
+     * method needs to be called to configure the namespaces.
+     *
+     * @param selectorExpression The selector expression.
+     * @return The set of selector steps.
+     * @throws SAXPathException Error parsing expression.
+     */
+    private static SelectorStep[] _buildSteps(String selectorExpression) throws SAXPathException {
         AssertArgument.isNotNull(selectorExpression, "selectorExpression");
 
         String xpathExpression = toXPathExpression(selectorExpression);

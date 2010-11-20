@@ -41,9 +41,9 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  */
 public class SmooksOverheadTest extends TestCase {
 
-    private static final int NUM_WARMUPS = 100;
+    private static final int NUM_WARMUPS = 10;
     //private static final int NUM_ITERATIONS = 10000000;
-    private static final int NUM_ITERATIONS = 10000;
+    private static final int NUM_ITERATIONS = 100;
 
     public void test_saxonly_timings() throws SAXException, IOException {
         for(int i = 0; i < NUM_WARMUPS; i++) {
@@ -89,19 +89,37 @@ public class SmooksOverheadTest extends TestCase {
         runSmooks("smooks-sax-java4.xml");
     }
 
+    public void test_configLoad() throws IOException, SAXException {
+        for(int i = 0; i < NUM_WARMUPS; i++) {
+            readAndLoadConfig();
+        }
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < NUM_ITERATIONS; i++) {
+            readAndLoadConfig();
+        }
+        long took = System.currentTimeMillis() - start;
+        System.out.println("took: " + took + " total");
+        System.out.println("took: " + (took/NUM_ITERATIONS) + " per config");
+    }
+
+    private void readAndLoadConfig() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-sax-java4.xml"));
+        smooks.createExecutionContext();
+    }
+
     private void runSmooks(String config) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
 
         for(int i = 0; i < NUM_WARMUPS; i++) {
             JavaResult javaResult = new JavaResult();
-            smooks.filter(new StreamSource(getMessageReader()), javaResult);
+            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
         }
 
         long start = System.currentTimeMillis();
         JavaResult javaResult = null;
         for(int i = 0; i < NUM_ITERATIONS; i++) {
             javaResult = new JavaResult();
-            smooks.filter(new StreamSource(getMessageReader()), javaResult);
+            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
         }
         System.out.println(config + " took: " + (System.currentTimeMillis() - start));
         List orderItems = (List) javaResult.getBean("orderItemList");

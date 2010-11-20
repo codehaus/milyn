@@ -18,11 +18,13 @@ package org.milyn.cdr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.classpath.ClasspathUtils;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ApplicationContextInitializer;
+import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.JavaContentHandlerFactory;
@@ -56,7 +58,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author tfennelly
  */
 public class SmooksResourceConfigurationStore {
-	
+
+    private static List<Class<ContentHandlerFactory>> handlerFactories = ClassUtil.getClasses("META-INF/content-handlers.inf", ContentHandlerFactory.class);
+    
 	/**
 	 * Logger.
 	 */
@@ -94,19 +98,23 @@ public class SmooksResourceConfigurationStore {
 	 * @param applicationContext Container context in which this store lives.
 	 */
 	public SmooksResourceConfigurationStore(ApplicationContext applicationContext) {
-		if(applicationContext == null) {
-			throw new IllegalArgumentException("null 'applicationContext' arg in constructor call.");
-		}
-		this.applicationContext = applicationContext;
-        
-		// add the default list to the list.
+        this(applicationContext, true);
+    }
+
+    public SmooksResourceConfigurationStore(ApplicationContext applicationContext, boolean registerInstalledResources) {
+        AssertArgument.isNotNull(applicationContext, "applicationContext");
+        this.applicationContext = applicationContext;
+
+        // add the default list to the list.
         configLists.add(defaultList);
-        
+
         registerInstalledHandlerFactories();
-        registerInstalledResources("null-dom.cdrl");
-        registerInstalledResources("null-sax.cdrl");
-        registerInstalledResources("installed-param-decoders.cdrl");
-        registerInstalledResources("installed-serializers.cdrl");
+        if(registerInstalledResources) {
+            registerInstalledResources("null-dom.cdrl");
+            registerInstalledResources("null-sax.cdrl");
+            registerInstalledResources("installed-param-decoders.cdrl");
+            registerInstalledResources("installed-serializers.cdrl");
+        }
     }
 
     /**
@@ -118,8 +126,6 @@ public class SmooksResourceConfigurationStore {
     }
 
     private void registerInstalledHandlerFactories() {
-        List<Class<ContentHandlerFactory>> handlerFactories = ClassUtil.getClasses("META-INF/content-handlers.inf", ContentHandlerFactory.class);
-
         for (Class<ContentHandlerFactory> handlerFactory : handlerFactories) {
             Resource resourceAnnotation = handlerFactory.getAnnotation(Resource.class);
 

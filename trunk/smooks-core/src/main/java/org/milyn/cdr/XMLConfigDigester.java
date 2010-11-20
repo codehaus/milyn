@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.cdr.extension.ExtensionContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.io.StreamUtils;
 import org.milyn.net.URIUtil;
@@ -580,7 +581,7 @@ public final class XMLConfigDigester {
             assertExtendedConfigOK(configNamespace, resourcePath);
 
             // Construct the Smooks instance for processing this config namespace...
-            smooks = new Smooks();
+            smooks = new Smooks(new StandaloneApplicationContext(false));
             setExtentionDigestOn();
             try {
                 SmooksResourceConfigurationStore configStore = smooks.getApplicationContext().getStore();
