@@ -113,7 +113,18 @@ public class Smooks {
      * {@link #addConfigurations(String)} or {@link #addConfigurations(String,java.io.InputStream)}.
      */
     public Smooks() {
-        context = new StandaloneApplicationContext();
+        context = new StandaloneApplicationContext(true);
+        visitorConfigMap = new VisitorConfigMap(context);
+    }
+
+    /**
+     * Public Default Constructor.
+     * <p/>
+     * Resource configurations can be added through calls to
+     * {@link #addConfigurations(String)} or {@link #addConfigurations(String,java.io.InputStream)}.
+     */
+    public Smooks(StandaloneApplicationContext context) {
+        this.context = context;
         visitorConfigMap = new VisitorConfigMap(context);
     }
 

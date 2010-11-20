@@ -46,13 +46,11 @@ public class StandaloneApplicationContext implements ApplicationContext {
 
     /**
      * Public constructor.
-     * <p/>
-     *
      */
-    public StandaloneApplicationContext() {
+    public StandaloneApplicationContext(boolean registerInstalledResources) {
         resourceLocator = new URIResourceLocator();
         ((URIResourceLocator)resourceLocator).setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
-        resStore = new SmooksResourceConfigurationStore(this);
+        resStore = new SmooksResourceConfigurationStore(this, registerInstalledResources);
         // Add the open profile...
         profileStore.addProfileSet(new DefaultProfileSet(Profile.DEFAULT_PROFILE));
     }
