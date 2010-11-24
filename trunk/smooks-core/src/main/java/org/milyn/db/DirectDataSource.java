@@ -108,7 +108,9 @@ public class DirectDataSource extends AbstractDataSource {
         try {
             driverInstance = (Driver) driver.newInstance();
         } catch (Exception e) {
-            throw new SQLException("Failed to register JDBC driver '" + driver + "'.  Unable to create instance of driver class.", e);
+            SQLException sqlE = new SQLException("Failed to register JDBC driver '" + driver + "'.  Unable to create instance of driver class.");
+            sqlE.initCause(e);
+            throw sqlE;
         }
         
         DriverManager.registerDriver(driverInstance);
