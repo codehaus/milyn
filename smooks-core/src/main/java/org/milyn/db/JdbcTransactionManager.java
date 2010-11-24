@@ -25,7 +25,7 @@ class JdbcTransactionManager implements TransactionManager {
 				connection.setAutoCommit(autoCommit);
 			}
 		} catch (SQLException e) {
-			throw new TransactionException("Exception while setting the autoCommit flag of the connection");
+			throw new TransactionException("Exception while setting the autoCommit flag of the connection", e);
 		}
 	}
 
@@ -37,7 +37,7 @@ class JdbcTransactionManager implements TransactionManager {
 		try {
 			connection.commit();
 		} catch (SQLException e) {
-			throw new TransactionException("Exception while committing the connection");
+			throw new TransactionException("Exception while committing the connection", e);
 		}
 	}
 
@@ -49,7 +49,7 @@ class JdbcTransactionManager implements TransactionManager {
 		try {
 			connection.rollback();
 		} catch (SQLException e) {
-			throw new TransactionException("Exception while rolling back the connection");
+			throw new TransactionException("Exception while rolling back the connection", e);
 		}
 	}
 

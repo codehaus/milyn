@@ -90,7 +90,7 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
                 }
             }
         } catch (SQLException e) {
-            throw new SmooksException("Unable to unbind DataSource '" + getName() + "'.");
+            throw new SmooksException("Unable to unbind DataSource '" + getName() + "'.", e);
         } finally {
             executionContext.removeAttribute(DS_CONTEXT_KEY_PREFIX + getName());
             executionContext.removeAttribute(TRANSACTION_MANAGER_CONTEXT_KEY_PREFIX + getName());
