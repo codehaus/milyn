@@ -142,6 +142,7 @@ The escape attribute specifies a character that can be used before a delimiter t
 	<xs:simpleType name="paramType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="BigDecimal"/>
+            <xs:enumeration value="DABigDecimal"/>
 			<xs:enumeration value="BigInteger"/>
 			<xs:enumeration value="Binary"/>
 			<xs:enumeration value="Boolean"/>
