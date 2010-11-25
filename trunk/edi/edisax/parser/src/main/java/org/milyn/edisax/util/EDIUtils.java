@@ -342,34 +342,45 @@ public class EDIUtils {
         boolean escapeNextSequence = false;
         boolean delimiterLastSequence = false;
         CharSequence previousSequence = null;
+        
         for (CharSequence sequence : charSequences) {
             delimiterLastSequence = false;
 
-            if (previousSequence != null && (sequence.getType() != CharSequenceTypeEnum.DELIMITER) && escapeNextSequence) {
+            if (escapeNextSequence && (sequence.getType() != CharSequenceTypeEnum.DELIMITER)) {
                 stringBuilder.append(previousSequence.getValue());
             }
-            previousSequence = sequence;
 
-            if (sequence.getType() == CharSequenceTypeEnum.PLAIN) {
-                stringBuilder.append(sequence.getValue());
-            } else if (sequence.getType() == CharSequenceTypeEnum.DELIMITER) {
-                if (escapeNextSequence) {
-                    stringBuilder.append(sequence.getValue());
-                } else {
-                    result.add(stringBuilder.toString());
-                    stringBuilder = new StringBuilder();
-                    delimiterLastSequence = true;
+            try {
+                switch (sequence.getType()) {
+                    case PLAIN : {
+                        stringBuilder.append(sequence.getValue());
+                        break;
+                    }
+                    case DELIMITER : {
+                        if (escapeNextSequence) {
+                            stringBuilder.append(sequence.getValue());
+                        } else {
+                            result.add(stringBuilder.toString());
+                            stringBuilder.setLength(0);
+                            delimiterLastSequence = true;
+                        }
+                        break;
+                    }
+                    case ESCAPE : {
+                        if (escapeNextSequence) {
+                            stringBuilder.append(sequence.getValue());
+                        } else {
+                            escapeNextSequence = true;
+                            continue;
+                        }
+                        break;
+                    }
                 }
-            } else if (sequence.getType() == CharSequenceTypeEnum.ESCAPE) {
-                if (escapeNextSequence) {
-                    stringBuilder.append(sequence.getValue());
-                } else {
-                    escapeNextSequence = true;
-                    continue;
-                }
+
+                escapeNextSequence = false;
+            } finally {
+                previousSequence = sequence;
             }
-
-            escapeNextSequence = false;
         }
 
         if (stringBuilder.length() > 0 || delimiterLastSequence) {
@@ -389,42 +400,59 @@ public class EDIUtils {
      */
     private static void readSequenceStructure(String value, String delimiter, String escape, List<CharSequence> result) {
         StringBuilder stringBuilder = new StringBuilder();
+        int escapeLength = escape == null ? 0 : escape.length();
+        int delimiterLength = delimiter == null ? 0 : delimiter.length();
+
         for (int j = 0; j < value.length(); j++) {
             char theChar = value.charAt(j);
             stringBuilder.append(theChar);
 
-            int escapeLength = escape == null ? 0 : escape.length();
-            int delimiterLength = delimiter == null ? 0 : delimiter.length();
-            int readLength = stringBuilder.length();
-
-            if (readLength >= delimiterLength) {
-                if (stringBuilder.substring(readLength-delimiterLength, readLength).equals(delimiter)) {
-                    stringBuilder.replace(readLength-delimiterLength, readLength, "");
-                    if (stringBuilder.length() > 0) {
-                        result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
-                        stringBuilder = new StringBuilder();
-                    }
-                    result.add(new CharSequence(delimiter, CharSequenceTypeEnum.DELIMITER));
-                    continue;
+            int curTokenLength = stringBuilder.length();
+            if (builderEndsWith(stringBuilder, delimiter)) {
+                stringBuilder.setLength(curTokenLength - delimiterLength);
+                if (stringBuilder.length() > 0) {
+                    result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
+                    stringBuilder.setLength(0);
                 }
-            }
-
-            if (readLength >= escapeLength) {
-                if (stringBuilder.substring(readLength-escapeLength, readLength).equals(escape)) {
-                    stringBuilder.replace(readLength-escapeLength, readLength, "");
-                    if (stringBuilder.length() > 0) {
-                        result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
-                        stringBuilder = new StringBuilder();
-                    }
-                    result.add(new CharSequence(escape, CharSequenceTypeEnum.ESCAPE));
-                    continue;
+                result.add(new CharSequence(delimiter, CharSequenceTypeEnum.DELIMITER));
+                continue;
+            } else if (builderEndsWith(stringBuilder, escape)) {
+                stringBuilder.setLength(curTokenLength - escapeLength);
+                if (stringBuilder.length() > 0) {
+                    result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
+                    stringBuilder.setLength(0);
                 }
+                result.add(new CharSequence(escape, CharSequenceTypeEnum.ESCAPE));
+                continue;
             }
         }
 
         if (stringBuilder.length() > 0) {
             result.add(new CharSequence(stringBuilder.toString(), CharSequenceTypeEnum.PLAIN));
         }
+    }
+
+    private static boolean builderEndsWith(StringBuilder stringBuilder, String string) {
+        if(string == null) {
+            return false;
+        }
+
+        int builderLen = stringBuilder.length();
+        int stringLen = string.length();
+
+        if(builderLen < stringLen) {
+            return false;
+        }
+
+        int stringIndx = 0;
+        for(int i = (builderLen - stringLen); i < builderLen; i++) {
+            if(stringBuilder.charAt(i) != string.charAt(stringIndx)) {
+                return false;
+            }
+            stringIndx++;
+        }
+
+        return true;
     }
 
     private static class CharSequence {
