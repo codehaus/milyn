@@ -52,6 +52,9 @@ public class ValueNodeInfo {
     }
 
     public String getDecoderType() {
+        if (property.getType().getType().getSimpleName().equals("BigDecimal")) {
+            return "DABigDecimal";
+        }
         return property.getType().getType().getSimpleName();
     }
 }

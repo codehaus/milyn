@@ -23,6 +23,8 @@
             <jb:decodeParam name="${config.key}">${config.value}</jb:decodeParam>
         </#list>
         </jb:value>
+	<#elseif valueBinding.decoderType?exists>
+	<jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}" decoder="${valueBinding.decoderType}" default="null" />
         <#else>
         <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}" default="null"/>
         </#if>

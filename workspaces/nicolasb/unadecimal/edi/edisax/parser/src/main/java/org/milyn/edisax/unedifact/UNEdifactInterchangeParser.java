@@ -29,6 +29,7 @@ import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.interchange.ControlBlockHandlerFactory;
 import org.milyn.edisax.unedifact.handlers.r41.UNEdifact41ControlBlockHandlerFactory;
+import org.milyn.edisax.unedifact.handlers.UNAHandler;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
@@ -57,14 +58,14 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 
     private Map<String, Boolean> features = new HashMap<String, Boolean>();
 	
-	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
+	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?").setDecimalSeparator(".");
 	
 	private Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
 	private ContentHandler contentHandler;
     private HierarchyChangeListener hierarchyChangeListener;
     private InterchangeContext interchangeContext;
 
-    public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
+    public void parse(InputSource unedifactInterchange, DelimitersSetter ds) throws IOException, SAXException {
 		AssertArgument.isNotNull(unedifactInterchange, "unedifactInterchange");
 
         if(contentHandler == null) {
@@ -97,6 +98,9 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 					interchangeContext.indentDepth.value++;
 		        	handler.process(interchangeContext);
 					interchangeContext.indentDepth.value--;
+					if (handler instanceof UNAHandler && ds != null) {
+						ds.setCurrentDelimiters(interchangeContext.getSegmentReader().getDelimiters());
+					}
 		        } else {
 		        	break;
 		        }
@@ -109,6 +113,10 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
         	contentHandler = null;
         }
 	}
+
+    public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
+	    parse(unedifactInterchange,null);
+    }
 
     public InterchangeContext getInterchangeContext() {
         return interchangeContext;

@@ -103,7 +103,11 @@ class WriteMethod extends JMethod {
 
             // Create the encoder in the constructor...
             JMethod defaultConstructor = jClass.getDefaultConstructor();
-            defaultConstructor.appendToBody("\n        " + encoderName + " = new " + decoderClass.getSimpleName() + "();");
+	    String decoderClassName = decoderClass.getSimpleName();
+	    if (decoderClassName.equals("BigDecimalDecoder")) {
+	        decoderClassName = "DABigDecimalDecoder";
+	    }
+            defaultConstructor.appendToBody("\n        " + encoderName + " = new " + decoderClassName + "();");
 
             // Configure the encoder in the constructor (if needed)....
             if(dataDecoder instanceof Configurable) {
@@ -122,6 +126,9 @@ class WriteMethod extends JMethod {
                 }
             }
 
+	    if (decoderClassName.equals("DABigDecimalDecoder")){
+            appendToBody("\n            " + encoderName + ".setDelimiters(delimiters);");
+	    }
             // Add the encoder encode instruction to te write method...
             appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
         } else {
@@ -212,6 +219,9 @@ class WriteMethod extends JMethod {
                 break;
             case SUB_COMPONENT:
                 builder.append("\n        " + writerVariableName + ".write(delimiters.getSubComponent());");
+                break;
+            case DECIMAL_SEPARATOR:
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getDecimalSeparator());");
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported '" + DelimiterType.class.getName() + "' enum conversion.  Enum '" + delimiterType + "' not specified in switch statement.");

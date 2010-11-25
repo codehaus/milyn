@@ -56,6 +56,12 @@ public class ValueNode extends MappingNode {
     public void setDataType(String dataType) {
         this.dataType = dataType;
         if(dataType != null) {
+ //Hack to be able to manage a BigDecimalDecoder which is 'delimiters aware'.
+/*              if (!dataType.equals("BigDecimal")) {
+                  decoder = DataDecoder.Factory.create(dataType);
+              }else {
+                  decoder =  new org.milyn.javabean.decoders.DABigDecimalDecoder();
+              }*/
             decoder = DataDecoder.Factory.create(dataType);
 
             DecodeType decodeType = decoder.getClass().getAnnotation(DecodeType.class);

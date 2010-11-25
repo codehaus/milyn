@@ -199,6 +199,7 @@ public class EDIConfigDigester {
         delimiters.setComponent(getAttributeValue(node, "component"));
         delimiters.setSubComponent(getAttributeValue(node, "sub-component"));
         delimiters.setEscape(getAttributeValue(node, "escape"));
+        delimiters.setDecimalSeparator(getAttributeValue(node, "decimalSeparator"));
     }
 
     /**

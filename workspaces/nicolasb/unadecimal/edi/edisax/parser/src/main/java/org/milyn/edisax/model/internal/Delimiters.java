@@ -27,6 +27,7 @@ public class Delimiters {
     private String component;
     private String subComponent;
     private String escape;
+    private String decimalSeparator;
     private volatile char[] segmentDelimiter;
     private boolean ignoreCRLF;
     private Set<Character> delimiterChars = new LinkedHashSet<Character>();
@@ -92,6 +93,16 @@ public class Delimiters {
         return this;
     }
 
+    public Delimiters setDecimalSeparator(String decimalSeparator) {
+	    this.decimalSeparator = decimalSeparator;
+	    initDelimiterChars();
+	    return this;
+    }
+
+    public String getDecimalSeparator() {
+	    return decimalSeparator;
+    }
+
     public char[] getSegmentDelimiter() {
 		if(segmentDelimiter == null) {
 			initSegmentDelimiter();
@@ -145,6 +156,10 @@ public class Delimiters {
                     }
                 case SUB_COMPONENT:
                     if(equals(subComponent, c)) {
+                        continue;
+                    }
+                case DECIMAL_SEPARATOR:
+                    if(equals(decimalSeparator, c)) {
                         continue;
                     }
                 default :
