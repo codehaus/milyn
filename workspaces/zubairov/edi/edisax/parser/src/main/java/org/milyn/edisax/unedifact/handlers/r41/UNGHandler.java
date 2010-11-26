@@ -71,23 +71,23 @@ class UNGHandler implements ControlBlockHandler {
 		ungSegment.setDescription("UNG - Group Header");
 		ungSegment.setTruncatable(true);
 		ungSegment.setNamespace(ControlBlockHandler.NAMESPACE);
-		ungSegment.addField(new Field("groupId", false));
-		ungSegment.addField(new Field("senderApp",  false).
-                addComponent(new Component("id",            true)).
-                addComponent(new Component("codeQualifier", false)));
-		ungSegment.addField(new Field("recipientApp", false).
-                addComponent(new Component("id",              true)).
-                addComponent(new Component("codeQualifier",   false)));
-		ungSegment.addField(new Field("dateTime",  false).
-                addComponent(new Component("date", true)).
-                addComponent(new Component("time", true)));
-		ungSegment.addField(new Field("groupRef", true));
-		ungSegment.addField(new Field("controllingAgencyCode", false));
-		ungSegment.addField(new Field("messageVersion",        false).
-                addComponent(new Component("versionNum",       true)).
-                addComponent(new Component("releaseNum",       true)).
-                addComponent(new Component("associationCode", false)));
-		ungSegment.addField(new Field("applicationPassword",  false));
+		ungSegment.addField(new Field("groupId", ControlBlockHandler.NAMESPACE, false));
+		ungSegment.addField(new Field("senderApp", ControlBlockHandler.NAMESPACE,  false).
+                addComponent(new Component("id",ControlBlockHandler.NAMESPACE, 	true)).
+                addComponent(new Component("codeQualifier", ControlBlockHandler.NAMESPACE, false)));
+		ungSegment.addField(new Field("recipientApp",ControlBlockHandler.NAMESPACE,  false).
+                addComponent(new Component("id",ControlBlockHandler.NAMESPACE,               true)).
+                addComponent(new Component("codeQualifier",ControlBlockHandler.NAMESPACE,    false)));
+		ungSegment.addField(new Field("dateTime",ControlBlockHandler.NAMESPACE,   false).
+                addComponent(new Component("date",ControlBlockHandler.NAMESPACE,  true)).
+                addComponent(new Component("time",ControlBlockHandler.NAMESPACE,  true)));
+		ungSegment.addField(new Field("groupRef",ControlBlockHandler.NAMESPACE,  true));
+		ungSegment.addField(new Field("controllingAgencyCode",ControlBlockHandler.NAMESPACE,  false));
+		ungSegment.addField(new Field("messageVersion",ControlBlockHandler.NAMESPACE,         false).
+                addComponent(new Component("versionNum",ControlBlockHandler.NAMESPACE,        true)).
+                addComponent(new Component("releaseNum",ControlBlockHandler.NAMESPACE,        true)).
+                addComponent(new Component("associationCode",ControlBlockHandler.NAMESPACE,  false)));
+		ungSegment.addField(new Field("applicationPassword", ControlBlockHandler.NAMESPACE,  false));
 
 		// UNE Segment Definition...
 		// http://www.gefeg.com/jswg/v41/se/se14.htm
@@ -97,7 +97,7 @@ class UNGHandler implements ControlBlockHandler {
 		uneSegment.setDescription("UNE - Group Trailer");
 		uneSegment.setNamespace(ControlBlockHandler.NAMESPACE);
 		uneSegment.setTruncatable(true);
-		uneSegment.addField(new Field("controlCount", true));
-		uneSegment.addField(new Field("groupRef", true));
+		uneSegment.addField(new Field("controlCount", ControlBlockHandler.NAMESPACE, true));
+		uneSegment.addField(new Field("groupRef", ControlBlockHandler.NAMESPACE, true));
 	}
 }
