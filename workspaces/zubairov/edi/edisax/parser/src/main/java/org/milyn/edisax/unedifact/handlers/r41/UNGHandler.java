@@ -70,6 +70,7 @@ class UNGHandler implements ControlBlockHandler {
 		ungSegment.setXmltag("UNG");
 		ungSegment.setDescription("UNG - Group Header");
 		ungSegment.setTruncatable(true);
+		ungSegment.setNamespace(ControlBlockHandler.NAMESPACE);
 		ungSegment.addField(new Field("groupId", false));
 		ungSegment.addField(new Field("senderApp",  false).
                 addComponent(new Component("id",            true)).
@@ -94,6 +95,7 @@ class UNGHandler implements ControlBlockHandler {
 		uneSegment.setSegcode("UNE");
 		uneSegment.setXmltag("UNE");
 		uneSegment.setDescription("UNE - Group Trailer");
+		uneSegment.setNamespace(ControlBlockHandler.NAMESPACE);
 		uneSegment.setTruncatable(true);
 		uneSegment.addField(new Field("controlCount", true));
 		uneSegment.addField(new Field("groupRef", true));
