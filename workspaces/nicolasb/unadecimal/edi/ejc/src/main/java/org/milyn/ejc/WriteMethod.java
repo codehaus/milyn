@@ -126,11 +126,12 @@ class WriteMethod extends JMethod {
                 }
             }
 
-	    if (decoderClassName.equals("DABigDecimalDecoder")){
-            appendToBody("\n            " + encoderName + ".setDelimiters(delimiters);");
-	    }
             // Add the encoder encode instruction to te write method...
-            appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
+	    if (decoderClassName.equals("DABigDecimalDecoder")){
+                appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ",delimiters)));");
+	    }else {
+                appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
+	    }
         } else {
             appendToBody("\n            nodeWriter.write(delimiters.escape(" + property.getName() + ".toString()));");
         }

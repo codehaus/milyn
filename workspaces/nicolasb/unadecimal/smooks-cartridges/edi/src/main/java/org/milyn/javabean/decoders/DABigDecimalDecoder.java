@@ -36,15 +36,10 @@ import java.text.DecimalFormatSymbols;
  */
 @DecodeType(BigDecimal.class)
 public class DABigDecimalDecoder extends org.milyn.javabean.decoders.BigDecimalDecoder {
-    private DecimalFormat decimalFormat = null;
-    private Delimiters interchangeDelimiters = null;
 
-    public DABigDecimalDecoder setDelimiters(Delimiters interchangeDelimiters){
-	    this.interchangeDelimiters = interchangeDelimiters;
-	    return this;
-    }
-
-    private BigDecimalDecoder initDecimalFormat() {
+    private synchronized DecimalFormat initDecimalFormat() {
+    	Delimiters interchangeDelimiters = null;
+    	DecimalFormat decimalFormat = null;
         //Check to see if we can use the parent default format
         NumberFormat parentNumberFormat = getNumberFormat();
         if (parentNumberFormat != null && parentNumberFormat instanceof DecimalFormat) {
@@ -55,27 +50,27 @@ public class DABigDecimalDecoder extends org.milyn.javabean.decoders.BigDecimalD
 	//EDI Format only include ',' or '.' for decimal separation, no grouping separator
 	decimalFormat.applyPattern("#0.0#");
         // Retrieve the current delimiter if exist, default one otherwise
-	if (interchangeDelimiters == null){
-		ExecutionContext ec = Filter.getCurrentExecutionContext();
-		if (ec != null) {
-        	        interchangeDelimiters = (Delimiters) ec.getBeanContext().getBean("interchangeDelimiters");
-		}else {
-			interchangeDelimiters = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
-		}
+	ExecutionContext ec = Filter.getCurrentExecutionContext();
+	if (ec != null) {
+                interchangeDelimiters = (Delimiters) ec.getBeanContext().getBean("interchangeDelimiters");
+	}else {
+		interchangeDelimiters = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
 	}
         //Setting decimal separator from delimiters
         DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
         dfs.setDecimalSeparator(interchangeDelimiters.getDecimalSeparator().charAt(0));
         decimalFormat.setDecimalFormatSymbols(dfs);
-	return this;
+	return decimalFormat;
     }
 
     public Object decode(String data) throws DataDecodeException {
-        if (decimalFormat == null) {
-		initDecimalFormat();
-        }
+	DecimalFormat decimalFormat = null;
         try {
-           Number number = decimalFormat.parse(data.trim());
+	   Number number;
+	   decimalFormat = initDecimalFormat();
+	   synchronized(decimalFormat){
+               number = decimalFormat.parse(data.trim());
+	   }
 
            if(number instanceof BigDecimal) {
                     return number;
@@ -90,9 +85,33 @@ public class DABigDecimalDecoder extends org.milyn.javabean.decoders.BigDecimalD
     }
 
     public String encode(Object object) throws DataDecodeException {
-        if(decimalFormat == null) {
-		initDecimalFormat();
-	}
+	DecimalFormat decimalFormat = initDecimalFormat();
         return decimalFormat.format(object);
+    }
+
+    //This function return a decimalformat based on the delimiters passed
+    private synchronized DecimalFormat forceDecimalFormat(Delimiters interchangeDelimiters) {
+	DecimalFormat decimalFormat;
+        NumberFormat parentNumberFormat = getNumberFormat();
+        if (parentNumberFormat != null && parentNumberFormat instanceof DecimalFormat) {
+            decimalFormat = (DecimalFormat) parentNumberFormat;
+        }else {
+            decimalFormat = new DecimalFormat();
+	}
+	decimalFormat.applyPattern("#0.0#");
+	DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
+	if (interchangeDelimiters != null) {
+	    dfs.setDecimalSeparator(interchangeDelimiters.getDecimalSeparator().charAt(0));
+	}
+	decimalFormat.setDecimalFormatSymbols(dfs);
+	return decimalFormat;
+    }
+
+    //Thread safe function to encode with delimiters awareness
+    public String encode(Object object,Delimiters interchangeDelimiters) throws DataDecodeException {
+	DecimalFormat decimalFormat = forceDecimalFormat(interchangeDelimiters);
+	synchronized(decimalFormat){
+	    return decimalFormat.format(object);
+	}
     }
 }
