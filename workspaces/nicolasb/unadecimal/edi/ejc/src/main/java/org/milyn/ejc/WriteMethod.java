@@ -20,6 +20,7 @@ import org.milyn.edisax.model.internal.*;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataEncoder;
+import org.milyn.javabean.decoders.DABigDecimalDecoder;
 import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JMethod;
 import org.milyn.javabean.pojogen.JNamedType;
@@ -103,11 +104,7 @@ class WriteMethod extends JMethod {
 
             // Create the encoder in the constructor...
             JMethod defaultConstructor = jClass.getDefaultConstructor();
-	    String decoderClassName = decoderClass.getSimpleName();
-	    if (decoderClassName.equals("BigDecimalDecoder")) {
-	        decoderClassName = "DABigDecimalDecoder";
-	    }
-            defaultConstructor.appendToBody("\n        " + encoderName + " = new " + decoderClassName + "();");
+            defaultConstructor.appendToBody("\n        " + encoderName + " = new " + decoderClass.getSimpleName() + "();");
 
             // Configure the encoder in the constructor (if needed)....
             if(dataDecoder instanceof Configurable) {
@@ -127,11 +124,11 @@ class WriteMethod extends JMethod {
             }
 
             // Add the encoder encode instruction to te write method...
-	    if (decoderClassName.equals("DABigDecimalDecoder")){
-                appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ",delimiters)));");
-	    }else {
+            if (decoderClass == DABigDecimalDecoder.class){
+                appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ", delimiters)));");
+            } else {
                 appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
-	    }
+            }
         } else {
             appendToBody("\n            nodeWriter.write(delimiters.escape(" + property.getName() + ".toString()));");
         }

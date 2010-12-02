@@ -35,83 +35,73 @@ import java.text.DecimalFormatSymbols;
  * @author <a href="mailto:sinfomicien@gmail.com">sinfomicien@gmail.com</a>
  */
 @DecodeType(BigDecimal.class)
-public class DABigDecimalDecoder extends org.milyn.javabean.decoders.BigDecimalDecoder {
-
-    private synchronized DecimalFormat initDecimalFormat() {
-    	Delimiters interchangeDelimiters = null;
-    	DecimalFormat decimalFormat = null;
-        //Check to see if we can use the parent default format
-        NumberFormat parentNumberFormat = getNumberFormat();
-        if (parentNumberFormat != null && parentNumberFormat instanceof DecimalFormat) {
-                decimalFormat = (DecimalFormat) parentNumberFormat;
-        }else {
-                decimalFormat = new DecimalFormat();
-        }
-	//EDI Format only include ',' or '.' for decimal separation, no grouping separator
-	decimalFormat.applyPattern("#0.0#");
-        // Retrieve the current delimiter if exist, default one otherwise
-	ExecutionContext ec = Filter.getCurrentExecutionContext();
-	if (ec != null) {
-                interchangeDelimiters = (Delimiters) ec.getBeanContext().getBean("interchangeDelimiters");
-	}else {
-		interchangeDelimiters = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
-	}
-        //Setting decimal separator from delimiters
-        DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
-        dfs.setDecimalSeparator(interchangeDelimiters.getDecimalSeparator().charAt(0));
-        decimalFormat.setDecimalFormatSymbols(dfs);
-	return decimalFormat;
-    }
+public class DABigDecimalDecoder extends BigDecimalDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-	DecimalFormat decimalFormat = null;
+        DecimalFormat decimalFormat = getDecimalFormat();
+        
         try {
-	   Number number;
-	   decimalFormat = initDecimalFormat();
-	   synchronized(decimalFormat){
-               number = decimalFormat.parse(data.trim());
-	   }
+            setDecimalPointFormat(decimalFormat, getContextDelimiters());
 
-           if(number instanceof BigDecimal) {
-                    return number;
-           } else if(number instanceof BigInteger) {
-                    return new BigDecimal((BigInteger) number);
-           }
+            Number number = decimalFormat.parse(data.trim());
+            if (number instanceof BigDecimal) {
+                return number;
+            } else if (number instanceof BigInteger) {
+                return new BigDecimal((BigInteger) number);
+            }
 
-           return new BigDecimal(number.doubleValue());
-       } catch (ParseException e) {
+            return new BigDecimal(number.doubleValue());
+        } catch (ParseException e) {
             throw new DataDecodeException("Failed to decode BigDecimal value '" + data + "' using NumberFormat instance " + decimalFormat + ".", e);
-       }
+        }
     }
 
     public String encode(Object object) throws DataDecodeException {
-	DecimalFormat decimalFormat = initDecimalFormat();
+        DecimalFormat decimalFormat = getDecimalFormat();
         return decimalFormat.format(object);
     }
 
-    //This function return a decimalformat based on the delimiters passed
-    private synchronized DecimalFormat forceDecimalFormat(Delimiters interchangeDelimiters) {
-	DecimalFormat decimalFormat;
-        NumberFormat parentNumberFormat = getNumberFormat();
-        if (parentNumberFormat != null && parentNumberFormat instanceof DecimalFormat) {
-            decimalFormat = (DecimalFormat) parentNumberFormat;
-        }else {
-            decimalFormat = new DecimalFormat();
-	}
-	decimalFormat.applyPattern("#0.0#");
-	DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
-	if (interchangeDelimiters != null) {
-	    dfs.setDecimalSeparator(interchangeDelimiters.getDecimalSeparator().charAt(0));
-	}
-	decimalFormat.setDecimalFormatSymbols(dfs);
-	return decimalFormat;
+    //Thread safe function to encode with delimiters awareness
+    public String encode(Object object, Delimiters interchangeDelimiters) throws DataDecodeException {
+        DecimalFormat decimalFormat = getDecimalFormat();
+        setDecimalPointFormat(decimalFormat, interchangeDelimiters);
+        return decimalFormat.format(object);
     }
 
-    //Thread safe function to encode with delimiters awareness
-    public String encode(Object object,Delimiters interchangeDelimiters) throws DataDecodeException {
-	DecimalFormat decimalFormat = forceDecimalFormat(interchangeDelimiters);
-	synchronized(decimalFormat){
-	    return decimalFormat.format(object);
-	}
+    private synchronized DecimalFormat getDecimalFormat() {
+        //Check to see if we can use the parent default format
+        NumberFormat parentNumberFormat = getNumberFormat();
+        
+        if (parentNumberFormat != null && parentNumberFormat instanceof DecimalFormat) {
+            // Clone because we potentially need to modify the decimal point...
+            return (DecimalFormat) parentNumberFormat.clone();
+        } else {
+            return new DecimalFormat();
+        }
+    }
+
+    private synchronized void setDecimalPointFormat(DecimalFormat decimalFormat, Delimiters interchangeDelimiters) {
+        DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
+
+        decimalFormat.applyPattern("#0.0#");
+        if (interchangeDelimiters != null) {
+            dfs.setDecimalSeparator(interchangeDelimiters.getDecimalSeparator().charAt(0));
+        }
+        decimalFormat.setDecimalFormatSymbols(dfs);
+    }
+
+    private Delimiters getContextDelimiters() {
+        ExecutionContext ec = Filter.getCurrentExecutionContext();
+        Delimiters delimiters = null;
+
+        if (ec != null) {
+            delimiters = ec.getBeanContext().getBean(Delimiters.class);
+        }
+
+        if(delimiters == null) {
+            delimiters = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
+        }
+
+        return delimiters;
     }
 }
