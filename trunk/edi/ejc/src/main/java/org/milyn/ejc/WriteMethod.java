@@ -20,6 +20,7 @@ import org.milyn.edisax.model.internal.*;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataEncoder;
+import org.milyn.javabean.decoders.DABigDecimalDecoder;
 import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JMethod;
 import org.milyn.javabean.pojogen.JNamedType;
@@ -123,7 +124,11 @@ class WriteMethod extends JMethod {
             }
 
             // Add the encoder encode instruction to te write method...
-            appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
+            if (decoderClass == DABigDecimalDecoder.class){
+                appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ", delimiters)));");
+            } else {
+                appendToBody("\n            nodeWriter.write(delimiters.escape(" + encoderName + ".encode(" + property.getName() + ")));");
+            }
         } else {
             appendToBody("\n            nodeWriter.write(delimiters.escape(" + property.getName() + ".toString()));");
         }
@@ -212,6 +217,9 @@ class WriteMethod extends JMethod {
                 break;
             case SUB_COMPONENT:
                 builder.append("\n        " + writerVariableName + ".write(delimiters.getSubComponent());");
+                break;
+            case DECIMAL_SEPARATOR:
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getDecimalSeparator());");
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported '" + DelimiterType.class.getName() + "' enum conversion.  Enum '" + delimiterType + "' not specified in switch statement.");

@@ -41,8 +41,16 @@ public class D03B_GeneratedMessagesTest extends AbstractTestCase {
         InterchangeTestUtil.test_Interchange(factory, false, Aperak.class);
     }
 
+    public void test_APERAK_comma_decimal() throws IOException {
+        InterchangeTestUtil.test_Interchange_Comma_Decimal(factory, false, Aperak.class);
+    }
+
     public void test_AUTHOR() throws IOException {
         InterchangeTestUtil.test_Interchange(factory, false, Author.class);
+    }
+
+    public void test_AUTHOR_comma_decimal() throws IOException {
+        InterchangeTestUtil.test_Interchange_Comma_Decimal(factory, true, Author.class);
     }
 
     public void test_BALANC() throws IOException {

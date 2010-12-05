@@ -26,5 +26,6 @@ public enum DelimiterType {
     FIELD,
     FIELD_REPEAT,
     COMPONENT,
-    SUB_COMPONENT;
+    SUB_COMPONENT,
+    DECIMAL_SEPARATOR;
 }

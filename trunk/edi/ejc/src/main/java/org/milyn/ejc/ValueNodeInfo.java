@@ -15,9 +15,9 @@
 */
 package org.milyn.ejc;
 
+import org.milyn.edisax.model.internal.ValueNode;
 import org.milyn.javabean.pojogen.JNamedType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +31,12 @@ public class ValueNodeInfo {
 
     private JNamedType property;
     private String dataSelector;
-    private List<Map.Entry<String,String>> decoderConfigs;
+    private ValueNode valueNode;
 
-    public ValueNodeInfo(JNamedType property, String dataSelector, List<Map.Entry<String,String>> decoderConfigs) {
+    public ValueNodeInfo(JNamedType property, String dataSelector, ValueNode valueNode) {
         this.property = property;
         this.dataSelector = dataSelector;
-        this.decoderConfigs = decoderConfigs;
+        this.valueNode = valueNode;
     }
 
     public JNamedType getProperty() {
@@ -48,10 +48,10 @@ public class ValueNodeInfo {
     }
 
     public List<Map.Entry<String,String>> getDecoderConfigs() {
-        return decoderConfigs;
+        return valueNode.getTypeParameters();
     }
 
     public String getDecoderType() {
-        return property.getType().getType().getSimpleName();
+        return valueNode.getDataType();
     }
 }

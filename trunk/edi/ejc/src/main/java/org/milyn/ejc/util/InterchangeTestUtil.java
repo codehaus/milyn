@@ -17,6 +17,7 @@
 package org.milyn.ejc.util;
 
 import junit.framework.TestCase;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.io.StreamUtils;
 import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
@@ -29,7 +30,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -39,7 +39,13 @@ import java.util.List;
  */
 public class InterchangeTestUtil {
 
-    private static MessageBuilder messageBuilder = new MessageBuilder("org.milyn", UNEdifactInterchangeParser.defaultUNEdifactDelimiters.getField());
+    private static MessageBuilder defaultUNAMessageBuilder = new MessageBuilder("org.milyn", UNEdifactInterchangeParser.defaultUNEdifactDelimiters.getField(), UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
+    private static MessageBuilder commaDecimalSepUNAMessageBuilder = new MessageBuilder("org.milyn", UNEdifactInterchangeParser.defaultUNEdifactDelimiters.getField(), UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
+
+    static {
+        Delimiters delimiters = ((Delimiters)UNEdifactInterchangeParser.defaultUNEdifactDelimiters.clone()).setDecimalSeparator(",");
+        commaDecimalSepUNAMessageBuilder = new MessageBuilder("org.milyn", delimiters.getField(), delimiters);
+    }
 
     public static void testJavaBinding(UNEdifactInterchangeFactory factory, String messageInFile, boolean dumpResult) throws IOException, SAXException {
         // Deserialize the a UN/EDIFACT interchange stream to Java...
@@ -69,6 +75,11 @@ public class InterchangeTestUtil {
         test_Interchange(factory, dump, interchange41);
     }
 
+    public static void test_Interchange_Comma_Decimal(UNEdifactInterchangeFactory factory, boolean dump, Class<?>... messageTypes) throws IOException {
+        UNEdifactInterchange41 interchange41 = buildInterchange(commaDecimalSepUNAMessageBuilder, messageTypes);
+        test_Interchange(factory, dump, interchange41);
+    }
+
     public static void test_Interchange(UNEdifactInterchangeFactory factory, boolean dump, UNEdifactInterchange41 interchange41) throws IOException {
         StringWriter writer = new StringWriter();
 
@@ -94,14 +105,19 @@ public class InterchangeTestUtil {
     }
 
     public static UNEdifactInterchange41 buildInterchange(Class<?>... messageTypes) {
-        return buildInterchange("D", "03B", messageTypes);
+        return buildInterchange(defaultUNAMessageBuilder, messageTypes);
     }
 
-    public static UNEdifactInterchange41 buildInterchange(String versionNum, String releaseNum, Class<?>[] messageTypes) {
+    public static UNEdifactInterchange41 buildInterchange(MessageBuilder builder, Class<?>... messageTypes) {
+        return buildInterchange("D", "03B", messageTypes, builder);
+    }
+
+    public static UNEdifactInterchange41 buildInterchange(String versionNum, String releaseNum, Class<?>[] messageTypes, MessageBuilder messageBuilder) {
         UNEdifactInterchange41 interchange41 = messageBuilder.buildMessage(UNEdifactInterchange41.class);
         UNB41 unb = interchange41.getInterchangeHeader();
         List<UNEdifactMessage41> messages = interchange41.getMessages();
 
+        interchange41.setInterchangeDelimiters(messageBuilder.getDelimiters());
         unb.getSyntaxIdentifier().setId("UNOW"); // UNOW is UTF-8.... as encoded above
         unb.getSyntaxIdentifier().setCodedCharacterEncoding("UNOW"); // UNOW is UTF-8.... as encoded above
         messages.clear();

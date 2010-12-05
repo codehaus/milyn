@@ -241,7 +241,7 @@ public class ClassModelCompiler {
             getWriteMethod(parent).writeValue(childToParentProperty, valueNode, delimiterType);
         }
 
-        parent.getValueBindings().add(new ValueNodeInfo(childToParentProperty, getCurrentNodePath(), valueNode.getTypeParameters()));
+        parent.getValueBindings().add(new ValueNodeInfo(childToParentProperty, getCurrentNodePath(), valueNode));
 
         return childToParentProperty;
     }

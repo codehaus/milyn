@@ -100,7 +100,7 @@ public class UNEdifactReaderTest extends TestCase {
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-02.xml")), new StringReader(new XStream().toXML(messages)));		
 	}
 	
-	public void test_java_binding_interchange() throws IOException, SAXException {
+	public void test_java_binding_interchange_01() throws IOException, SAXException {
 		Smooks smooks = new Smooks("/org/milyn/smooks/edi/unedifact/smooks-config-jb-02.xml");
 		JavaResult jResult = new JavaResult();		
 		StringResult sResult = new StringResult();		
@@ -116,6 +116,23 @@ public class UNEdifactReaderTest extends TestCase {
 		XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-03.xml")), new StringReader(new XStream().toXML(interchange)));		
 	}
+
+    public void test_java_binding_interchange_02() throws IOException, SAXException {
+        Smooks smooks = new Smooks("/org/milyn/smooks/edi/unedifact/smooks-config-jb-02.xml");
+        JavaResult jResult = new JavaResult();
+        StringResult sResult = new StringResult();
+        ExecutionContext execCtx = smooks.createExecutionContext();
+
+        //execCtx.setEventListener(new HtmlReportGenerator("target/report.html"));
+        smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("unedifact-msg-03.edi")), jResult, sResult);
+
+        UNEdifactInterchange41 interchange = jResult.getBean(UNEdifactInterchange41.class);
+
+        System.out.println(new XStream().toXML(interchange));
+
+        XMLUnit.setIgnoreWhitespace( true );
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-04.xml")), new StringReader(new XStream().toXML(interchange)));
+    }
 
 	private void createZip() throws IOException {
 		File zipFile = new File("target/mapping-models.zip");
