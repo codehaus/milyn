@@ -16,6 +16,8 @@
 
 package org.milyn.ejc.util;
 
+import org.milyn.edisax.model.internal.Delimiters;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -32,10 +34,16 @@ public class MessageBuilder {
 
     private String packageScope;
     private String delimiterForEscaping;
+    private Delimiters delimiters;
 
-    public MessageBuilder(String packageScope, String delimiterForEscaping) {
+    public MessageBuilder(String packageScope, String delimiterForEscaping, Delimiters delimiters) {
         this.packageScope = packageScope;
         this.delimiterForEscaping = delimiterForEscaping;
+        this.delimiters = delimiters;
+    }
+
+    public Delimiters getDelimiters() {
+        return delimiters;
     }
 
     public <T> T buildMessage(Class<T> messageType) {
@@ -47,6 +55,10 @@ public class MessageBuilder {
     }
 
     private <T> T buildObject(Class<T> objectType, String name) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+
+        if(objectType == Delimiters.class) {
+            return objectType.cast(delimiters);
+        }
 
         //
         // Assumptions...
@@ -61,7 +73,7 @@ public class MessageBuilder {
             // escaping of delims...
             return objectType.cast(name + delimiterForEscaping + name);
         } else if(Number.class.isAssignableFrom(objectType)) {
-            return objectType.getConstructor(String.class).newInstance("1");
+            return objectType.getConstructor(String.class).newInstance("1.1");
         } else if(int.class.isAssignableFrom(objectType)) {
             return (T) new Integer(1);
         } else if(objectType == Object.class) {

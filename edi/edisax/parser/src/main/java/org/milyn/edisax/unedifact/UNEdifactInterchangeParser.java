@@ -57,7 +57,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 
     private Map<String, Boolean> features = new HashMap<String, Boolean>();
 	
-	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
+	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?").setDecimalSeparator(".");
 	
 	private Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
 	private ContentHandler contentHandler;
@@ -90,7 +90,7 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
 		        segCode = segmentReader.peek(3);
 		        if(segCode.length() == 3) {
                     ControlBlockHandlerFactory controlBlockHandlerFactory = new UNEdifact41ControlBlockHandlerFactory(hierarchyChangeListener);
-		        	interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
+                    interchangeContext = createInterchangeContext(segmentReader, validate, controlBlockHandlerFactory);
 
                     ControlBlockHandler handler = controlBlockHandlerFactory.getControlBlockHandler(segCode);
 
@@ -110,20 +110,28 @@ public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeRea
         }
 	}
 
+    protected InterchangeContext createInterchangeContext(BufferedSegmentReader segmentReader, boolean validate, ControlBlockHandlerFactory controlBlockHandlerFactory) {
+        return new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
+    }
+
     public InterchangeContext getInterchangeContext() {
         return interchangeContext;
+    }
+
+    public Map<Description, EdifactModel> getMappingModels() {
+        return mappingModels;
     }
 
     /**
 	 * Set the EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
 	 * The model can be generated through a call to the {@link EDIParser}.
-	 * 
+	 *
 	 * @param mappingModels The mapping model.
 	 * @return This parser instance.
 	 */
 	public UNEdifactInterchangeParser setMappingModels(Map<Description, EdifactModel> mappingModels) {
-		AssertArgument.isNotNullAndNotEmpty(mappingModels, "mappingModels");		
+		AssertArgument.isNotNullAndNotEmpty(mappingModels, "mappingModels");
 		this.mappingModels = mappingModels;
 		return this;
 	}

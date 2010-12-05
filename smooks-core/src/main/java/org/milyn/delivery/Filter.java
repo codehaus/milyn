@@ -25,12 +25,15 @@ import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.NullReader;
 import org.milyn.io.NullWriter;
+import org.milyn.thread.StackedThreadLocal;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
+import java.util.EmptyStackException;
+import java.util.Stack;
 
 /**
  * Content filter.
@@ -58,12 +61,12 @@ public abstract class Filter {
     /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
      */
-    private static final ThreadLocal<Filter> filterThreadLocal = new ThreadLocal<Filter>();
+    private static final StackedThreadLocal<Filter> filterThreadLocal = new StackedThreadLocal<Filter>("Filter");
 
     /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" Filter associated with the thread.
      */
-    private static final ThreadLocal<ExecutionContext> execThreadLocal = new ThreadLocal<ExecutionContext>();
+    private static final StackedThreadLocal<ExecutionContext> execThreadLocal = new StackedThreadLocal<ExecutionContext>("ExecutionContext");
 
     public static final String CLOSE_SOURCE = "close.source";
 

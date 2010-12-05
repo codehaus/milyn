@@ -22,8 +22,12 @@ import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.interchange.ControlBlockHandlerFactory;
+import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.smooks.edi.ModelLoader;
@@ -71,8 +75,17 @@ public class UNEdifactReader extends UNEdifactInterchangeParser implements Smook
 		validate(validate);
 		
 		super.parse(unedifactInterchange);
-
-        // Bind the delimiters into the bean context.  Will then get auto-wired into interchanges...
-        executionContext.getBeanContext().addBean("interchangeDelimiters", getInterchangeContext().getSegmentReader().getDelimiters());
 	}
+
+    @Override
+    protected InterchangeContext createInterchangeContext(BufferedSegmentReader segmentReader, boolean validate, ControlBlockHandlerFactory controlBlockHandlerFactory) {
+        return new InterchangeContext(segmentReader, getMappingModels(), getContentHandler(), controlBlockHandlerFactory, validate) {
+            @Override
+            public void pushDelimiters(Delimiters delimiters) {
+                super.pushDelimiters(delimiters);
+                // Bind the delimiters into the bean context.  Will then get auto-wired into interchanges...
+                executionContext.getBeanContext().addBean("interchangeDelimiters", getInterchangeContext().getSegmentReader().getDelimiters());
+            }
+        };
+    }
 }

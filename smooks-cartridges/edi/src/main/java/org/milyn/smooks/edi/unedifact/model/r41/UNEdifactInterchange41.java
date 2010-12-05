@@ -135,7 +135,7 @@ public class UNEdifactInterchange41 implements UNEdifactInterchange {
             writer.append("UNA");
             writer.append(delimiters.getComponent());
             writer.append(delimiters.getField());
-            writer.append(".");
+            writer.append(delimiters.getDecimalSeparator());
             writer.append(delimiters.getEscape());
             writer.append(" ");
             writer.append(delimiters.getSegment());

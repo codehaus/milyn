@@ -397,7 +397,7 @@ if (components.get(linePart.getId()) == null) {
         }
 
         if (typeAndOccurance[0].trim().equals("n")) {
-            return "BigDecimal";
+            return "DABigDecimal";
         } else {
             return "String";
         }
@@ -515,7 +515,7 @@ if (components.get(linePart.getId()) == null) {
 
         public void setType(String type) {
             if (type.equalsIgnoreCase("n")) {
-                this.type = "BigDecimal";
+                this.type = "DABigDecimal";
             } else {
                 this.type = "String";
             }

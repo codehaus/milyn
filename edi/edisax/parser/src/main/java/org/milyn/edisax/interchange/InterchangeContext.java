@@ -21,6 +21,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Segment;
@@ -123,4 +124,12 @@ public class InterchangeContext {
 			segmentReader.getSegmentBuffer().setLength(0);
 		}
 	}
+
+    public void pushDelimiters(Delimiters delimiters) {
+        segmentReader.pushDelimiters(delimiters);
+    }
+
+    public void popDelimiters() {
+        segmentReader.popDelimiters();
+    }
 }
