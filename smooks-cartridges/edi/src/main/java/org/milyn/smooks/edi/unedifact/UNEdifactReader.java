@@ -84,7 +84,7 @@ public class UNEdifactReader extends UNEdifactInterchangeParser implements Smook
             public void pushDelimiters(Delimiters delimiters) {
                 super.pushDelimiters(delimiters);
                 // Bind the delimiters into the bean context.  Will then get auto-wired into interchanges...
-                executionContext.getBeanContext().addBean("interchangeDelimiters", getInterchangeContext().getSegmentReader().getDelimiters());
+                executionContext.getBeanContext().addBean("interchangeDelimiters", delimiters);
             }
         };
     }
