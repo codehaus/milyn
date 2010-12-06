@@ -171,6 +171,7 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        
 		<dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi_R4_core</artifactId>
@@ -211,6 +212,42 @@
 			<version>1.1.1</version>
 			<scope>provided</scope> 
 		</dependency>
+
+        <!-- Readding core dependencies -->
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>${xstream.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mvel</groupId>
+            <artifactId>mvel2</artifactId>
+            <version>${mvel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>${jaxen.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>dom4j</artifactId>
+                    <groupId>dom4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xerces</artifactId>
+                    <groupId>xmlParserAPIs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xerces</artifactId>
+                    <groupId>xercesImpl</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xom</artifactId>
+                    <groupId>xom</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 	</dependencies>
 
     <build>
