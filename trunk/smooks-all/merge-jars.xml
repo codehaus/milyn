@@ -20,6 +20,10 @@
     <target name="assemble">
         <delete file="./target/milyn*.jar" />
 
+        <jar destfile="./target/milyn-smooks-all-${smooks.version}.jar">
+            <zipgroupfileset dir="./target/dependency" includes="milyn*.jar"/>
+        </jar>
+
         <jar destfile="./target/milyn-smooks-all-${smooks.version}-sources.jar">
             <zipgroupfileset dir="./target/sources" includes="milyn*.jar"/>
         </jar>
