@@ -92,12 +92,6 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-        <!--
-        <repository>
-            <id>spring s3</id>
-            <url>https://s3browse.springsource.com/browse/repository.springsource.com/maven/bundles/external/</url>
-        </repository>
-        -->
     </repositories>
 
 </project>

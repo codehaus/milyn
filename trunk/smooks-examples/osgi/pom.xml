@@ -17,6 +17,10 @@
 		<module>peaberry</module>
 	</modules>
 
+	<properties>
+        <objectweb.version>2.2.3</objectweb.version>
+    </properties>
+
     <dependencies>
 
 		<dependency>
@@ -71,6 +75,55 @@
             <groupId>org.jaxen</groupId>
             <artifactId>com.springsource.org.jaxen</artifactId>
             <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>com.springsource.freemarker</artifactId>
+            <version>2.3.15</version>
+            <scope>provided</scope> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>com.springsource.org.codehaus.groovy</artifactId>
+            <version>1.5.7</version>
+            <scope>provided</scope> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>com.springsource.antlr</artifactId>
+            <version>2.7.7</version>
+            <scope>provided</scope> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm</artifactId>
+            <version>${objectweb.version}</version>
+            <scope>provided</scope> 
+        </dependency>
+
+		<dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm.tree.analysis</artifactId>
+            <version>${objectweb.version}</version>
+            <scope>provided</scope> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm.tree</artifactId>
+            <version>${objectweb.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm.util</artifactId>
+            <version>${objectweb.version}</version>
             <scope>provided</scope>
         </dependency>
 
