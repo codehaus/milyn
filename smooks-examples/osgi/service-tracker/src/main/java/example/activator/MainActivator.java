@@ -36,7 +36,7 @@ public class MainActivator implements BundleActivator
         System.out.println(context.getBundle().getHeaders().get("Bundle-Name") + " start");
         serviceTracker = new ServiceTracker(context, Smooks.class.getName(), null);
         serviceTracker.open();
-        Smooks smooks = (Smooks) serviceTracker.waitForService(0);
+        Smooks smooks = (Smooks) serviceTracker.waitForService(5000);
         if (smooks == null)
         {
             System.out.println("Smooks service was not available upon bundle startup");
