@@ -29,6 +29,7 @@
         <d99b.version>${edi.gen.version}</d99b.version>
         <d00a.version>${edi.gen.version}</d00a.version>
         <d00b.version>${edi.gen.version}</d00b.version>
+        <d01a.version>${edi.gen.version}</d01a.version>
         <d01b.version>${edi.gen.version}</d01b.version>
         <d01c.version>${edi.gen.version}</d01c.version>
         <d02a.version>${edi.gen.version}</d02a.version>
