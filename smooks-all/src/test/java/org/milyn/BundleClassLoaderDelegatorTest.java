@@ -46,5 +46,5 @@ public class BundleClassLoaderDelegatorTest
         URL resource = bcl.getResource("test.properties");
         assertNotNull(resource);
     }
-
+    
 }
