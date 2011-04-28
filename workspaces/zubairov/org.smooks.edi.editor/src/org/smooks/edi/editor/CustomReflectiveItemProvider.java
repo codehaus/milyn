@@ -7,7 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.provider.ReflectiveItemProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.mylin.ecore.SmooksMetadata;
+import org.milyn.ect.ecore.SmooksMetadata;
 
 /**
  * Extension for the {@link ReflectiveItemProvider} to change

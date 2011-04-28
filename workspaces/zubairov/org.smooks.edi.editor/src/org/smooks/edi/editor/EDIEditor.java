@@ -5,8 +5,8 @@ import org.eclipse.emf.ecore.provider.EcoreItemProviderAdapterFactory;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
-import org.mylin.ecore.model.envelope.EnvelopeFactory;
-import org.mylin.ecore.resource.EDIFactResourceFactoryImpl;
+import org.milyn.edisax.unedifact.registry.LazyMappingsRegistry;
+import org.smooks.edi.editor.resource.EDIFactResourceFactoryImpl;
 
 public class EDIEditor extends EcoreEditor {
 
@@ -14,7 +14,7 @@ public class EDIEditor extends EcoreEditor {
 		super();
 		editingDomain.getResourceSet().getResourceFactoryRegistry()
 				.getExtensionToFactoryMap()
-				.put("edi", new EDIFactResourceFactoryImpl(new EclipseEDIRegistry()));
+				.put("edi", new EDIFactResourceFactoryImpl(new LazyMappingsRegistry()));
 		editingDomain.getResourceSet().getLoadOptions().put(EDIFactResourceFactoryImpl.FEATURE_IGNORE_NEWLINES, true);
 		editingDomain.getResourceSet().getLoadOptions().put(EDIFactResourceFactoryImpl.FEATURE_VALIDATE, true);
 		editingDomain.getResourceSet().getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, true);
